@@ -1,5 +1,5 @@
 name: anchwatt
-description: "A new Flutter project."
+description: "Anchwatt didn't ask for this. But he has feelings about your system events."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: ^3.11.4
@@ -28,23 +28,60 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  # AutoRoute is a declarative routing solution, where everything needed for navigation is automatically generated for you.
+  auto_route: ^11.1.0
+
+  # Superpowers for Dart. Collection of useful static extension methods.
+  dartx: ^1.2.0
+
+  # Flutter SDK
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  # Flutter localizations library, from the Flutter SDK.
+  flutter_localizations:
+    sdk: flutter
+
+  # Simple direct Service Locator that allows to decouple the interface from a concrete implementation and to access the concrete implementation from everywhere in your App
+  get_it: ^9.2.1
+
+  # Contains code to deal with internationalized/localized messages, date and number formatting and parsing, bi-directional text, and other internationalization issues.
+  intl: ^0.20.2
+
+  # Flutter plugin for querying information about the application package, such as CFBundleVersion on iOS or versionCode on Android.
+  package_info_plus: ^10.0.0
+
+  # A wrapper around InheritedWidget to make them easier to use and more reusable.
+  provider: ^6.1.5+1
+
+  # Flutter plugin for reading and writing simple key-value pairs. Wraps NSUserDefaults on iOS and SharedPreferences on Android.
+  shared_preferences: ^2.5.5
+
+  # Flutter plugin for launching a URL. Supports web, phone, SMS, and email schemes.
+  url_launcher: ^6.3.2
 
 dev_dependencies:
+  # AutoRoute is a declarative routing solution, where everything needed for navigation is automatically generated for you.
+  auto_route_generator: ^10.5.0
+
+  # A build system for Dart code generation and modular compilation.
+  build_runner: ^2.13.1
+
+  # Change App Package Name with single command. Update AndroidManifest, build.gradle, MainActivity files & move MainActivity file to new directory structure automatically.
+  change_app_package_name: ^1.5.0
+
+  # A package which simplifies the task of updating your Flutter app's launcher icon.
+  flutter_launcher_icons: ^0.14.4
+
+  # Recommended lints for Flutter apps, packages, and plugins to encourage good coding practices.
+  flutter_lints: ^6.0.0
+
+  # Testing library for flutter, built on top of package:test.
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^6.0.0
+  # intl_utils is a dart library that generates Dart localization code from ARB file. Generated code relies on Intl library.
+  intl_utils: ^2.8.14
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -87,3 +124,22 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Flutter Intl
+flutter_intl:
+  enabled: true
+  class_name: L10n
+  main_locale: fr
+  arb_dir: lib/l10n/arb
+  output_dir: lib/l10n/outputs
+
+# Flutter Launcher Icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  background_color_ios: '#ffffff'
+  image_path: 'assets/images/icons/app/icon__app--full-dev.png'
+  image_path_ios_dark_transparent: 'assets/images/icons/app/icon__app--full-dev.png'
+  adaptive_icon_background: 'assets/images/icons/app/icon__app--background.png'
+  adaptive_icon_foreground: 'assets/images/icons/app/icon__app--foreground-dev.png'
