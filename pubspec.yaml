@@ -135,11 +135,6 @@ flutter_intl:
 
 # Flutter Launcher Icons
 flutter_launcher_icons:
-  android: true
-  ios: true
-  remove_alpha_ios: true
-  background_color_ios: '#ffffff'
-  image_path: 'assets/images/icons/app/icon__app--full-dev.png'
-  image_path_ios_dark_transparent: 'assets/images/icons/app/icon__app--full-dev.png'
-  adaptive_icon_background: 'assets/images/icons/app/icon__app--background.png'
-  adaptive_icon_foreground: 'assets/images/icons/app/icon__app--foreground-dev.png'
+  macos:
+    generate: true
+    image_path: 'assets/images/icons/app/icon__app--dev.png'
