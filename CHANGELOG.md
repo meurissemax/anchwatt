@@ -1,8 +1,13 @@
 # Changelog
 
-This Changelog follows the principles of [Common Changelog](https://common-changelog.org).
+This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
-## [Unreleased]
+## Unreleased
+
+### Changed
+
+- Change the Flutter version to 3.41.7
+- Change the Dart SDK version to 3.11.5
 
 ### Added
 
