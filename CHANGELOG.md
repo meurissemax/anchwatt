@@ -13,3 +13,4 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 - Add the base project structure and initial files
 - Add the macOS app icon
+- Add the "Inter" font family
