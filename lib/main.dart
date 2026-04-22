@@ -7,7 +7,7 @@ import 'package:anchwatt/styles/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   setupLocator();
@@ -17,6 +17,7 @@ Future<void> main() async {
 
 class App extends StatelessWidget {
   final AppRouter _router = locator<AppRouter>();
+  final L10n _l10n = locator<L10n>();
 
   App({super.key});
 
@@ -43,7 +44,7 @@ class App extends StatelessWidget {
       routerConfig: _router.config(),
       supportedLocales: L10n.delegate.supportedLocales,
       theme: themeDefault,
-      title: Settings.appTitle,
+      title: _l10n.anchwatt,
     );
   }
 }

@@ -53,6 +53,11 @@ class L10n {
   static L10n? maybeOf(BuildContext context) {
     return Localizations.of<L10n>(context, L10n);
   }
+
+  /// `Anchwatt`
+  String get anchwatt {
+    return Intl.message('Anchwatt', name: 'anchwatt', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<L10n> {

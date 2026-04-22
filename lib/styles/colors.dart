@@ -11,5 +11,3 @@ const Color colorWarning = Colors.orange;
 const Color colorScaffoldBackground = Colors.white;
 const Color colorSurface = Colors.white;
 const Color colorText = Colors.black;
-const Color colorToastBackground = Colors.black;
-const Color colorToastIcon = Colors.white;
