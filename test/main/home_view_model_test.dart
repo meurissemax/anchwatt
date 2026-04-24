@@ -3,32 +3,34 @@ import 'package:anchwatt/main/view_models/home_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('HomeViewModel addXp crosses stage boundaries and caps at levelMax', () {
-    final HomeViewModel vm = HomeViewModel();
+  test('HomeViewModel addXp crosses evolution boundaries and caps at levelMax', () async {
+    final HomeViewModel vm = HomeViewModel(
+      levelUpDwell: Duration.zero,
+    );
 
     expect(vm.level, AnchwattSettings.levelMin);
-    expect(vm.stage, EvolutionStage.baby);
+    expect(vm.evolution, Evolution.anchwatt);
 
-    for (int i = 0; i < 33; i++) {
-      vm.addXp(AnchwattSettings.xpPerLevel);
+    while (vm.level < AnchwattSettings.evolutionLamperoieLevel) {
+      await vm.addXp(vm.xpToNextLevel);
     }
 
-    expect(vm.level, 34);
-    expect(vm.stage, EvolutionStage.normal);
+    expect(vm.level, AnchwattSettings.evolutionLamperoieLevel);
+    expect(vm.evolution, Evolution.lamperoie);
 
-    for (int i = 0; i < 33; i++) {
-      vm.addXp(AnchwattSettings.xpPerLevel);
+    while (vm.level < AnchwattSettings.evolutionOhmassacreLevel) {
+      await vm.addXp(vm.xpToNextLevel);
     }
 
-    expect(vm.level, 67);
-    expect(vm.stage, EvolutionStage.mega);
+    expect(vm.level, AnchwattSettings.evolutionOhmassacreLevel);
+    expect(vm.evolution, Evolution.ohmassacre);
 
-    for (int i = 0; i < 200; i++) {
-      vm.addXp(AnchwattSettings.xpPerLevel);
+    for (int i = 0; i < AnchwattSettings.levelMax; i++) {
+      await vm.addXp(AnchwattSettings.xpForLevel(AnchwattSettings.levelMax));
     }
 
     expect(vm.level, AnchwattSettings.levelMax);
-    expect(vm.xp, AnchwattSettings.xpPerLevel);
+    expect(vm.xp, AnchwattSettings.xpForLevel(AnchwattSettings.levelMax));
     expect(vm.progress, 1);
   });
 }

@@ -21,10 +21,10 @@ const Color colorMutedLight = Color(0xff9ca3af);
 const Color colorNeutralDark = Color(0xff111827);
 const Color colorNeutralLight = Color(0xffe5e7eb);
 
-// Stage accents
-const Color colorStageBaby = Color(0xff5eead4);
-const Color colorStageMega = Color(0xfff43f5e);
-const Color colorStageNormal = Color(0xffeab308);
+// Evolution accents
+const Color colorEvolutionAnchwatt = Color(0xff5eead4);
+const Color colorEvolutionLamperoie = Color(0xffeab308);
+const Color colorEvolutionOhmassacre = Color(0xfff43f5e);
 
 // Widgets
 const Color colorXpProgressBarTrack = Color(0xfff3f4f6);

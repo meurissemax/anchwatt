@@ -3,79 +3,71 @@ import 'package:anchwatt/styles/colors.dart';
 import 'package:flutter/material.dart';
 
 class AnchwattSettings {
+  static const int evolutionLamperoieLevel = 15;
+  static const int evolutionOhmassacreLevel = 40;
   static const int levelMax = 100;
   static const int levelMin = 1;
+  static const int xpBase = 25;
+  static const int xpGrowthFactor = 2;
   static const int xpPerEvent = 10;
-  static const int xpPerLevel = 100;
+
+  static int xpForLevel(int level) => xpBase + xpGrowthFactor * (level - 1) * (level - 1);
 }
 
-enum EvolutionStage {
-  baby,
-  normal,
-  mega
+enum Evolution {
+  anchwatt,
+  lamperoie,
+  ohmassacre
   ;
 
-  static EvolutionStage fromLevel(int level) {
-    if (level <= 33) {
-      return EvolutionStage.baby;
+  static Evolution fromLevel(int level) {
+    if (level < AnchwattSettings.evolutionLamperoieLevel) {
+      return Evolution.anchwatt;
     }
 
-    if (level <= 66) {
-      return EvolutionStage.normal;
+    if (level < AnchwattSettings.evolutionOhmassacreLevel) {
+      return Evolution.lamperoie;
     }
 
-    return EvolutionStage.mega;
+    return Evolution.ohmassacre;
   }
 
   Color get accentColor {
     switch (this) {
-      case EvolutionStage.baby:
-        return colorStageBaby;
+      case Evolution.anchwatt:
+        return colorEvolutionAnchwatt;
 
-      case EvolutionStage.normal:
-        return colorStageNormal;
+      case Evolution.lamperoie:
+        return colorEvolutionLamperoie;
 
-      case EvolutionStage.mega:
-        return colorStageMega;
+      case Evolution.ohmassacre:
+        return colorEvolutionOhmassacre;
     }
   }
 
-  double get scale {
+  String get assetPath {
     switch (this) {
-      case EvolutionStage.baby:
-        return 0.55;
+      case Evolution.anchwatt:
+        return 'assets/images/misc/anchwatt.png';
 
-      case EvolutionStage.normal:
-        return 0.8;
+      case Evolution.lamperoie:
+        return 'assets/images/misc/lamperoie.png';
 
-      case EvolutionStage.mega:
-        return 1;
-    }
-  }
-
-  double get opacity {
-    switch (this) {
-      case EvolutionStage.baby:
-        return 0.8;
-
-      case EvolutionStage.normal:
-        return 1;
-
-      case EvolutionStage.mega:
-        return 1;
+      case Evolution.ohmassacre:
+        return 'assets/images/misc/ohmassacre.png';
     }
   }
 
   String label(L10n l10n) {
     switch (this) {
-      case EvolutionStage.baby:
-        return l10n.stageBaby;
+      case Evolution.anchwatt:
+        return l10n.anchwatt;
 
-      case EvolutionStage.normal:
-        return l10n.stageNormal;
+      case Evolution.lamperoie:
+        return l10n.lamperoie;
 
-      case EvolutionStage.mega:
-        return l10n.stageMega;
+      case Evolution.ohmassacre:
+        return l10n.ohmassacre;
     }
   }
 }

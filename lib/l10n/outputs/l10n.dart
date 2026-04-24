@@ -69,13 +69,13 @@ class L10n {
     );
   }
 
-  /// `{stage} Anchwatt — Lvl {level}`
-  String homeStageLevel(int level, String stage) {
+  /// `{name} — Lvl {level}`
+  String homeEvolutionLevel(int level, String name) {
     return Intl.message(
-      '$stage Anchwatt — Lvl $level',
-      name: 'homeStageLevel',
+      '$name — Lvl $level',
+      name: 'homeEvolutionLevel',
       desc: '',
-      args: [level, stage],
+      args: [level, name],
     );
   }
 
@@ -89,19 +89,14 @@ class L10n {
     );
   }
 
-  /// `Baby`
-  String get stageBaby {
-    return Intl.message('Baby', name: 'stageBaby', desc: '', args: []);
+  /// `Lampéroie`
+  String get lamperoie {
+    return Intl.message('Lampéroie', name: 'lamperoie', desc: '', args: []);
   }
 
-  /// `Mega`
-  String get stageMega {
-    return Intl.message('Mega', name: 'stageMega', desc: '', args: []);
-  }
-
-  /// `Normal`
-  String get stageNormal {
-    return Intl.message('Normal', name: 'stageNormal', desc: '', args: []);
+  /// `Ohmassacre`
+  String get ohmassacre {
+    return Intl.message('Ohmassacre', name: 'ohmassacre', desc: '', args: []);
   }
 }
 

@@ -78,10 +78,10 @@ class _LevelHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<HomeViewModel, ({int level, EvolutionStage stage})>(
+    return Selector<HomeViewModel, ({int level, Evolution evolution})>(
       selector: (_, vm) => (
         level: vm.level,
-        stage: vm.stage,
+        evolution: vm.evolution,
       ),
       builder: (_, data, _) => Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -98,7 +98,7 @@ class _LevelHeader extends StatelessWidget {
               bottom: 8,
             ),
             child: Text(
-              l10n.homeStageLevel(data.level, data.stage.label(l10n)),
+              l10n.homeEvolutionLevel(data.level, data.evolution.label(l10n)),
               style: textStageLabel,
             ),
           ),
@@ -113,10 +113,10 @@ class _SpriteSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<HomeViewModel, EvolutionStage>(
-      selector: (_, vm) => vm.stage,
-      builder: (_, stage, _) => AnchwattSprite(
-        stage: stage,
+    return Selector<HomeViewModel, Evolution>(
+      selector: (_, vm) => vm.evolution,
+      builder: (_, evolution, _) => AnchwattSprite(
+        evolution: evolution,
       ),
     );
   }
@@ -127,11 +127,11 @@ class _XpProgressBarSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<HomeViewModel, ({double progress, EvolutionStage stage})>(
-      selector: (_, vm) => (progress: vm.progress, stage: vm.stage),
+    return Selector<HomeViewModel, ({double progress, Evolution evolution})>(
+      selector: (_, vm) => (progress: vm.progress, evolution: vm.evolution),
       builder: (_, data, _) => XpProgressBar(
         progress: data.progress,
-        color: data.stage.accentColor,
+        color: data.evolution.accentColor,
       ),
     );
   }
@@ -144,10 +144,10 @@ class _XpCounterText extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<HomeViewModel, int>(
-      selector: (_, vm) => vm.xp,
-      builder: (_, xp, _) => Text(
-        l10n.homeXpCounter(xp, AnchwattSettings.xpPerLevel),
+    return Selector<HomeViewModel, ({int xp, int xpToNextLevel})>(
+      selector: (_, vm) => (xp: vm.xp, xpToNextLevel: vm.xpToNextLevel),
+      builder: (_, data, _) => Text(
+        l10n.homeXpCounter(data.xp, data.xpToNextLevel),
         style: textXpCounter,
       ),
     );

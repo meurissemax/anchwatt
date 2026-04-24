@@ -6,6 +6,8 @@ class MainFlutterWindow: NSWindow {
     let flutterViewController = FlutterViewController()
     self.contentViewController = flutterViewController
 
+    self.title = "Anchwatt"
+
     let size = NSSize(width: 320, height: 420)
     self.setContentSize(size)
     self.contentMinSize = size

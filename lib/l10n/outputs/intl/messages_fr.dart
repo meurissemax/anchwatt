@@ -20,7 +20,7 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'fr';
 
-  static String m0(level, stage) => "${stage} Anchwatt — Lvl ${level}";
+  static String m0(level, name) => "${name} — Lvl ${level}";
 
   static String m1(current, total) => "${current} / ${total}";
 
@@ -28,10 +28,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
     "homeDebugAddXp": MessageLookupByLibrary.simpleMessage("DEBUG: +XP"),
-    "homeStageLevel": m0,
+    "homeEvolutionLevel": m0,
     "homeXpCounter": m1,
-    "stageBaby": MessageLookupByLibrary.simpleMessage("Baby"),
-    "stageMega": MessageLookupByLibrary.simpleMessage("Mega"),
-    "stageNormal": MessageLookupByLibrary.simpleMessage("Normal"),
+    "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
+    "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
   };
 }

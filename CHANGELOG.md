@@ -10,6 +10,11 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Change the Dart SDK version to 3.11.5
 - Change the macOS window to a fixed 320x420 non-resizable size
 - Change the home view internals to use centralized styling tokens and granular `Selector` state observation
+- Replace the Anchwatt growth stages (baby/normal/mega) with proper evolutions (Anchwatt, Lampéroie, Ohmassacre) and their dedicated sprites
+- Apply a progressive XP curve — early levels ramp fast, high levels require substantially more XP
+- Move the evolution thresholds to level 15 (Lampéroie) and level 40 (Ohmassacre)
+- Hold the XP progress bar at 100% briefly before applying the level-up
+- Set the macOS window title to "Anchwatt"
 
 ### Added
 

@@ -1,11 +1,11 @@
 {
     "@@locale": "fr",
-    "@homeStageLevel": {
+    "@homeEvolutionLevel": {
         "placeholders": {
             "level": {
                 "type": "int"
             },
-            "stage": {
+            "name": {
                 "type": "String"
             }
         }
@@ -22,9 +22,8 @@
     },
     "anchwatt": "Anchwatt",
     "homeDebugAddXp": "DEBUG: +XP",
-    "homeStageLevel": "{stage} Anchwatt — Lvl {level}",
+    "homeEvolutionLevel": "{name} — Lvl {level}",
     "homeXpCounter": "{current} / {total}",
-    "stageBaby": "Baby",
-    "stageMega": "Mega",
-    "stageNormal": "Normal"
+    "lamperoie": "Lampéroie",
+    "ohmassacre": "Ohmassacre"
 }
