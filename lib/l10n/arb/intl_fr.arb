@@ -1,4 +1,30 @@
 {
     "@@locale": "fr",
-    "anchwatt": "Anchwatt"
+    "@homeStageLevel": {
+        "placeholders": {
+            "level": {
+                "type": "int"
+            },
+            "stage": {
+                "type": "String"
+            }
+        }
+    },
+    "@homeXpCounter": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "anchwatt": "Anchwatt",
+    "homeDebugAddXp": "DEBUG: +XP",
+    "homeStageLevel": "{stage} Anchwatt — Lvl {level}",
+    "homeXpCounter": "{current} / {total}",
+    "stageBaby": "Baby",
+    "stageMega": "Mega",
+    "stageNormal": "Normal"
 }

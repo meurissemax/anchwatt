@@ -58,6 +58,51 @@ class L10n {
   String get anchwatt {
     return Intl.message('Anchwatt', name: 'anchwatt', desc: '', args: []);
   }
+
+  /// `DEBUG: +XP`
+  String get homeDebugAddXp {
+    return Intl.message(
+      'DEBUG: +XP',
+      name: 'homeDebugAddXp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{stage} Anchwatt — Lvl {level}`
+  String homeStageLevel(int level, String stage) {
+    return Intl.message(
+      '$stage Anchwatt — Lvl $level',
+      name: 'homeStageLevel',
+      desc: '',
+      args: [level, stage],
+    );
+  }
+
+  /// `{current} / {total}`
+  String homeXpCounter(int current, int total) {
+    return Intl.message(
+      '$current / $total',
+      name: 'homeXpCounter',
+      desc: '',
+      args: [current, total],
+    );
+  }
+
+  /// `Baby`
+  String get stageBaby {
+    return Intl.message('Baby', name: 'stageBaby', desc: '', args: []);
+  }
+
+  /// `Mega`
+  String get stageMega {
+    return Intl.message('Mega', name: 'stageMega', desc: '', args: []);
+  }
+
+  /// `Normal`
+  String get stageNormal {
+    return Intl.message('Normal', name: 'stageNormal', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<L10n> {

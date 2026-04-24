@@ -1,5 +1,15 @@
+import 'package:anchwatt/l10n/outputs/l10n.dart';
+import 'package:anchwatt/locator.dart';
+import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/view_models/home_view_model.dart';
+import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
+import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
+import 'package:anchwatt/styles/borders.dart';
+import 'package:anchwatt/styles/colors.dart';
+import 'package:anchwatt/styles/texts.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 @RoutePage()
 class HomeView extends StatelessWidget {
@@ -9,10 +19,165 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider<HomeViewModel>(
+      create: (_) => HomeViewModel(),
+      child: const _HomeViewBody(),
+    );
+  }
+}
+
+class _HomeViewBody extends StatelessWidget {
+  const _HomeViewBody();
+
+  @override
+  Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Text('Home'),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _LevelHeader(),
+              SizedBox(
+                height: 8,
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment(0.1, 0),
+                  child: _SpriteSelector(),
+                ),
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              _XpProgressBarSelector(),
+              SizedBox(
+                height: 6,
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: _XpCounterText(),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              _DebugAddXpButton(),
+            ],
+          ),
+        ),
       ),
+    );
+  }
+}
+
+class _LevelHeader extends StatelessWidget {
+  const _LevelHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Selector<HomeViewModel, ({int level, EvolutionStage stage})>(
+      selector: (_, vm) => (
+        level: vm.level,
+        stage: vm.stage,
+      ),
+      builder: (_, data, _) => Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            '${data.level}',
+            style: textLevel,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              bottom: 8,
+            ),
+            child: Text(
+              l10n.homeStageLevel(data.level, data.stage.label(l10n)),
+              style: textStageLabel,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SpriteSelector extends StatelessWidget {
+  const _SpriteSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<HomeViewModel, EvolutionStage>(
+      selector: (_, vm) => vm.stage,
+      builder: (_, stage, _) => AnchwattSprite(
+        stage: stage,
+      ),
+    );
+  }
+}
+
+class _XpProgressBarSelector extends StatelessWidget {
+  const _XpProgressBarSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<HomeViewModel, ({double progress, EvolutionStage stage})>(
+      selector: (_, vm) => (progress: vm.progress, stage: vm.stage),
+      builder: (_, data, _) => XpProgressBar(
+        progress: data.progress,
+        color: data.stage.accentColor,
+      ),
+    );
+  }
+}
+
+class _XpCounterText extends StatelessWidget {
+  const _XpCounterText();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Selector<HomeViewModel, int>(
+      selector: (_, vm) => vm.xp,
+      builder: (_, xp, _) => Text(
+        l10n.homeXpCounter(xp, AnchwattSettings.xpPerLevel),
+        style: textXpCounter,
+      ),
+    );
+  }
+}
+
+// TODO(step2): remove debug XP button once system events drive XP increments.
+class _DebugAddXpButton extends StatelessWidget {
+  const _DebugAddXpButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return OutlinedButton(
+      onPressed: () => context.read<HomeViewModel>().addXp(),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colorNeutralDark,
+        side: const BorderSide(
+          color: colorNeutralLight,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: borderRadiusDebugButton,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        textStyle: textDebugButton,
+      ),
+      child: Text(l10n.homeDebugAddXp),
     );
   }
 }
