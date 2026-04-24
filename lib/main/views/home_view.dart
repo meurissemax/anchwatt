@@ -34,7 +34,7 @@ class _HomeViewBody extends StatelessWidget {
     return const Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(24, 24, 24, 20),
+          padding: EdgeInsets.fromLTRB(24, 36, 24, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
