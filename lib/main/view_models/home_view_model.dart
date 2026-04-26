@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/sound_service.dart';
+import 'package:anchwatt/main/services/usb_event_service.dart';
+import 'package:anchwatt/main/storages/anchwatt_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class HomeViewModel extends ChangeNotifier {
@@ -9,13 +14,20 @@ class HomeViewModel extends ChangeNotifier {
   /* Variables */
 
   final Duration _levelUpDwell;
+  final AnchwattStorage _storage = AnchwattStorage();
+  final UsbEventService _usbEventService = UsbEventService();
+  final SoundService _soundService = SoundService();
+
+  StreamSubscription<void>? _usbSubscription;
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
   Future<void>? _pending;
 
   /* Constructor */
 
-  HomeViewModel({Duration levelUpDwell = defaultLevelUpDwell}) : _levelUpDwell = levelUpDwell;
+  HomeViewModel({Duration levelUpDwell = defaultLevelUpDwell}) : _levelUpDwell = levelUpDwell {
+    _bootServices();
+  }
 
   /* Getters */
 
@@ -38,6 +50,30 @@ class HomeViewModel extends ChangeNotifier {
     });
 
     return next;
+  }
+
+  Future<void> _bootServices() async {
+    await _storage.init();
+    final ({int level, int xp}) initial = _storage.readProgression();
+    _level = initial.level;
+    _xp = initial.xp;
+    notifyListeners();
+
+    try {
+      await _soundService.init();
+    } on Object catch (error) {
+      debugPrint('HomeViewModel: SoundService init failed: $error');
+    }
+
+    try {
+      await _usbEventService.start();
+      _usbSubscription = _usbEventService.events.listen((_) {
+        _soundService.playRandom();
+        addXp();
+      });
+    } on Object catch (error) {
+      debugPrint('HomeViewModel: UsbEventService start failed: $error');
+    }
   }
 
   Future<void> _process(int amount) async {
@@ -66,5 +102,15 @@ class HomeViewModel extends ChangeNotifier {
     }
 
     notifyListeners();
+
+    await _storage.writeProgression(level: _level, xp: _xp);
+  }
+
+  @override
+  void dispose() {
+    _usbSubscription?.cancel();
+    _usbEventService.stop();
+    _soundService.dispose();
+    super.dispose();
   }
 }

@@ -1,8 +1,14 @@
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/home_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+  });
+
   test('HomeViewModel addXp crosses evolution boundaries and caps at levelMax', () async {
     final HomeViewModel vm = HomeViewModel(
       levelUpDwell: Duration.zero,

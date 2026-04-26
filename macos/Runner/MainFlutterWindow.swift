@@ -2,6 +2,8 @@ import Cocoa
 import FlutterMacOS
 
 class MainFlutterWindow: NSWindow {
+  private var usbMonitor: UsbMonitor?
+
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
     self.contentViewController = flutterViewController
@@ -22,6 +24,14 @@ class MainFlutterWindow: NSWindow {
     self.collectionBehavior.remove(.fullScreenPrimary)
 
     RegisterGeneratedPlugins(registry: flutterViewController)
+
+    let monitor = UsbMonitor()
+    let usbChannel = FlutterEventChannel(
+      name: "com.anchwatt/usb_events",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    usbChannel.setStreamHandler(monitor)
+    self.usbMonitor = monitor
 
     super.awakeFromNib()
   }

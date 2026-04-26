@@ -4,6 +4,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/home_view_model.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
+import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/borders.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/texts.dart';
@@ -31,38 +32,40 @@ class _HomeViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(24, 36, 24, 20),
+          padding: const EdgeInsets.fromLTRB(24, 36, 24, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _LevelHeader(),
-              SizedBox(
+              const _LevelHeader(),
+              const SizedBox(
                 height: 8,
               ),
-              Expanded(
+              const Expanded(
                 child: Align(
                   alignment: Alignment(0.1, 0),
                   child: _SpriteSelector(),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 12,
               ),
-              _XpProgressBarSelector(),
-              SizedBox(
+              const _XpProgressBarSelector(),
+              const SizedBox(
                 height: 6,
               ),
-              Align(
+              const Align(
                 alignment: Alignment.centerRight,
                 child: _XpCounterText(),
               ),
-              SizedBox(
-                height: 16,
-              ),
-              _DebugAddXpButton(),
+              if (Settings.isDev) ...[
+                const SizedBox(
+                  height: 16,
+                ),
+                const _DebugAddXpButton(),
+              ],
             ],
           ),
         ),
@@ -154,7 +157,6 @@ class _XpCounterText extends StatelessWidget {
   }
 }
 
-// TODO(step2): remove debug XP button once system events drive XP increments.
 class _DebugAddXpButton extends StatelessWidget {
   const _DebugAddXpButton();
 
