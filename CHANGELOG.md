@@ -17,15 +17,15 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Translate the macOS system menus (Apple menu, Édition, Présentation, Fenêtre, Aide) to French
 - Add the home view with the Anchwatt sprite, level header and XP progress bar
 - Add three evolutions — Anchwatt, Lampéroie (level 15) and Ohmassacre (level 40) — on a progressive XP curve, with a brief hold at 100% before each level-up
-- Add a temporary debug button to increment XP for local testing of evolution transitions
+- Add a temporary debug button to increment XP for local testing of evolution transitions, hidden outside the dev environment
 - Add a dev/prod `Environment` flag in `Settings` to gate developer-only UI
-- Add `readInt`/`writeInt` methods to `PrefsStorage`
-- Add `AnchwattStorage` to persist level and XP across launches with schema versioning
+- Add `readInt`/`writeInt` and `readString`/`writeString` methods to `PrefsStorage`
+- Add `AnchwattStorage` to persist level and XP across launches with schema versioning, loaded on boot and saved after every XP change
 - Add `UsbEventService` to detect USB connect/disconnect events via IOKit
 - Add `SoundService` to play random sounds from `assets/sounds/`
 - Play a random sound and grant XP on every USB connect/disconnect event
-
-### Changed
-
-- Hide the debug XP button outside the dev environment
-- Load and persist the Anchwatt progression in `HomeViewModel` on boot and after every XP change
+- Add `UpdateService` to check the latest GitHub Release at boot, with a 2-hour cooldown
+- Add `UpdateStorage` to cache update-check results
+- Add an update-available badge in the top-right of the home view, opening the release page on click
+- Declare `Settings.githubReleasesLatestEndpoint` for the GitHub Releases API URL
+- Enable `com.apple.security.network.client` in the macOS Debug and Release entitlements for the GitHub API call

@@ -36,6 +36,14 @@ const TextStyle textStageLabel = TextStyle(
   fontWeight: FontWeight.w500,
 );
 
+const TextStyle textUpdateBadge = TextStyle(
+  color: Colors.white,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 11,
+  fontWeight: FontWeight.w600,
+);
+
 const TextStyle textXpCounter = TextStyle(
   color: colorMutedLight,
   fontFamily: fontFamily,

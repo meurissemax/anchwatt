@@ -1,6 +1,7 @@
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/view_models/home_view_model.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
@@ -36,36 +37,45 @@ class _HomeViewBody extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 36, 24, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Stack(
             children: [
-              const _LevelHeader(),
-              const SizedBox(
-                height: 8,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const _LevelHeader(),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  const Expanded(
+                    child: Align(
+                      alignment: Alignment(0.1, 0),
+                      child: _SpriteSelector(),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  const _XpProgressBarSelector(),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: _XpCounterText(),
+                  ),
+                  if (Settings.isDev) ...[
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    const _DebugAddXpButton(),
+                  ],
+                ],
               ),
-              const Expanded(
-                child: Align(
-                  alignment: Alignment(0.1, 0),
-                  child: _SpriteSelector(),
-                ),
+              const Positioned(
+                top: 0,
+                right: 0,
+                child: _UpdateBadge(),
               ),
-              const SizedBox(
-                height: 12,
-              ),
-              const _XpProgressBarSelector(),
-              const SizedBox(
-                height: 6,
-              ),
-              const Align(
-                alignment: Alignment.centerRight,
-                child: _XpCounterText(),
-              ),
-              if (Settings.isDev) ...[
-                const SizedBox(
-                  height: 16,
-                ),
-                const _DebugAddXpButton(),
-              ],
             ],
           ),
         ),
@@ -180,6 +190,52 @@ class _DebugAddXpButton extends StatelessWidget {
         textStyle: textDebugButton,
       ),
       child: Text(l10n.homeDebugAddXp),
+    );
+  }
+}
+
+class _UpdateBadge extends StatelessWidget {
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    horizontal: 8,
+    vertical: 4,
+  );
+
+  const _UpdateBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Selector<HomeViewModel, UpdateStatus>(
+      selector: (_, vm) => vm.updateStatus,
+      builder: (_, status, _) {
+        if (status is! UpdateAvailable) {
+          return const SizedBox.shrink();
+        }
+
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Tooltip(
+            message: l10n.homeUpdateBadgeTooltip,
+            child: GestureDetector(
+              onTap: () => context.read<HomeViewModel>().openLatestRelease(),
+              child: DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: colorUpdateBadge,
+                  borderRadius: borderRadiusUpdateBadge,
+                ),
+                child: Padding(
+                  padding: _padding,
+                  child: Text(
+                    l10n.homeUpdateBadgeLabel(status.latestVersion),
+                    style: textUpdateBadge,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

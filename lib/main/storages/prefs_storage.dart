@@ -29,6 +29,20 @@ class PrefsStorage {
     await prefs?.setInt(key, value);
   }
 
+  String? readString({
+    required String key,
+    String? fallback,
+  }) {
+    return prefs?.getString(key) ?? fallback;
+  }
+
+  Future<void> writeString({
+    required String key,
+    required String value,
+  }) async {
+    await prefs?.setString(key, value);
+  }
+
   Future<void> delete({
     required String key,
   }) async {

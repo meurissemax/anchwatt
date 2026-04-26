@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
+import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/services/usb_event_service.dart';
 import 'package:anchwatt/main/storages/anchwatt_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeViewModel extends ChangeNotifier {
   /* Static variables */
@@ -17,11 +19,13 @@ class HomeViewModel extends ChangeNotifier {
   final AnchwattStorage _storage = AnchwattStorage();
   final UsbEventService _usbEventService = UsbEventService();
   final SoundService _soundService = SoundService();
+  final UpdateService _updateService = UpdateService();
 
   StreamSubscription<void>? _usbSubscription;
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
   Future<void>? _pending;
+  UpdateStatus _updateStatus = const UpdateUnknown();
 
   /* Constructor */
 
@@ -36,6 +40,7 @@ class HomeViewModel extends ChangeNotifier {
   int get xpToNextLevel => AnchwattSettings.xpForLevel(_level);
   Evolution get evolution => Evolution.fromLevel(_level);
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
+  UpdateStatus get updateStatus => _updateStatus;
 
   /* Methods */
 
@@ -74,6 +79,25 @@ class HomeViewModel extends ChangeNotifier {
     } on Object catch (error) {
       debugPrint('HomeViewModel: UsbEventService start failed: $error');
     }
+
+    unawaited(
+      _updateService.check().then((status) {
+        _updateStatus = status;
+        notifyListeners();
+      }),
+    );
+  }
+
+  Future<void> openLatestRelease() async {
+    final UpdateStatus status = _updateStatus;
+    if (status is! UpdateAvailable) {
+      return;
+    }
+
+    await launchUrl(
+      Uri.parse(status.releaseUrl),
+      mode: LaunchMode.externalApplication,
+    );
   }
 
   Future<void> _process(int amount) async {

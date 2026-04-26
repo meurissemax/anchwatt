@@ -22,14 +22,20 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(level, name) => "${name} — Lvl ${level}";
 
-  static String m1(current, total) => "${current} / ${total}";
+  static String m1(version) => "↑ v${version}";
+
+  static String m2(current, total) => "${current} / ${total}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
     "homeDebugAddXp": MessageLookupByLibrary.simpleMessage("DEBUG: +XP"),
     "homeEvolutionLevel": m0,
-    "homeXpCounter": m1,
+    "homeUpdateBadgeLabel": m1,
+    "homeUpdateBadgeTooltip": MessageLookupByLibrary.simpleMessage(
+      "Mise à jour disponible !",
+    ),
+    "homeXpCounter": m2,
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
   };

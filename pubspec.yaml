@@ -48,6 +48,9 @@ dependencies:
   # Simple direct Service Locator that allows to decouple the interface from a concrete implementation and to access the concrete implementation from everywhere in your App
   get_it: ^9.2.1
 
+  # A composable, multi-platform, Future-based API for HTTP requests.
+  http: ^1.6.0
+
   # Contains code to deal with internationalized/localized messages, date and number formatting and parsing, bi-directional text, and other internationalization issues.
   intl: ^0.20.2
 

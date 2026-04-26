@@ -79,6 +79,26 @@ class L10n {
     );
   }
 
+  /// `↑ v{version}`
+  String homeUpdateBadgeLabel(String version) {
+    return Intl.message(
+      '↑ v$version',
+      name: 'homeUpdateBadgeLabel',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `Mise à jour disponible !`
+  String get homeUpdateBadgeTooltip {
+    return Intl.message(
+      'Mise à jour disponible !',
+      name: 'homeUpdateBadgeTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `{current} / {total}`
   String homeXpCounter(int current, int total) {
     return Intl.message(

@@ -82,6 +82,11 @@ else
   fail_step "🧩" "Checking required files" "pubspec.yml/pubspec.yaml not found."
 fi
 
+SETTINGS_FILE="lib/settings.dart"
+if [[ ! -f "$SETTINGS_FILE" ]]; then
+  fail_step "🧩" "Checking required files" "$SETTINGS_FILE not found."
+fi
+
 # -----------------------------
 # 1) Tooling checks
 # -----------------------------
@@ -125,18 +130,23 @@ info "Flutter: ${CYAN}$INSTALLED_VERSION${RESET}"
 run_step "🧹" "Checking git working tree clean" test -z "$(git status --porcelain)"
 
 # -----------------------------
-# Temp edits + restore (pubspec + generated icons)
+# Temp edits + restore (pubspec + settings + generated icons)
 # -----------------------------
 PUBSPEC_BACKUP="$(mktemp)"
 cp "$PUBSPEC_FILE" "$PUBSPEC_BACKUP"
 
+SETTINGS_BACKUP="$(mktemp)"
+cp "$SETTINGS_FILE" "$SETTINGS_BACKUP"
+
 restore_everything() {
   cp "$PUBSPEC_BACKUP" "$PUBSPEC_FILE" 2>/dev/null || true
+  cp "$SETTINGS_BACKUP" "$SETTINGS_FILE" 2>/dev/null || true
 
   # Restore generated platform icons to repo state (tracked files only)
   git restore --quiet macos/Runner/Assets.xcassets/AppIcon.appiconset 2>/dev/null || true
 
   rm -f "$PUBSPEC_BACKUP" 2>/dev/null || true
+  rm -f "$SETTINGS_BACKUP" 2>/dev/null || true
 }
 
 # Always restore on exit (success or failure)
@@ -180,17 +190,36 @@ else
 fi
 
 # -----------------------------
-# 6) Analyze
+# 6) Settings environment
+# -----------------------------
+if [[ "$TARGET" == "prod" ]]; then
+  perl -i -pe '
+    s|(static const Environment environment\s*=\s*)Environment\.dev|${1}Environment.prod|;
+  ' "$SETTINGS_FILE"
+
+  if ! grep -q "environment = Environment.prod" "$SETTINGS_FILE"; then
+    fail_step "⚙️" "Switching environment to prod" "Could not update Environment in $SETTINGS_FILE."
+  fi
+
+  run_step "⚙️" "Switching environment to prod" true
+  info "settings.dart updated temporarily (dev → prod)"
+else
+  run_step "⚙️" "Switching environment to prod" true
+  info "Skipped (dev keeps Environment.dev)"
+fi
+
+# -----------------------------
+# 7) Analyze
 # -----------------------------
 run_step "🔎" "Running analyze" flutter analyze
 
 # -----------------------------
-# 7) Tests
+# 8) Tests
 # -----------------------------
 run_step "🧪" "Running tests" flutter test
 
 # -----------------------------
-# 8) Build (macOS)
+# 9) Build (macOS)
 # -----------------------------
 run_step "🧹" "Cleaning" flutter clean
 run_step "📦" "Fetching dependencies" flutter pub get
@@ -204,9 +233,9 @@ run_step "🚀" "Building macOS app ($TARGET)" flutter build macos --release $OB
 info "Output: ${CYAN}build/macos/Build/Products/Release/${RESET}"
 
 # -----------------------------
-# 9) Restore
+# 10) Restore
 # -----------------------------
 run_step "🔄" "Restoring edited files" restore_now
-info "pubspec / generated icons restored"
+info "pubspec / settings / generated icons restored"
 
 run_step "🎉" "Build completed ($TARGET)" true
