@@ -157,7 +157,7 @@ class UpdateService {
     try {
       response = await http
           .get(
-            Uri.parse(Settings.githubReleasesLatestEndpoint),
+            Uri.parse(Settings.latestReleaseEndpoint),
             headers: {
               'Accept': 'application/vnd.github+json',
               'User-Agent': 'anchwatt-app',

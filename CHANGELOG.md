@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Sign, notarize and staple the macOS app in `./build.sh prod`, producing a signed DMG ready for distribution (with a `--no-notarize` escape hatch for local pipeline tests)
 - Add the base project structure and initial files
 - Pin the Flutter SDK to 3.41.7 and the Dart SDK to 3.11.5
 - Add the build script
@@ -27,5 +28,5 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Add `UpdateService` to check the latest GitHub Release at boot, with a 2-hour cooldown
 - Add `UpdateStorage` to cache update-check results
 - Add an update-available badge in the top-right of the home view, opening the release page on click
-- Declare `Settings.githubReleasesLatestEndpoint` for the GitHub Releases API URL
+- Declare `Settings.latestReleaseEndpoint` for the latest release API URL
 - Enable `com.apple.security.network.client` in the macOS Debug and Release entitlements for the GitHub API call
