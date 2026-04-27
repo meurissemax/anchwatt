@@ -55,3 +55,7 @@ app.*.map.json
 
 # Flutter DevTools
 devtools_options.yaml
+
+# Claude / AI tooling
+.claude/
+CLAUDE.md
