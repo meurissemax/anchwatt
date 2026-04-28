@@ -27,6 +27,13 @@
             }
         }
     },
+    "@systemVolumeTooltip": {
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
     "anchwatt": "Anchwatt",
     "homeDebugAddXp": "DEBUG: +XP",
     "homeEvolutionLevel": "{name} — Lvl {level}",
@@ -34,5 +41,7 @@
     "homeUpdateBadgeTooltip": "Mise à jour disponible !",
     "homeXpCounter": "{current} / {total}",
     "lamperoie": "Lampéroie",
-    "ohmassacre": "Ohmassacre"
+    "ohmassacre": "Ohmassacre",
+    "systemVolumeTooltip": "Volume système : {percent} %",
+    "systemVolumeTooltipMuted": "Son coupé"
 }

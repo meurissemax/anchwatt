@@ -3,6 +3,7 @@ import FlutterMacOS
 
 class MainFlutterWindow: NSWindow {
   private var usbMonitor: UsbMonitor?
+  private var systemVolumeMonitor: SystemVolumeMonitor?
 
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
@@ -32,6 +33,14 @@ class MainFlutterWindow: NSWindow {
     )
     usbChannel.setStreamHandler(monitor)
     self.usbMonitor = monitor
+
+    let volumeMonitor = SystemVolumeMonitor()
+    let volumeChannel = FlutterEventChannel(
+      name: "com.anchwatt/system_volume",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    volumeChannel.setStreamHandler(volumeMonitor)
+    self.systemVolumeMonitor = volumeMonitor
 
     super.awakeFromNib()
   }

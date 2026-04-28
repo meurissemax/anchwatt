@@ -4,6 +4,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/view_models/home_view_model.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
+import 'package:anchwatt/main/widgets/system_volume_pill.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
 import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/borders.dart';
@@ -74,7 +75,16 @@ class _HomeViewBody extends StatelessWidget {
               const Positioned(
                 top: 0,
                 right: 0,
-                child: _UpdateBadge(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _UpdateBadge(),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    SystemVolumePill(),
+                  ],
+                ),
               ),
             ],
           ),

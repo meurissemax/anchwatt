@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
+import 'package:anchwatt/main/services/system_volume_service.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/services/usb_event_service.dart';
 import 'package:anchwatt/main/storages/anchwatt_storage.dart';
@@ -20,12 +21,15 @@ class HomeViewModel extends ChangeNotifier {
   final UsbEventService _usbEventService = UsbEventService();
   final SoundService _soundService = SoundService();
   final UpdateService _updateService = UpdateService();
+  final SystemVolumeService _systemVolumeService = SystemVolumeService();
 
   StreamSubscription<void>? _usbSubscription;
+  StreamSubscription<SystemVolumeState>? _systemVolumeSubscription;
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
   Future<void>? _pending;
   UpdateStatus _updateStatus = const UpdateUnknown();
+  SystemVolumeState _systemVolumeState = SystemVolumeState.initial();
 
   /* Constructor */
 
@@ -41,6 +45,7 @@ class HomeViewModel extends ChangeNotifier {
   Evolution get evolution => Evolution.fromLevel(_level);
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
   UpdateStatus get updateStatus => _updateStatus;
+  SystemVolumeState get systemVolumeState => _systemVolumeState;
 
   /* Methods */
 
@@ -78,6 +83,20 @@ class HomeViewModel extends ChangeNotifier {
       });
     } on Object catch (error) {
       debugPrint('HomeViewModel: UsbEventService start failed: $error');
+    }
+
+    try {
+      await _systemVolumeService.start();
+      _systemVolumeSubscription = _systemVolumeService.events.listen((SystemVolumeState state) {
+        if (state == _systemVolumeState) {
+          return;
+        }
+
+        _systemVolumeState = state;
+        notifyListeners();
+      });
+    } on Object catch (error) {
+      debugPrint('HomeViewModel: SystemVolumeService start failed: $error');
     }
 
     unawaited(
@@ -134,6 +153,8 @@ class HomeViewModel extends ChangeNotifier {
   void dispose() {
     _usbSubscription?.cancel();
     _usbEventService.stop();
+    _systemVolumeSubscription?.cancel();
+    _systemVolumeService.stop();
     _soundService.dispose();
     super.dispose();
   }

@@ -12,6 +12,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add a system volume pill in the home view that mirrors the macOS output volume and mute state in real time
 - Add some flabbergasting sounds
 
 ## 1.0.0 - 2026-04-27

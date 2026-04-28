@@ -118,6 +118,26 @@ class L10n {
   String get ohmassacre {
     return Intl.message('Ohmassacre', name: 'ohmassacre', desc: '', args: []);
   }
+
+  /// `Volume système : {percent} %`
+  String systemVolumeTooltip(int percent) {
+    return Intl.message(
+      'Volume système : $percent %',
+      name: 'systemVolumeTooltip',
+      desc: '',
+      args: [percent],
+    );
+  }
+
+  /// `Son coupé`
+  String get systemVolumeTooltipMuted {
+    return Intl.message(
+      'Son coupé',
+      name: 'systemVolumeTooltipMuted',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<L10n> {

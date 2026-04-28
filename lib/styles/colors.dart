@@ -27,5 +27,8 @@ const Color colorEvolutionLamperoie = Color(0xffeab308);
 const Color colorEvolutionOhmassacre = Color(0xfff43f5e);
 
 // Widgets
+const Color colorSystemVolumeForeground = Color(0xff6b7280);
+const Color colorSystemVolumeLow = Color(0xffea580c);
+const Color colorSystemVolumeMuted = Color(0xffdc2626);
 const Color colorUpdateBadge = Color(0xffea580c);
 const Color colorXpProgressBarTrack = Color(0xfff3f4f6);

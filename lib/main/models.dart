@@ -2,6 +2,7 @@ import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:flutter/material.dart';
 
+// Clément, don't read this, you curious boy
 class AnchwattSettings {
   static const int evolutionLamperoieLevel = 15;
   static const int evolutionOhmassacreLevel = 40;
@@ -70,4 +71,52 @@ enum Evolution {
         return l10n.ohmassacre;
     }
   }
+}
+
+class SystemVolumeSettings {
+  static const double lowThreshold = 0.15;
+  static const double mediumThreshold = 0.5;
+}
+
+@immutable
+class SystemVolumeState {
+  final double volume;
+  final bool muted;
+
+  const SystemVolumeState({
+    required this.volume,
+    required this.muted,
+  });
+
+  factory SystemVolumeState.initial() => const SystemVolumeState(
+    volume: 0,
+    muted: false,
+  );
+
+  factory SystemVolumeState.fromMap(Map<Object?, Object?> map) {
+    final Object? rawVolume = map['volume'];
+    final Object? rawMuted = map['muted'];
+
+    double volume = rawVolume is num ? rawVolume.toDouble() : 0;
+    if (volume.isNaN || volume < 0) {
+      volume = 0;
+    } else if (volume > 1) {
+      volume = 1;
+    }
+
+    return SystemVolumeState(
+      volume: volume,
+      muted: rawMuted is bool && rawMuted,
+    );
+  }
+
+  int get percent => (volume * 100).round();
+  bool get isLow => !muted && volume < SystemVolumeSettings.lowThreshold;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || (other is SystemVolumeState && other.volume == volume && other.muted == muted);
+
+  @override
+  int get hashCode => Object.hash(volume, muted);
 }

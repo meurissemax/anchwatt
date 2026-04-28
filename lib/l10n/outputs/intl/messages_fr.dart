@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(current, total) => "${current} / ${total}";
 
+  static String m3(percent) => "Volume système : ${percent} %";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
@@ -38,5 +40,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "homeXpCounter": m2,
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
+    "systemVolumeTooltip": m3,
+    "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
+      "Son coupé",
+    ),
   };
 }

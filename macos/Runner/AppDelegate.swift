@@ -1,4 +1,5 @@
 import Cocoa
+import CoreAudio
 import FlutterMacOS
 import IOKit
 import IOKit.usb
@@ -112,5 +113,227 @@ final class UsbMonitor: NSObject, FlutterStreamHandler {
     if sawAny, let sink = sink {
       sink(["type": type])
     }
+  }
+}
+
+final class SystemVolumeMonitor: NSObject, FlutterStreamHandler {
+  private var sink: FlutterEventSink?
+  private var currentDeviceID: AudioDeviceID = AudioDeviceID(kAudioObjectUnknown)
+  private var defaultDeviceListener: AudioObjectPropertyListenerBlock?
+  private var volumeListeners: [(AudioObjectPropertyAddress, AudioObjectPropertyListenerBlock)] = []
+  private var muteListener: (AudioObjectPropertyAddress, AudioObjectPropertyListenerBlock)?
+  private let listenerQueue: DispatchQueue = DispatchQueue.main
+
+  func onListen(
+    withArguments arguments: Any?,
+    eventSink events: @escaping FlutterEventSink
+  ) -> FlutterError? {
+    self.sink = events
+    start()
+    return nil
+  }
+
+  func onCancel(withArguments arguments: Any?) -> FlutterError? {
+    stop()
+    self.sink = nil
+    return nil
+  }
+
+  private func start() {
+    currentDeviceID = resolveDefaultOutputDevice()
+    emitCurrentState()
+    attachDefaultDeviceListener()
+    if currentDeviceID != AudioDeviceID(kAudioObjectUnknown) {
+      attachDeviceListeners(deviceID: currentDeviceID)
+    }
+  }
+
+  private func stop() {
+    detachDeviceListeners(deviceID: currentDeviceID)
+    detachDefaultDeviceListener()
+    currentDeviceID = AudioDeviceID(kAudioObjectUnknown)
+  }
+
+  // CoreAudio listener blocks fire on `listenerQueue` (main), so reads and
+  // sink dispatches are guaranteed to happen on the main thread.
+  private func emitCurrentState() {
+    let deviceID = currentDeviceID
+    let volume: Double
+    let muted: Bool
+    if deviceID == AudioDeviceID(kAudioObjectUnknown) {
+      volume = 0
+      muted = false
+    } else {
+      volume = readVolume(deviceID: deviceID)
+      muted = readMuted(deviceID: deviceID)
+    }
+    sink?(["volume": volume, "muted": muted])
+  }
+
+  private func resolveDefaultOutputDevice() -> AudioDeviceID {
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+      mScope: kAudioObjectPropertyScopeGlobal,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    var deviceID = AudioDeviceID(kAudioObjectUnknown)
+    var size = UInt32(MemoryLayout<AudioDeviceID>.size)
+    let status = AudioObjectGetPropertyData(
+      AudioObjectID(kAudioObjectSystemObject),
+      &address,
+      0,
+      nil,
+      &size,
+      &deviceID
+    )
+    return status == noErr ? deviceID : AudioDeviceID(kAudioObjectUnknown)
+  }
+
+  private func attachDefaultDeviceListener() {
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+      mScope: kAudioObjectPropertyScopeGlobal,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+      guard let self = self else { return }
+      let oldID = self.currentDeviceID
+      let newID = self.resolveDefaultOutputDevice()
+      if newID == oldID {
+        return
+      }
+      self.detachDeviceListeners(deviceID: oldID)
+      self.currentDeviceID = newID
+      if newID != AudioDeviceID(kAudioObjectUnknown) {
+        self.attachDeviceListeners(deviceID: newID)
+      }
+      self.emitCurrentState()
+    }
+    self.defaultDeviceListener = block
+    AudioObjectAddPropertyListenerBlock(
+      AudioObjectID(kAudioObjectSystemObject),
+      &address,
+      listenerQueue,
+      block
+    )
+  }
+
+  private func detachDefaultDeviceListener() {
+    guard let block = defaultDeviceListener else { return }
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+      mScope: kAudioObjectPropertyScopeGlobal,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    AudioObjectRemovePropertyListenerBlock(
+      AudioObjectID(kAudioObjectSystemObject),
+      &address,
+      listenerQueue,
+      block
+    )
+    defaultDeviceListener = nil
+  }
+
+  // Some output devices do not expose the "main" volume element (element 0)
+  // and only publish per-channel volumes (typically channels 1 and 2). We
+  // attach to whichever combination is available so the pill keeps tracking.
+  private func attachDeviceListeners(deviceID: AudioDeviceID) {
+    for var address in volumeAddresses(deviceID: deviceID) {
+      let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+        self?.emitCurrentState()
+      }
+      let status = AudioObjectAddPropertyListenerBlock(deviceID, &address, listenerQueue, block)
+      if status == noErr {
+        volumeListeners.append((address, block))
+      }
+    }
+
+    var muteAddress = AudioObjectPropertyAddress(
+      mSelector: kAudioDevicePropertyMute,
+      mScope: kAudioDevicePropertyScopeOutput,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    if AudioObjectHasProperty(deviceID, &muteAddress) {
+      let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+        self?.emitCurrentState()
+      }
+      let status = AudioObjectAddPropertyListenerBlock(deviceID, &muteAddress, listenerQueue, block)
+      if status == noErr {
+        muteListener = (muteAddress, block)
+      }
+    }
+  }
+
+  private func detachDeviceListeners(deviceID: AudioDeviceID) {
+    if deviceID != AudioDeviceID(kAudioObjectUnknown) {
+      for (var address, block) in volumeListeners {
+        AudioObjectRemovePropertyListenerBlock(deviceID, &address, listenerQueue, block)
+      }
+      if var entry = muteListener {
+        AudioObjectRemovePropertyListenerBlock(deviceID, &entry.0, listenerQueue, entry.1)
+      }
+    }
+    volumeListeners.removeAll()
+    muteListener = nil
+  }
+
+  private func volumeAddresses(deviceID: AudioDeviceID) -> [AudioObjectPropertyAddress] {
+    var mainAddress = AudioObjectPropertyAddress(
+      mSelector: kAudioDevicePropertyVolumeScalar,
+      mScope: kAudioDevicePropertyScopeOutput,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    if AudioObjectHasProperty(deviceID, &mainAddress) {
+      return [mainAddress]
+    }
+    var fallbacks: [AudioObjectPropertyAddress] = []
+    for channel: AudioObjectPropertyElement in [1, 2] {
+      var address = AudioObjectPropertyAddress(
+        mSelector: kAudioDevicePropertyVolumeScalar,
+        mScope: kAudioDevicePropertyScopeOutput,
+        mElement: channel
+      )
+      if AudioObjectHasProperty(deviceID, &address) {
+        fallbacks.append(address)
+      }
+    }
+    return fallbacks
+  }
+
+  private func readVolume(deviceID: AudioDeviceID) -> Double {
+    let addresses = volumeAddresses(deviceID: deviceID)
+    if addresses.isEmpty {
+      return 0
+    }
+    var sum: Double = 0
+    var count: Int = 0
+    for var address in addresses {
+      var value: Float32 = 0
+      var size = UInt32(MemoryLayout<Float32>.size)
+      let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &value)
+      if status == noErr {
+        sum += Double(value)
+        count += 1
+      }
+    }
+    return count > 0 ? sum / Double(count) : 0
+  }
+
+  private func readMuted(deviceID: AudioDeviceID) -> Bool {
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioDevicePropertyMute,
+      mScope: kAudioDevicePropertyScopeOutput,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    if !AudioObjectHasProperty(deviceID, &address) {
+      return false
+    }
+    var value: UInt32 = 0
+    var size = UInt32(MemoryLayout<UInt32>.size)
+    let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &value)
+    if status != noErr {
+      return false
+    }
+    return value != 0
   }
 }
