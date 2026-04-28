@@ -7,7 +7,7 @@ class UsbEventService {
   /* Static variables */
 
   static const String _channelName = 'com.anchwatt/usb_events';
-  static const Duration _debounceWindow = Duration(milliseconds: 1000);
+  static const Duration _debounceWindow = Duration(milliseconds: 750);
   static const Duration _startupGuard = Duration(milliseconds: 500);
 
   /* Variables */

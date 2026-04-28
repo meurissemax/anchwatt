@@ -6,8 +6,9 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
-- Change the Flutter SDK version to 3.41.8
+- Reduce the USB event debounce window from 1000ms to 750ms for snappier sound playback
 - Change the macOS app icon
+- Change the Flutter SDK version to 3.41.8
 
 ### Added
 
