@@ -9,6 +9,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Change the Flutter SDK version to 3.41.8
 - Change the macOS app icon
 
+### Added
+
+- Add some flabbergasting sounds
+
 ## 1.0.0 - 2026-04-27
 
 ### Added

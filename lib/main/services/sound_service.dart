@@ -9,7 +9,7 @@ class SoundService {
   /* Static variables */
 
   static const String _soundsPrefix = 'assets/sounds/';
-  static const Set<String> _supportedExtensions = {'.mp3', '.wav'};
+  static const Set<String> _supportedExtensions = {'.mp3', '.m4a'};
 
   /* Variables */
 
