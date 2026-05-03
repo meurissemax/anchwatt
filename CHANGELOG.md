@@ -10,6 +10,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Scale XP per event with the player level and the system volume
 - Remove `AnchwattSettings.xpPerEvent`
 - Introduce `AnchwattEventType` enum and `xpForEvent(...)` to support future event types
+- Switch the USB event debounce to leading-edge so the sound plays on the first native event, with a 1500ms window wide enough to absorb the connect/disconnect/reconnect handshake some USB devices (notably iPhones) emit during enumeration
 
 ### Added
 
@@ -17,6 +18,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Add GitHub issues and pull requests templates
 - Change the Flutter SDK version to 3.41.9
 - Add an ephemeral `+{n}xp` floater shown above the XP gauge when XP is gained, with fade-in/out and rise animation
+
+### Fixed
+
+- Fix doubled and phantom USB sounds by deduplicating IOKit notifications per device registry entry ID
 
 ## 1.1.0 - 2026-04-28
 

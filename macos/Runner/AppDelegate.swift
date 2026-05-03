@@ -20,6 +20,11 @@ final class UsbMonitor: NSObject, FlutterStreamHandler {
   private var matchedIterator: io_iterator_t = 0
   private var terminatedIterator: io_iterator_t = 0
   private var sink: FlutterEventSink?
+  // Registry entry IDs of USB devices currently considered connected. A composite
+  // device (phone, dock, hub) can surface several IOUSBDevice services across
+  // separate IOKit callbacks during enumeration; tracking IDs lets us emit one
+  // Flutter event per real connect/disconnect transition instead of one per match.
+  private var connectedDeviceIDs: Set<UInt64> = []
 
   func onListen(
     withArguments arguments: Any?,
@@ -37,6 +42,10 @@ final class UsbMonitor: NSObject, FlutterStreamHandler {
   }
 
   private func start() {
+    // We have no visibility on devices plugged/unplugged while we were not
+    // listening — resync from scratch using the initial iterator drain below.
+    connectedDeviceIDs.removeAll()
+
     let port = IONotificationPortCreate(kIOMainPortDefault)
     self.notifyPort = port
 
@@ -58,8 +67,9 @@ final class UsbMonitor: NSObject, FlutterStreamHandler {
       selfPtr,
       &matchedIterator
     )
-    // Drain the initial set silently — these are devices already plugged in at launch.
-    drainSilently(matchedIterator)
+    // Drain the initial set silently and record IDs — these are devices already
+    // plugged in at registration time and should not trigger a Flutter event.
+    drainAndRecord(matchedIterator)
 
     // Terminated (disconnect) — fresh matching dictionary required.
     IOServiceAddMatchingNotification(
@@ -99,20 +109,50 @@ final class UsbMonitor: NSObject, FlutterStreamHandler {
     }
   }
 
-  // The iterator MUST be drained for IOKit to re-arm the next callback,
-  // so we always consume every entry — even if we end up coalescing them
-  // into a single payload to the Flutter sink.
-  private func handleIterator(_ iterator: io_iterator_t, type: String) {
+  private func drainAndRecord(_ iterator: io_iterator_t) {
     var obj = IOIteratorNext(iterator)
-    var sawAny = false
     while obj != 0 {
-      sawAny = true
+      if let id = registryEntryID(of: obj) {
+        connectedDeviceIDs.insert(id)
+      }
       IOObjectRelease(obj)
       obj = IOIteratorNext(iterator)
     }
-    if sawAny, let sink = sink {
+  }
+
+  // The iterator MUST be drained for IOKit to re-arm the next callback,
+  // so we always consume every entry — but we only emit a single Flutter
+  // event when at least one device ID actually transitions in our set.
+  private func handleIterator(_ iterator: io_iterator_t, type: String) {
+    var didTransition = false
+    var obj = IOIteratorNext(iterator)
+    while obj != 0 {
+      if let id = registryEntryID(of: obj) {
+        switch type {
+        case "connect":
+          if connectedDeviceIDs.insert(id).inserted {
+            didTransition = true
+          }
+        case "disconnect":
+          if connectedDeviceIDs.remove(id) != nil {
+            didTransition = true
+          }
+        default:
+          break
+        }
+      }
+      IOObjectRelease(obj)
+      obj = IOIteratorNext(iterator)
+    }
+    if didTransition, let sink = sink {
       sink(["type": type])
     }
+  }
+
+  private func registryEntryID(of service: io_service_t) -> UInt64? {
+    var id: UInt64 = 0
+    let status = IORegistryEntryGetRegistryEntryID(service, &id)
+    return status == KERN_SUCCESS ? id : nil
   }
 }
 

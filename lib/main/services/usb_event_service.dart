@@ -7,7 +7,11 @@ class UsbEventService {
   /* Static variables */
 
   static const String _channelName = 'com.anchwatt/usb_events';
-  static const Duration _debounceWindow = Duration(milliseconds: 750);
+  // Wide enough to absorb the connect → disconnect → reconnect handshake some
+  // USB devices (notably iPhones, which renegotiate their USB configuration)
+  // emit during enumeration. Each step lands as a distinct IOKit registry entry
+  // and would otherwise trigger a second sound ~1s after the first.
+  static const Duration _debounceWindow = Duration(milliseconds: 1500);
   static const Duration _startupGuard = Duration(milliseconds: 500);
 
   /* Variables */
@@ -16,8 +20,8 @@ class UsbEventService {
   final StreamController<void> _controller = StreamController<void>.broadcast();
 
   StreamSubscription<dynamic>? _nativeSubscription;
-  Timer? _debounceTimer;
   DateTime? _startedAt;
+  DateTime? _lastEmittedAt;
 
   /* Getters */
 
@@ -38,25 +42,28 @@ class UsbEventService {
   }
 
   Future<void> stop() async {
-    _debounceTimer?.cancel();
-    _debounceTimer = null;
     await _nativeSubscription?.cancel();
     _nativeSubscription = null;
     _startedAt = null;
+    _lastEmittedAt = null;
   }
 
   void _onNativeEvent(Object? _) {
-    final DateTime? startedAt = _startedAt;
+    final DateTime now = DateTime.now();
 
-    if (startedAt != null && DateTime.now().difference(startedAt) < _startupGuard) {
+    final DateTime? startedAt = _startedAt;
+    if (startedAt != null && now.difference(startedAt) < _startupGuard) {
       return;
     }
 
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(_debounceWindow, () {
-      if (!_controller.isClosed) {
-        _controller.add(null);
-      }
-    });
+    final DateTime? last = _lastEmittedAt;
+    if (last != null && now.difference(last) < _debounceWindow) {
+      return;
+    }
+
+    _lastEmittedAt = now;
+    if (!_controller.isClosed) {
+      _controller.add(null);
+    }
   }
 }
