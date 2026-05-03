@@ -26,7 +26,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(current, total) => "${current} / ${total}";
 
-  static String m3(percent) => "Volume système : ${percent} %";
+  static String m3(xp) => "+${xp}xp";
+
+  static String m4(percent) => "Volume système : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -38,6 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Mise à jour disponible !",
     ),
     "anchwattXpCounter": m2,
+    "anchwattXpGain": m3,
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
     "soundModeCorporate": MessageLookupByLibrary.simpleMessage("Corporate"),
@@ -48,7 +51,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
       "Passer en mode Friday",
     ),
-    "systemVolumeTooltip": m3,
+    "systemVolumeTooltip": m4,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Son coupé",
     ),

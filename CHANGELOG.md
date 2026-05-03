@@ -16,6 +16,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Add a sound mode toggle (Corporate / Friday) in the Anchwatt view's top-right pill, persisting the chosen mode and filtering random sound playback to that mode's folder
 - Add GitHub issues and pull requests templates
 - Change the Flutter SDK version to 3.41.9
+- Add an ephemeral `+{n}xp` floater shown above the XP gauge when XP is gained, with fade-in/out and rise animation
 
 ## 1.1.0 - 2026-04-28
 

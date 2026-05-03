@@ -25,6 +25,7 @@ class AnchwattViewModel extends ChangeNotifier {
 
   StreamSubscription<void>? _usbSubscription;
   StreamSubscription<SystemVolumeState>? _systemVolumeSubscription;
+  final StreamController<int> _xpGainController = StreamController<int>.broadcast();
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
   Future<void>? _pending;
@@ -47,6 +48,7 @@ class AnchwattViewModel extends ChangeNotifier {
   UpdateStatus get updateStatus => _updateStatus;
   SystemVolumeState get systemVolumeState => _systemVolumeState;
   ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
+  Stream<int> get xpGainStream => _xpGainController.stream;
 
   /* Methods */
 
@@ -146,6 +148,7 @@ class AnchwattViewModel extends ChangeNotifier {
     }
 
     _xp += amount;
+    _xpGainController.add(amount);
 
     while (_xp >= AnchwattSettings.xpForLevel(_level) && _level < AnchwattSettings.levelMax) {
       final int cost = AnchwattSettings.xpForLevel(_level);
@@ -177,6 +180,7 @@ class AnchwattViewModel extends ChangeNotifier {
     _systemVolumeSubscription?.cancel();
     _systemVolumeService.stop();
     _soundService.dispose();
+    _xpGainController.close();
     super.dispose();
   }
 }

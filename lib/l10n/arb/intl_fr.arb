@@ -27,6 +27,13 @@
             }
         }
     },
+    "@anchwattXpGain": {
+        "placeholders": {
+            "xp": {
+                "type": "int"
+            }
+        }
+    },
     "@systemVolumeTooltip": {
         "placeholders": {
             "percent": {
@@ -40,6 +47,7 @@
     "anchwattUpdateBadgeLabel": "↑ v{version}",
     "anchwattUpdateBadgeTooltip": "Mise à jour disponible !",
     "anchwattXpCounter": "{current} / {total}",
+    "anchwattXpGain": "+{xp}xp",
     "lamperoie": "Lampéroie",
     "ohmassacre": "Ohmassacre",
     "soundModeCorporate": "Corporate",

@@ -109,6 +109,16 @@ class L10n {
     );
   }
 
+  /// `+{xp}xp`
+  String anchwattXpGain(int xp) {
+    return Intl.message(
+      '+${xp}xp',
+      name: 'anchwattXpGain',
+      desc: '',
+      args: [xp],
+    );
+  }
+
   /// `Lampéroie`
   String get lamperoie {
     return Intl.message('Lampéroie', name: 'lamperoie', desc: '', args: []);

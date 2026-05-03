@@ -66,3 +66,10 @@ const TextStyle textXpCounter = TextStyle(
   fontSize: 11,
   fontWeight: FontWeight.w400,
 );
+
+const TextStyle textXpGainFloater = TextStyle(
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 14,
+  fontWeight: FontWeight.w700,
+);

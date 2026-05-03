@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
@@ -6,6 +8,7 @@ import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/sound_mode_pill.dart';
 import 'package:anchwatt/main/widgets/system_volume_pill.dart';
+import 'package:anchwatt/main/widgets/xp_gain_floater.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
 import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/borders.dart';
@@ -57,7 +60,7 @@ class _AnchwattViewBody extends StatelessWidget {
                   const SizedBox(
                     height: 12,
                   ),
-                  const _XpProgressBarSelector(),
+                  const _XpGauge(),
                   const SizedBox(
                     height: 6,
                   ),
@@ -143,19 +146,92 @@ class _SpriteSelector extends StatelessWidget {
   }
 }
 
-class _XpProgressBarSelector extends StatelessWidget {
-  const _XpProgressBarSelector();
+class _XpGauge extends StatefulWidget {
+  const _XpGauge();
+
+  @override
+  State<_XpGauge> createState() => _XpGaugeState();
+}
+
+class _XpGaugeState extends State<_XpGauge> {
+  /* Variables */
+
+  final List<_FloaterEntry> _floaters = [];
+  StreamSubscription<int>? _subscription;
+
+  /* Methods */
+
+  @override
+  void initState() {
+    super.initState();
+
+    _subscription = context.read<AnchwattViewModel>().xpGainStream.listen(_onGain);
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  void _onGain(int amount) {
+    final Color color = context.read<AnchwattViewModel>().evolution.accentColor;
+
+    setState(() {
+      _floaters.add(
+        _FloaterEntry(
+          key: UniqueKey(),
+          amount: amount,
+          color: color,
+        ),
+      );
+    });
+  }
+
+  void _onCompleted(Key key) {
+    setState(() {
+      _floaters.removeWhere((entry) => entry.key == key);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Selector<AnchwattViewModel, ({double progress, Evolution evolution})>(
-      selector: (_, vm) => (progress: vm.progress, evolution: vm.evolution),
-      builder: (_, data, _) => XpProgressBar(
-        progress: data.progress,
-        color: data.evolution.accentColor,
-      ),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Selector<AnchwattViewModel, ({double progress, Evolution evolution})>(
+          selector: (_, vm) => (progress: vm.progress, evolution: vm.evolution),
+          builder: (_, data, _) => XpProgressBar(
+            progress: data.progress,
+            color: data.evolution.accentColor,
+          ),
+        ),
+        for (final _FloaterEntry entry in _floaters)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: XpGainFloater(
+              key: entry.key,
+              amount: entry.amount,
+              color: entry.color,
+              onCompleted: () => _onCompleted(entry.key),
+            ),
+          ),
+      ],
     );
   }
+}
+
+class _FloaterEntry {
+  final Key key;
+  final int amount;
+  final Color color;
+
+  const _FloaterEntry({
+    required this.key,
+    required this.amount,
+    required this.color,
+  });
 }
 
 class _XpCounterText extends StatelessWidget {
