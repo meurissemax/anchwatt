@@ -7,6 +7,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 ### Added
 
 - Add GitHub issues and pull requests templates
+- Change the Flutter SDK version to 3.41.9
 
 ## 1.1.0 - 2026-04-28
 
