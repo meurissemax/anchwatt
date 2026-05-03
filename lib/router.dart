@@ -1,4 +1,4 @@
-import 'package:anchwatt/main/views/home_view.dart';
+import 'package:anchwatt/main/views/anchwatt_view.dart';
 import 'package:anchwatt/router.gr.dart';
 import 'package:auto_route/auto_route.dart';
 
@@ -10,8 +10,8 @@ class AppRouter extends RootStackRouter {
   List<AutoRoute> get routes => <AutoRoute>[
     AutoRoute(
       initial: true,
-      page: HomeRoute.page,
-      path: HomeView.path,
+      page: AnchwattRoute.page,
+      path: AnchwattView.path,
     ),
   ];
 }

@@ -1,5 +1,5 @@
 import 'package:anchwatt/main/models.dart';
-import 'package:anchwatt/main/view_models/home_view_model.dart';
+import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,8 +9,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('HomeViewModel addXp crosses evolution boundaries and caps at levelMax', () async {
-    final HomeViewModel vm = HomeViewModel(
+  test('AnchwattViewModel addXp crosses evolution boundaries and caps at levelMax', () async {
+    final AnchwattViewModel vm = AnchwattViewModel(
       levelUpDwell: Duration.zero,
     );
 

@@ -2,7 +2,7 @@ import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/update_service.dart';
-import 'package:anchwatt/main/view_models/home_view_model.dart';
+import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/system_volume_pill.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
@@ -15,22 +15,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 @RoutePage()
-class HomeView extends StatelessWidget {
-  static const String path = '/home';
+class AnchwattView extends StatelessWidget {
+  static const String path = '/anchwatt';
 
-  const HomeView({super.key});
+  const AnchwattView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomeViewModel>(
-      create: (_) => HomeViewModel(),
-      child: const _HomeViewBody(),
+    return ChangeNotifierProvider<AnchwattViewModel>(
+      create: (_) => AnchwattViewModel(),
+      child: const _AnchwattViewBody(),
     );
   }
 }
 
-class _HomeViewBody extends StatelessWidget {
-  const _HomeViewBody();
+class _AnchwattViewBody extends StatelessWidget {
+  const _AnchwattViewBody();
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class _LevelHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<HomeViewModel, ({int level, Evolution evolution})>(
+    return Selector<AnchwattViewModel, ({int level, Evolution evolution})>(
       selector: (_, vm) => (
         level: vm.level,
         evolution: vm.evolution,
@@ -121,7 +121,7 @@ class _LevelHeader extends StatelessWidget {
               bottom: 8,
             ),
             child: Text(
-              l10n.homeEvolutionLevel(data.level, data.evolution.label(l10n)),
+              l10n.anchwattEvolutionLevel(data.level, data.evolution.label(l10n)),
               style: textStageLabel,
             ),
           ),
@@ -136,7 +136,7 @@ class _SpriteSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<HomeViewModel, Evolution>(
+    return Selector<AnchwattViewModel, Evolution>(
       selector: (_, vm) => vm.evolution,
       builder: (_, evolution, _) => AnchwattSprite(
         evolution: evolution,
@@ -150,7 +150,7 @@ class _XpProgressBarSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<HomeViewModel, ({double progress, Evolution evolution})>(
+    return Selector<AnchwattViewModel, ({double progress, Evolution evolution})>(
       selector: (_, vm) => (progress: vm.progress, evolution: vm.evolution),
       builder: (_, data, _) => XpProgressBar(
         progress: data.progress,
@@ -167,10 +167,10 @@ class _XpCounterText extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<HomeViewModel, ({int xp, int xpToNextLevel})>(
+    return Selector<AnchwattViewModel, ({int xp, int xpToNextLevel})>(
       selector: (_, vm) => (xp: vm.xp, xpToNextLevel: vm.xpToNextLevel),
       builder: (_, data, _) => Text(
-        l10n.homeXpCounter(data.xp, data.xpToNextLevel),
+        l10n.anchwattXpCounter(data.xp, data.xpToNextLevel),
         style: textXpCounter,
       ),
     );
@@ -185,7 +185,7 @@ class _DebugAddXpButton extends StatelessWidget {
     final L10n l10n = locator<L10n>();
 
     return OutlinedButton(
-      onPressed: () => context.read<HomeViewModel>().addXp(),
+      onPressed: () => context.read<AnchwattViewModel>().addXp(),
       style: OutlinedButton.styleFrom(
         foregroundColor: colorNeutralDark,
         side: const BorderSide(
@@ -199,7 +199,7 @@ class _DebugAddXpButton extends StatelessWidget {
         ),
         textStyle: textDebugButton,
       ),
-      child: Text(l10n.homeDebugAddXp),
+      child: Text(l10n.anchwattDebugAddXp),
     );
   }
 }
@@ -216,7 +216,7 @@ class _UpdateBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<HomeViewModel, UpdateStatus>(
+    return Selector<AnchwattViewModel, UpdateStatus>(
       selector: (_, vm) => vm.updateStatus,
       builder: (_, status, _) {
         if (status is! UpdateAvailable) {
@@ -226,9 +226,9 @@ class _UpdateBadge extends StatelessWidget {
         return MouseRegion(
           cursor: SystemMouseCursors.click,
           child: Tooltip(
-            message: l10n.homeUpdateBadgeTooltip,
+            message: l10n.anchwattUpdateBadgeTooltip,
             child: GestureDetector(
-              onTap: () => context.read<HomeViewModel>().openLatestRelease(),
+              onTap: () => context.read<AnchwattViewModel>().openLatestRelease(),
               child: DecoratedBox(
                 decoration: const BoxDecoration(
                   color: colorUpdateBadge,
@@ -237,7 +237,7 @@ class _UpdateBadge extends StatelessWidget {
                 child: Padding(
                   padding: _padding,
                   child: Text(
-                    l10n.homeUpdateBadgeLabel(status.latestVersion),
+                    l10n.anchwattUpdateBadgeLabel(status.latestVersion),
                     style: textUpdateBadge,
                   ),
                 ),

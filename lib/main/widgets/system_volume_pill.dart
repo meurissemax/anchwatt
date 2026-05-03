@@ -1,7 +1,7 @@
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
-import 'package:anchwatt/main/view_models/home_view_model.dart';
+import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/texts.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +45,7 @@ class SystemVolumePill extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<HomeViewModel, SystemVolumeState>(
+    return Selector<AnchwattViewModel, SystemVolumeState>(
       selector: (_, vm) => vm.systemVolumeState,
       builder: (_, state, _) {
         final Color color = _colorFor(state);

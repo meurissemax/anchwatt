@@ -31,13 +31,13 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
-    "homeDebugAddXp": MessageLookupByLibrary.simpleMessage("DEBUG: +XP"),
-    "homeEvolutionLevel": m0,
-    "homeUpdateBadgeLabel": m1,
-    "homeUpdateBadgeTooltip": MessageLookupByLibrary.simpleMessage(
+    "anchwattDebugAddXp": MessageLookupByLibrary.simpleMessage("DEBUG: +XP"),
+    "anchwattEvolutionLevel": m0,
+    "anchwattUpdateBadgeLabel": m1,
+    "anchwattUpdateBadgeTooltip": MessageLookupByLibrary.simpleMessage(
       "Mise à jour disponible !",
     ),
-    "homeXpCounter": m2,
+    "anchwattXpCounter": m2,
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
     "systemVolumeTooltip": m3,

@@ -60,50 +60,50 @@ class L10n {
   }
 
   /// `DEBUG: +XP`
-  String get homeDebugAddXp {
+  String get anchwattDebugAddXp {
     return Intl.message(
       'DEBUG: +XP',
-      name: 'homeDebugAddXp',
+      name: 'anchwattDebugAddXp',
       desc: '',
       args: [],
     );
   }
 
   /// `{name} — Lvl {level}`
-  String homeEvolutionLevel(int level, String name) {
+  String anchwattEvolutionLevel(int level, String name) {
     return Intl.message(
       '$name — Lvl $level',
-      name: 'homeEvolutionLevel',
+      name: 'anchwattEvolutionLevel',
       desc: '',
       args: [level, name],
     );
   }
 
   /// `↑ v{version}`
-  String homeUpdateBadgeLabel(String version) {
+  String anchwattUpdateBadgeLabel(String version) {
     return Intl.message(
       '↑ v$version',
-      name: 'homeUpdateBadgeLabel',
+      name: 'anchwattUpdateBadgeLabel',
       desc: '',
       args: [version],
     );
   }
 
   /// `Mise à jour disponible !`
-  String get homeUpdateBadgeTooltip {
+  String get anchwattUpdateBadgeTooltip {
     return Intl.message(
       'Mise à jour disponible !',
-      name: 'homeUpdateBadgeTooltip',
+      name: 'anchwattUpdateBadgeTooltip',
       desc: '',
       args: [],
     );
   }
 
   /// `{current} / {total}`
-  String homeXpCounter(int current, int total) {
+  String anchwattXpCounter(int current, int total) {
     return Intl.message(
       '$current / $total',
-      name: 'homeXpCounter',
+      name: 'anchwattXpCounter',
       desc: '',
       args: [current, total],
     );

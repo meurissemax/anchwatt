@@ -1,6 +1,6 @@
 {
     "@@locale": "fr",
-    "@homeEvolutionLevel": {
+    "@anchwattEvolutionLevel": {
         "placeholders": {
             "level": {
                 "type": "int"
@@ -10,14 +10,14 @@
             }
         }
     },
-    "@homeUpdateBadgeLabel": {
+    "@anchwattUpdateBadgeLabel": {
         "placeholders": {
             "version": {
                 "type": "String"
             }
         }
     },
-    "@homeXpCounter": {
+    "@anchwattXpCounter": {
         "placeholders": {
             "current": {
                 "type": "int"
@@ -35,11 +35,11 @@
         }
     },
     "anchwatt": "Anchwatt",
-    "homeDebugAddXp": "DEBUG: +XP",
-    "homeEvolutionLevel": "{name} — Lvl {level}",
-    "homeUpdateBadgeLabel": "↑ v{version}",
-    "homeUpdateBadgeTooltip": "Mise à jour disponible !",
-    "homeXpCounter": "{current} / {total}",
+    "anchwattDebugAddXp": "DEBUG: +XP",
+    "anchwattEvolutionLevel": "{name} — Lvl {level}",
+    "anchwattUpdateBadgeLabel": "↑ v{version}",
+    "anchwattUpdateBadgeTooltip": "Mise à jour disponible !",
+    "anchwattXpCounter": "{current} / {total}",
     "lamperoie": "Lampéroie",
     "ohmassacre": "Ohmassacre",
     "systemVolumeTooltip": "Volume système : {percent} %",

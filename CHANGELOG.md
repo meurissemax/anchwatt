@@ -4,6 +4,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ## Unreleased
 
+### Changed
+
+- Rename the home view to the Anchwatt view (file, classes, route and l10n keys) so `lib/main/` reflects the project's main feature
+
 ### Added
 
 - Add GitHub issues and pull requests templates

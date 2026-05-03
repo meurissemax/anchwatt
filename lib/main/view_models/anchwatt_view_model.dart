@@ -9,7 +9,7 @@ import 'package:anchwatt/main/storages/anchwatt_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomeViewModel extends ChangeNotifier {
+class AnchwattViewModel extends ChangeNotifier {
   /* Static variables */
 
   static const Duration defaultLevelUpDwell = Duration(milliseconds: 500);
@@ -33,7 +33,7 @@ class HomeViewModel extends ChangeNotifier {
 
   /* Constructor */
 
-  HomeViewModel({Duration levelUpDwell = defaultLevelUpDwell}) : _levelUpDwell = levelUpDwell {
+  AnchwattViewModel({Duration levelUpDwell = defaultLevelUpDwell}) : _levelUpDwell = levelUpDwell {
     _bootServices();
   }
 
@@ -72,7 +72,7 @@ class HomeViewModel extends ChangeNotifier {
     try {
       await _soundService.init();
     } on Object catch (error) {
-      debugPrint('HomeViewModel: SoundService init failed: $error');
+      debugPrint('AnchwattViewModel: SoundService init failed: $error');
     }
 
     try {
@@ -82,7 +82,7 @@ class HomeViewModel extends ChangeNotifier {
         addXp();
       });
     } on Object catch (error) {
-      debugPrint('HomeViewModel: UsbEventService start failed: $error');
+      debugPrint('AnchwattViewModel: UsbEventService start failed: $error');
     }
 
     try {
@@ -96,7 +96,7 @@ class HomeViewModel extends ChangeNotifier {
         notifyListeners();
       });
     } on Object catch (error) {
-      debugPrint('HomeViewModel: SystemVolumeService start failed: $error');
+      debugPrint('AnchwattViewModel: SystemVolumeService start failed: $error');
     }
 
     unawaited(
