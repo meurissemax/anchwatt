@@ -4,6 +4,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
+import 'package:anchwatt/main/widgets/sound_mode_pill.dart';
 import 'package:anchwatt/main/widgets/system_volume_pill.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
 import 'package:anchwatt/settings.dart';
@@ -77,12 +78,11 @@ class _AnchwattViewBody extends StatelessWidget {
                 right: 0,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
                   children: [
                     _UpdateBadge(),
-                    SizedBox(
-                      width: 8,
-                    ),
                     SystemVolumePill(),
+                    SoundModePill(),
                   ],
                 ),
               ),
@@ -108,13 +108,11 @@ class _LevelHeader extends StatelessWidget {
       ),
       builder: (_, data, _) => Row(
         crossAxisAlignment: CrossAxisAlignment.end,
+        spacing: 10,
         children: [
           Text(
             '${data.level}',
             style: textLevel,
-          ),
-          const SizedBox(
-            width: 10,
           ),
           Padding(
             padding: const EdgeInsets.only(

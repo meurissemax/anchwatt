@@ -42,6 +42,10 @@
     "anchwattXpCounter": "{current} / {total}",
     "lamperoie": "Lampéroie",
     "ohmassacre": "Ohmassacre",
+    "soundModeCorporate": "Corporate",
+    "soundModeFriday": "Friday",
+    "soundModeSwitchToCorporate": "Passer en mode Corporate",
+    "soundModeSwitchToFriday": "Passer en mode Friday",
     "systemVolumeTooltip": "Volume système : {percent} %",
     "systemVolumeTooltipMuted": "Son coupé"
 }

@@ -103,7 +103,8 @@ flutter:
   # Assets
   assets:
     - assets/images/misc/
-    - assets/sounds/
+    - assets/sounds/corporate/
+    - assets/sounds/friday/
 
   # Fonts
   fonts:

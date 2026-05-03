@@ -27,6 +27,8 @@ const Color colorEvolutionLamperoie = Color(0xffeab308);
 const Color colorEvolutionOhmassacre = Color(0xfff43f5e);
 
 // Widgets
+const Color colorSoundModeCorporate = Color(0xff1e88e5);
+const Color colorSoundModeFriday = Color(0xffab47bc);
 const Color colorSystemVolumeForeground = Color(0xff6b7280);
 const Color colorSystemVolumeLow = Color(0xffea580c);
 const Color colorSystemVolumeMuted = Color(0xffdc2626);

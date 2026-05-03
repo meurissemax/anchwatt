@@ -10,6 +10,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add a sound mode toggle (Corporate / Friday) in the Anchwatt view's top-right pill, persisting the chosen mode and filtering random sound playback to that mode's folder
 - Add GitHub issues and pull requests templates
 - Change the Flutter SDK version to 3.41.9
 

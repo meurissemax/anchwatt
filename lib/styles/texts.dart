@@ -36,6 +36,13 @@ const TextStyle textStageLabel = TextStyle(
   fontWeight: FontWeight.w500,
 );
 
+const TextStyle textSoundModePill = TextStyle(
+  color: Colors.white,
+  fontFamily: fontFamily,
+  fontSize: 11,
+  fontWeight: FontWeight.w600,
+);
+
 const TextStyle textSystemVolumeLabel = TextStyle(
   color: colorSystemVolumeForeground,
   fontFamily: fontFamily,

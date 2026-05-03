@@ -73,6 +73,82 @@ enum Evolution {
   }
 }
 
+enum SoundMode {
+  corporate,
+  friday
+  ;
+
+  static SoundMode fromName(String? name) {
+    for (final SoundMode mode in SoundMode.values) {
+      if (mode.name == name) {
+        return mode;
+      }
+    }
+
+    return SoundMode.corporate;
+  }
+
+  Color get accentColor {
+    switch (this) {
+      case SoundMode.corporate:
+        return colorSoundModeCorporate;
+
+      case SoundMode.friday:
+        return colorSoundModeFriday;
+    }
+  }
+
+  String get assetSubfolder {
+    switch (this) {
+      case SoundMode.corporate:
+        return 'corporate/';
+
+      case SoundMode.friday:
+        return 'friday/';
+    }
+  }
+
+  IconData get iconData {
+    switch (this) {
+      case SoundMode.corporate:
+        return Icons.business_center;
+
+      case SoundMode.friday:
+        return Icons.local_bar;
+    }
+  }
+
+  SoundMode get next {
+    switch (this) {
+      case SoundMode.corporate:
+        return SoundMode.friday;
+
+      case SoundMode.friday:
+        return SoundMode.corporate;
+    }
+  }
+
+  String label(L10n l10n) {
+    switch (this) {
+      case SoundMode.corporate:
+        return l10n.soundModeCorporate;
+
+      case SoundMode.friday:
+        return l10n.soundModeFriday;
+    }
+  }
+
+  String switchTooltip(L10n l10n) {
+    switch (this) {
+      case SoundMode.corporate:
+        return l10n.soundModeSwitchToFriday;
+
+      case SoundMode.friday:
+        return l10n.soundModeSwitchToCorporate;
+    }
+  }
+}
+
 class SystemVolumeSettings {
   static const double lowThreshold = 0.15;
   static const double mediumThreshold = 0.5;

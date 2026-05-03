@@ -59,3 +59,9 @@ devtools_options.yaml
 # Claude / AI tooling
 .claude/
 CLAUDE.md
+
+# Sounds
+assets/sounds/corporate/*
+assets/sounds/friday/*
+!assets/sounds/corporate/.gitkeep
+!assets/sounds/friday/.gitkeep

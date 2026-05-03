@@ -40,6 +40,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "anchwattXpCounter": m2,
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
+    "soundModeCorporate": MessageLookupByLibrary.simpleMessage("Corporate"),
+    "soundModeFriday": MessageLookupByLibrary.simpleMessage("Friday"),
+    "soundModeSwitchToCorporate": MessageLookupByLibrary.simpleMessage(
+      "Passer en mode Corporate",
+    ),
+    "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
+      "Passer en mode Friday",
+    ),
     "systemVolumeTooltip": m3,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Son coupé",

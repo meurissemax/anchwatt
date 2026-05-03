@@ -46,8 +46,11 @@ class AnchwattViewModel extends ChangeNotifier {
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
   UpdateStatus get updateStatus => _updateStatus;
   SystemVolumeState get systemVolumeState => _systemVolumeState;
+  ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
 
   /* Methods */
+
+  Future<void> toggleSoundMode() => _soundService.toggleMode();
 
   Future<void> addXp([int amount = AnchwattSettings.xpPerEvent]) {
     final Future<void> next = (_pending ?? Future<void>.value()).then((_) => _process(amount));

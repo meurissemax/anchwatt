@@ -119,6 +119,41 @@ class L10n {
     return Intl.message('Ohmassacre', name: 'ohmassacre', desc: '', args: []);
   }
 
+  /// `Corporate`
+  String get soundModeCorporate {
+    return Intl.message(
+      'Corporate',
+      name: 'soundModeCorporate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Friday`
+  String get soundModeFriday {
+    return Intl.message('Friday', name: 'soundModeFriday', desc: '', args: []);
+  }
+
+  /// `Passer en mode Corporate`
+  String get soundModeSwitchToCorporate {
+    return Intl.message(
+      'Passer en mode Corporate',
+      name: 'soundModeSwitchToCorporate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passer en mode Friday`
+  String get soundModeSwitchToFriday {
+    return Intl.message(
+      'Passer en mode Friday',
+      name: 'soundModeSwitchToFriday',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Volume système : {percent} %`
   String systemVolumeTooltip(int percent) {
     return Intl.message(

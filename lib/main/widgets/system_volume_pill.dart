@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 class SystemVolumePill extends StatelessWidget {
   static const double _iconSize = 14;
-  static const double _gap = 4;
+  static const double _spacing = 4;
 
   const SystemVolumePill({super.key});
 
@@ -54,14 +54,12 @@ class SystemVolumePill extends StatelessWidget {
           message: state.muted ? l10n.systemVolumeTooltipMuted : l10n.systemVolumeTooltip(state.percent),
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            spacing: _spacing,
             children: [
               Icon(
                 _iconFor(state),
                 color: color,
                 size: _iconSize,
-              ),
-              const SizedBox(
-                width: _gap,
               ),
               Text(
                 '${state.percent} %',
