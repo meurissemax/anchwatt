@@ -7,6 +7,9 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 ### Changed
 
 - Rename the home view to the Anchwatt view (file, classes, route and l10n keys) so `lib/main/` reflects the project's main feature
+- Scale XP per event with the player level and the system volume
+- Remove `AnchwattSettings.xpPerEvent`
+- Introduce `AnchwattEventType` enum and `xpForEvent(...)` to support future event types
 
 ### Added
 

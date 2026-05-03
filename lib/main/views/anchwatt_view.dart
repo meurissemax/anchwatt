@@ -183,7 +183,7 @@ class _DebugAddXpButton extends StatelessWidget {
     final L10n l10n = locator<L10n>();
 
     return OutlinedButton(
-      onPressed: () => context.read<AnchwattViewModel>().addXp(),
+      onPressed: () => context.read<AnchwattViewModel>().debugAddXp(),
       style: OutlinedButton.styleFrom(
         foregroundColor: colorNeutralDark,
         side: const BorderSide(

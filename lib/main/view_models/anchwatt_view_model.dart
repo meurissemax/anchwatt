@@ -52,7 +52,7 @@ class AnchwattViewModel extends ChangeNotifier {
 
   Future<void> toggleSoundMode() => _soundService.toggleMode();
 
-  Future<void> addXp([int amount = AnchwattSettings.xpPerEvent]) {
+  Future<void> addXp(int amount) {
     final Future<void> next = (_pending ?? Future<void>.value()).then((_) => _process(amount));
     _pending = next;
 
@@ -64,6 +64,14 @@ class AnchwattViewModel extends ChangeNotifier {
 
     return next;
   }
+
+  Future<void> debugAddXp() => addXp(
+    AnchwattSettings.xpForEvent(
+      type: AnchwattEventType.usbToggle,
+      level: _level,
+      systemVolume: 1,
+    ),
+  );
 
   Future<void> _bootServices() async {
     await _storage.init();
@@ -81,8 +89,18 @@ class AnchwattViewModel extends ChangeNotifier {
     try {
       await _usbEventService.start();
       _usbSubscription = _usbEventService.events.listen((_) {
+        final int xp = AnchwattSettings.xpForEvent(
+          type: AnchwattEventType.usbToggle,
+          level: _level,
+          systemVolume: _systemVolumeState.muted ? 0 : _systemVolumeState.volume,
+        );
+
+        if (xp <= 0) {
+          return;
+        }
+
         _soundService.playRandom();
-        addXp();
+        addXp(xp);
       });
     } on Object catch (error) {
       debugPrint('AnchwattViewModel: UsbEventService start failed: $error');

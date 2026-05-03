@@ -8,11 +8,44 @@ class AnchwattSettings {
   static const int evolutionOhmassacreLevel = 40;
   static const int levelMax = 100;
   static const int levelMin = 1;
+  static const double levelXpCoef = 0.30;
+  static const double maxVolumeMultiplier = 1.5;
   static const int xpBase = 25;
   static const int xpGrowthFactor = 2;
-  static const int xpPerEvent = 10;
+
+  static const Map<AnchwattEventType, double> baseXpByEvent = {
+    AnchwattEventType.usbToggle: 20.0,
+  };
+
+  static const Set<AnchwattEventType> volumeAffectedEvents = {
+    AnchwattEventType.usbToggle,
+  };
 
   static int xpForLevel(int level) => xpBase + xpGrowthFactor * (level - 1) * (level - 1);
+
+  // Volume = 0 yields 0 XP — intentional (prevents farming with the system muted).
+  static int xpForEvent({
+    required AnchwattEventType type,
+    required int level,
+    double? systemVolume,
+  }) {
+    final double base = baseXpByEvent[type]!;
+    final double levelMult = 1 + (level - 1) * levelXpCoef;
+    final bool volumeAffected = volumeAffectedEvents.contains(type);
+
+    assert(
+      !volumeAffected || systemVolume != null,
+      'systemVolume is required for volume-affected events',
+    );
+
+    final double volumeMult = volumeAffected ? systemVolume!.clamp(0.0, 1.0) * maxVolumeMultiplier : 1.0;
+
+    return (base * levelMult * volumeMult).round();
+  }
+}
+
+enum AnchwattEventType {
+  usbToggle,
 }
 
 enum Evolution {
