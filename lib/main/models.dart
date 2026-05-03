@@ -10,10 +10,15 @@ class AnchwattSettings {
   static const int levelMin = 1;
   static const double levelXpCoef = 0.30;
   static const double maxVolumeMultiplier = 1.5;
+  static const int petCryCooldownMaxSeconds = 9;
+  static const int petCryCooldownMinSeconds = 5;
+  static const int petXpCooldownMaxSeconds = 5;
+  static const int petXpCooldownMinSeconds = 3;
   static const int xpBase = 25;
   static const int xpGrowthFactor = 2;
 
   static const Map<AnchwattEventType, double> baseXpByEvent = {
+    AnchwattEventType.pet: 2.0,
     AnchwattEventType.usbToggle: 20.0,
   };
 
@@ -45,6 +50,7 @@ class AnchwattSettings {
 }
 
 enum AnchwattEventType {
+  pet,
   usbToggle,
 }
 

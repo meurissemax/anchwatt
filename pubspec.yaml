@@ -104,6 +104,7 @@ flutter:
   assets:
     - assets/images/misc/
     - assets/sounds/corporate/
+    - assets/sounds/cries/
     - assets/sounds/friday/
 
   # Fonts

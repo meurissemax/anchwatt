@@ -11,6 +11,7 @@ class SoundService {
   /* Static variables */
 
   static const String _soundsPrefix = 'assets/sounds/';
+  static const String _criesPrefix = 'assets/sounds/cries/';
   static const Set<String> _supportedExtensions = {'.mp3', '.m4a'};
 
   /* Variables */
@@ -24,6 +25,7 @@ class SoundService {
   final Map<SoundMode, List<String>> _assetsByMode = {
     for (final SoundMode mode in SoundMode.values) mode: <String>[],
   };
+  final Map<Evolution, String> _criesByEvolution = {};
 
   /* Getters */
 
@@ -48,7 +50,20 @@ class SoundService {
       _assetsByMode[mode] = all.where((key) => key.startsWith(prefix)).toList();
     }
 
-    final List<String> toPreload = _assetsByMode.values.expand((paths) => paths).toList();
+    for (final String key in all.where((path) => path.startsWith(_criesPrefix))) {
+      for (final Evolution evolution in Evolution.values) {
+        final String fileName = key.substring(_criesPrefix.length);
+        if (fileName.startsWith('${evolution.name}.')) {
+          _criesByEvolution[evolution] = key;
+          break;
+        }
+      }
+    }
+
+    final List<String> toPreload = [
+      ..._assetsByMode.values.expand((paths) => paths),
+      ..._criesByEvolution.values,
+    ];
 
     if (toPreload.isEmpty) {
       debugPrint('SoundService: no sound assets found under $_soundsPrefix');
@@ -90,6 +105,36 @@ class SoundService {
         .play(AssetSource(asset))
         .catchError(
           (Object error) => debugPrint('SoundService play error: $error'),
+        );
+  }
+
+  void playCry(Evolution evolution) {
+    final String? asset = _criesByEvolution[evolution];
+
+    if (asset == null) {
+      debugPrint('SoundService: no cry asset found for evolution ${evolution.name}');
+
+      return;
+    }
+
+    final AudioPlayer player = AudioPlayer();
+    player.audioCache = _cache;
+    _activePlayers.add(player);
+
+    late final StreamSubscription<void> sub;
+
+    sub = player.onPlayerComplete.listen(
+      (_) async {
+        _activePlayers.remove(player);
+        await sub.cancel();
+        await player.dispose();
+      },
+    );
+
+    player
+        .play(AssetSource(asset))
+        .catchError(
+          (Object error) => debugPrint('SoundService cry play error: $error'),
         );
   }
 

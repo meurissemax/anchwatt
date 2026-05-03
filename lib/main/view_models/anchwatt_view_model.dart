@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
@@ -13,6 +14,7 @@ class AnchwattViewModel extends ChangeNotifier {
   /* Static variables */
 
   static const Duration defaultLevelUpDwell = Duration(milliseconds: 500);
+  static final Random _petRandom = Random();
 
   /* Variables */
 
@@ -31,6 +33,10 @@ class AnchwattViewModel extends ChangeNotifier {
   Future<void>? _pending;
   UpdateStatus _updateStatus = const UpdateUnknown();
   SystemVolumeState _systemVolumeState = SystemVolumeState.initial();
+  DateTime? _lastPetXpAt;
+  DateTime? _lastPetCryAt;
+  Duration _nextPetXpCooldown = Duration.zero;
+  Duration _nextPetCryCooldown = Duration.zero;
 
   /* Constructor */
 
@@ -74,6 +80,40 @@ class AnchwattViewModel extends ChangeNotifier {
       systemVolume: 1,
     ),
   );
+
+  void onPetTick() {
+    final DateTime now = DateTime.now();
+
+    if (_lastPetXpAt == null || now.difference(_lastPetXpAt!) >= _nextPetXpCooldown) {
+      final int xp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.pet,
+        level: _level,
+      );
+
+      if (xp > 0) {
+        addXp(xp);
+      }
+
+      _lastPetXpAt = now;
+      _nextPetXpCooldown = _rollPetCooldown(
+        min: AnchwattSettings.petXpCooldownMinSeconds,
+        max: AnchwattSettings.petXpCooldownMaxSeconds,
+      );
+    }
+
+    if (_lastPetCryAt == null || now.difference(_lastPetCryAt!) >= _nextPetCryCooldown) {
+      _soundService.playCry(evolution);
+
+      _lastPetCryAt = now;
+      _nextPetCryCooldown = _rollPetCooldown(
+        min: AnchwattSettings.petCryCooldownMinSeconds,
+        max: AnchwattSettings.petCryCooldownMaxSeconds,
+      );
+    }
+  }
+
+  Duration _rollPetCooldown({required int min, required int max}) =>
+      Duration(milliseconds: min * 1000 + _petRandom.nextInt((max - min) * 1000 + 1));
 
   Future<void> _bootServices() async {
     await _storage.init();

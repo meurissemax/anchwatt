@@ -6,6 +6,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
+import 'package:anchwatt/main/widgets/pet_gesture_surface.dart';
 import 'package:anchwatt/main/widgets/sound_mode_pill.dart';
 import 'package:anchwatt/main/widgets/system_volume_pill.dart';
 import 'package:anchwatt/main/widgets/xp_gain_floater.dart';
@@ -137,10 +138,12 @@ class _SpriteSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<AnchwattViewModel, Evolution>(
-      selector: (_, vm) => vm.evolution,
-      builder: (_, evolution, _) => AnchwattSprite(
-        evolution: evolution,
+    return PetGestureSurface(
+      child: Selector<AnchwattViewModel, Evolution>(
+        selector: (_, vm) => vm.evolution,
+        builder: (_, evolution, _) => AnchwattSprite(
+          evolution: evolution,
+        ),
       ),
     );
   }
