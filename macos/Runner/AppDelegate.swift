@@ -2,6 +2,7 @@ import Cocoa
 import CoreAudio
 import FlutterMacOS
 import IOKit
+import IOKit.ps
 import IOKit.usb
 
 @main
@@ -375,5 +376,312 @@ final class SystemVolumeMonitor: NSObject, FlutterStreamHandler {
       return false
     }
     return value != 0
+  }
+}
+
+final class ChargerMonitor: NSObject, FlutterStreamHandler {
+  private var sink: FlutterEventSink?
+  private var runLoopSource: CFRunLoopSource?
+  // Last known providing-power-source-type value, e.g. kIOPSACPowerValue or
+  // kIOPSBatteryPowerValue. Tracked so we only emit on actual transitions —
+  // IOPS notifications can fire without the providing source changing.
+  private var lastType: String?
+
+  func onListen(
+    withArguments arguments: Any?,
+    eventSink events: @escaping FlutterEventSink
+  ) -> FlutterError? {
+    self.sink = events
+    start()
+    return nil
+  }
+
+  func onCancel(withArguments arguments: Any?) -> FlutterError? {
+    stop()
+    self.sink = nil
+    return nil
+  }
+
+  private func start() {
+    // Capture the initial state silently — the desktop or laptop is in some
+    // power configuration when the listener boots; that is not a transition.
+    lastType = currentProvidingType()
+
+    let selfPtr = Unmanaged.passUnretained(self).toOpaque()
+    guard let source = IOPSNotificationCreateRunLoopSource({ context in
+      guard let context = context else { return }
+      let monitor = Unmanaged<ChargerMonitor>.fromOpaque(context).takeUnretainedValue()
+      monitor.handleChange()
+    }, selfPtr)?.takeRetainedValue() else {
+      return
+    }
+    self.runLoopSource = source
+    CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
+  }
+
+  private func stop() {
+    if let source = runLoopSource {
+      CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .defaultMode)
+      runLoopSource = nil
+    }
+    lastType = nil
+  }
+
+  private func handleChange() {
+    let newType = currentProvidingType()
+    if newType == lastType {
+      return
+    }
+    lastType = newType
+    sink?(["type": newType ?? ""])
+  }
+
+  // Returns the system-wide providing power source type — typically
+  // kIOPSACPowerValue ("AC Power") or kIOPSBatteryPowerValue ("Battery Power").
+  // On desktop Macs without a battery, this stays "AC Power" forever.
+  private func currentProvidingType() -> String? {
+    guard let blob = IOPSCopyPowerSourcesInfo()?.takeRetainedValue() else {
+      return nil
+    }
+    return IOPSGetProvidingPowerSourceType(blob)?.takeUnretainedValue() as String?
+  }
+}
+
+final class ExternalDisplayMonitor: NSObject, FlutterStreamHandler {
+  private var sink: FlutterEventSink?
+  private var observer: NSObjectProtocol?
+  // Tracked count of attached NSScreens. didChangeScreenParameters fires for
+  // any screen-related change (resolution, color profile, arrangement) — we
+  // only care about connect/disconnect, which manifests as a count change.
+  private var lastScreenCount: Int = 0
+
+  func onListen(
+    withArguments arguments: Any?,
+    eventSink events: @escaping FlutterEventSink
+  ) -> FlutterError? {
+    self.sink = events
+    start()
+    return nil
+  }
+
+  func onCancel(withArguments arguments: Any?) -> FlutterError? {
+    stop()
+    self.sink = nil
+    return nil
+  }
+
+  private func start() {
+    lastScreenCount = NSScreen.screens.count
+    observer = NotificationCenter.default.addObserver(
+      forName: NSApplication.didChangeScreenParametersNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.handleChange()
+    }
+  }
+
+  private func stop() {
+    if let observer = observer {
+      NotificationCenter.default.removeObserver(observer)
+      self.observer = nil
+    }
+    lastScreenCount = 0
+  }
+
+  private func handleChange() {
+    let newCount = NSScreen.screens.count
+    if newCount == lastScreenCount {
+      return
+    }
+    lastScreenCount = newCount
+    sink?(["count": newCount])
+  }
+}
+
+final class HeadphonesMonitor: NSObject, FlutterStreamHandler {
+  private var sink: FlutterEventSink?
+  private var currentDeviceID: AudioDeviceID = AudioDeviceID(kAudioObjectUnknown)
+  private var defaultDeviceListener: AudioObjectPropertyListenerBlock?
+  private var dataSourceListener: (AudioObjectPropertyAddress, AudioObjectPropertyListenerBlock)?
+  private let listenerQueue: DispatchQueue = DispatchQueue.main
+  // Last classification: true if the current default output looks like
+  // headphones / earphones (Bluetooth audio device, or built-in headphone
+  // jack). Tracked so we only emit on toggles, not on every device change.
+  private var lastIsHeadphones: Bool = false
+
+  func onListen(
+    withArguments arguments: Any?,
+    eventSink events: @escaping FlutterEventSink
+  ) -> FlutterError? {
+    self.sink = events
+    start()
+    return nil
+  }
+
+  func onCancel(withArguments arguments: Any?) -> FlutterError? {
+    stop()
+    self.sink = nil
+    return nil
+  }
+
+  private func start() {
+    currentDeviceID = resolveDefaultOutputDevice()
+    lastIsHeadphones = isHeadphones(deviceID: currentDeviceID)
+    attachDefaultDeviceListener()
+    if currentDeviceID != AudioDeviceID(kAudioObjectUnknown) {
+      attachDataSourceListener(deviceID: currentDeviceID)
+    }
+  }
+
+  private func stop() {
+    detachDataSourceListener(deviceID: currentDeviceID)
+    detachDefaultDeviceListener()
+    currentDeviceID = AudioDeviceID(kAudioObjectUnknown)
+    lastIsHeadphones = false
+  }
+
+  private func evaluateAndEmit() {
+    let now = isHeadphones(deviceID: currentDeviceID)
+    if now == lastIsHeadphones {
+      return
+    }
+    lastIsHeadphones = now
+    sink?(["state": now ? "headphones" : "other"])
+  }
+
+  private func resolveDefaultOutputDevice() -> AudioDeviceID {
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+      mScope: kAudioObjectPropertyScopeGlobal,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    var deviceID = AudioDeviceID(kAudioObjectUnknown)
+    var size = UInt32(MemoryLayout<AudioDeviceID>.size)
+    let status = AudioObjectGetPropertyData(
+      AudioObjectID(kAudioObjectSystemObject),
+      &address,
+      0,
+      nil,
+      &size,
+      &deviceID
+    )
+    return status == noErr ? deviceID : AudioDeviceID(kAudioObjectUnknown)
+  }
+
+  private func attachDefaultDeviceListener() {
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+      mScope: kAudioObjectPropertyScopeGlobal,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+      guard let self = self else { return }
+      let oldID = self.currentDeviceID
+      let newID = self.resolveDefaultOutputDevice()
+      if newID == oldID {
+        return
+      }
+      self.detachDataSourceListener(deviceID: oldID)
+      self.currentDeviceID = newID
+      if newID != AudioDeviceID(kAudioObjectUnknown) {
+        self.attachDataSourceListener(deviceID: newID)
+      }
+      self.evaluateAndEmit()
+    }
+    self.defaultDeviceListener = block
+    AudioObjectAddPropertyListenerBlock(
+      AudioObjectID(kAudioObjectSystemObject),
+      &address,
+      listenerQueue,
+      block
+    )
+  }
+
+  private func detachDefaultDeviceListener() {
+    guard let block = defaultDeviceListener else { return }
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+      mScope: kAudioObjectPropertyScopeGlobal,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    AudioObjectRemovePropertyListenerBlock(
+      AudioObjectID(kAudioObjectSystemObject),
+      &address,
+      listenerQueue,
+      block
+    )
+    defaultDeviceListener = nil
+  }
+
+  // The built-in audio device toggles between internal speaker and headphone
+  // jack via the data-source property — without the default-output device
+  // changing — when the user plugs in 3.5mm headphones on a Mac that has a
+  // jack. So we listen to data source changes on the current device too.
+  private func attachDataSourceListener(deviceID: AudioDeviceID) {
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioDevicePropertyDataSource,
+      mScope: kAudioDevicePropertyScopeOutput,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    if !AudioObjectHasProperty(deviceID, &address) {
+      return
+    }
+    let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+      self?.evaluateAndEmit()
+    }
+    let status = AudioObjectAddPropertyListenerBlock(deviceID, &address, listenerQueue, block)
+    if status == noErr {
+      dataSourceListener = (address, block)
+    }
+  }
+
+  private func detachDataSourceListener(deviceID: AudioDeviceID) {
+    if deviceID != AudioDeviceID(kAudioObjectUnknown), var entry = dataSourceListener {
+      AudioObjectRemovePropertyListenerBlock(deviceID, &entry.0, listenerQueue, entry.1)
+    }
+    dataSourceListener = nil
+  }
+
+  // Heuristic classification:
+  //   - Bluetooth* transports → headphones (vast majority of Bluetooth audio
+  //     output devices in practice are headsets / earphones).
+  //   - Built-in transport → read the data source: 'hdpn' is the headphone
+  //     jack, 'spkr' is the internal speakers, 'line' is line out.
+  //   - All other transports (USB, AirPlay, HDMI, DisplayPort, Continuity
+  //     Capture, Aggregate, Virtual, Unknown) → not headphones.
+  private func isHeadphones(deviceID: AudioDeviceID) -> Bool {
+    if deviceID == AudioDeviceID(kAudioObjectUnknown) {
+      return false
+    }
+    let transport = readUInt32(deviceID: deviceID, selector: kAudioDevicePropertyTransportType)
+    switch transport {
+    case kAudioDeviceTransportTypeBluetooth, kAudioDeviceTransportTypeBluetoothLE:
+      return true
+    case kAudioDeviceTransportTypeBuiltIn:
+      let dataSource = readUInt32(deviceID: deviceID, selector: kAudioDevicePropertyDataSource)
+      // 'hdpn' four-character code for headphones.
+      return dataSource == 0x6864_706e
+    default:
+      return false
+    }
+  }
+
+  private func readUInt32(deviceID: AudioDeviceID, selector: AudioObjectPropertySelector) -> UInt32? {
+    var address = AudioObjectPropertyAddress(
+      mSelector: selector,
+      mScope: kAudioDevicePropertyScopeOutput,
+      mElement: kAudioObjectPropertyElementMain
+    )
+    if !AudioObjectHasProperty(deviceID, &address) {
+      return nil
+    }
+    var value: UInt32 = 0
+    var size = UInt32(MemoryLayout<UInt32>.size)
+    let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &value)
+    if status != noErr {
+      return nil
+    }
+    return value
   }
 }

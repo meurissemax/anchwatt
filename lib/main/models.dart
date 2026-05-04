@@ -16,14 +16,26 @@ class AnchwattSettings {
   static const int petXpCooldownMinSeconds = 3;
   static const int xpBase = 25;
   static const int xpGrowthFactor = 2;
+  // Cross-event coalescing window. A single physical action (e.g. plugging in
+  // a USB-C dock) can fan out into several system events almost simultaneously
+  // — USB + display + sometimes audio — and we only want one Anchwatt reaction
+  // for the whole burst. Leading-edge: the first event in the window plays a
+  // sound and grants XP, the rest are absorbed.
+  static const Duration systemEventCoalesceWindow = Duration(milliseconds: 500);
 
   static const Map<AnchwattEventType, double> baseXpByEvent = {
     AnchwattEventType.pet: 2.0,
     AnchwattEventType.usbToggle: 20.0,
+    AnchwattEventType.chargerToggle: 20.0,
+    AnchwattEventType.externalDisplayToggle: 20.0,
+    AnchwattEventType.headphonesToggle: 20.0,
   };
 
   static const Set<AnchwattEventType> volumeAffectedEvents = {
     AnchwattEventType.usbToggle,
+    AnchwattEventType.chargerToggle,
+    AnchwattEventType.externalDisplayToggle,
+    AnchwattEventType.headphonesToggle,
   };
 
   static int xpForLevel(int level) => xpBase + xpGrowthFactor * (level - 1) * (level - 1);
@@ -52,6 +64,9 @@ class AnchwattSettings {
 enum AnchwattEventType {
   pet,
   usbToggle,
+  chargerToggle,
+  externalDisplayToggle,
+  headphonesToggle,
 }
 
 enum Evolution {

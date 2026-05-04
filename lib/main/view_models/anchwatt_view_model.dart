@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/charger_event_service.dart';
+import 'package:anchwatt/main/services/external_display_event_service.dart';
+import 'package:anchwatt/main/services/headphones_event_service.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
 import 'package:anchwatt/main/services/system_volume_service.dart';
 import 'package:anchwatt/main/services/update_service.dart';
@@ -21,11 +24,17 @@ class AnchwattViewModel extends ChangeNotifier {
   final Duration _levelUpDwell;
   final AnchwattStorage _storage = AnchwattStorage();
   final UsbEventService _usbEventService = UsbEventService();
+  final ChargerEventService _chargerEventService = ChargerEventService();
+  final ExternalDisplayEventService _externalDisplayEventService = ExternalDisplayEventService();
+  final HeadphonesEventService _headphonesEventService = HeadphonesEventService();
   final SoundService _soundService = SoundService();
   final UpdateService _updateService = UpdateService();
   final SystemVolumeService _systemVolumeService = SystemVolumeService();
 
   StreamSubscription<void>? _usbSubscription;
+  StreamSubscription<void>? _chargerSubscription;
+  StreamSubscription<void>? _externalDisplaySubscription;
+  StreamSubscription<void>? _headphonesSubscription;
   StreamSubscription<SystemVolumeState>? _systemVolumeSubscription;
   final StreamController<int> _xpGainController = StreamController<int>.broadcast();
   int _level = AnchwattSettings.levelMin;
@@ -37,6 +46,7 @@ class AnchwattViewModel extends ChangeNotifier {
   DateTime? _lastPetCryAt;
   Duration _nextPetXpCooldown = Duration.zero;
   Duration _nextPetCryCooldown = Duration.zero;
+  DateTime? _lastSystemEventAt;
 
   /* Constructor */
 
@@ -115,6 +125,34 @@ class AnchwattViewModel extends ChangeNotifier {
   Duration _rollPetCooldown({required int min, required int max}) =>
       Duration(milliseconds: min * 1000 + _petRandom.nextInt((max - min) * 1000 + 1));
 
+  // Single coalescence point for every native system event (USB, charger,
+  // external display, headphones). One physical action — e.g. plugging in a
+  // USB-C dock — can fan out into several events in quick succession; we let
+  // the first one in the window play a sound and grant XP, and absorb the
+  // rest. Per-channel debounces (the 1500ms USB iPhone-handshake one) still
+  // run upstream of this method.
+  void _handleSystemEvent(AnchwattEventType type) {
+    final DateTime now = DateTime.now();
+    final DateTime? last = _lastSystemEventAt;
+    if (last != null && now.difference(last) < AnchwattSettings.systemEventCoalesceWindow) {
+      return;
+    }
+    _lastSystemEventAt = now;
+
+    final int xp = AnchwattSettings.xpForEvent(
+      type: type,
+      level: _level,
+      systemVolume: _systemVolumeState.muted ? 0 : _systemVolumeState.volume,
+    );
+
+    if (xp <= 0) {
+      return;
+    }
+
+    _soundService.playRandom();
+    addXp(xp);
+  }
+
   Future<void> _bootServices() async {
     await _storage.init();
     final ({int level, int xp}) initial = _storage.readProgression();
@@ -130,22 +168,38 @@ class AnchwattViewModel extends ChangeNotifier {
 
     try {
       await _usbEventService.start();
-      _usbSubscription = _usbEventService.events.listen((_) {
-        final int xp = AnchwattSettings.xpForEvent(
-          type: AnchwattEventType.usbToggle,
-          level: _level,
-          systemVolume: _systemVolumeState.muted ? 0 : _systemVolumeState.volume,
-        );
-
-        if (xp <= 0) {
-          return;
-        }
-
-        _soundService.playRandom();
-        addXp(xp);
-      });
+      _usbSubscription = _usbEventService.events.listen(
+        (_) => _handleSystemEvent(AnchwattEventType.usbToggle),
+      );
     } on Object catch (error) {
       debugPrint('AnchwattViewModel: UsbEventService start failed: $error');
+    }
+
+    try {
+      await _chargerEventService.start();
+      _chargerSubscription = _chargerEventService.events.listen(
+        (_) => _handleSystemEvent(AnchwattEventType.chargerToggle),
+      );
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: ChargerEventService start failed: $error');
+    }
+
+    try {
+      await _externalDisplayEventService.start();
+      _externalDisplaySubscription = _externalDisplayEventService.events.listen(
+        (_) => _handleSystemEvent(AnchwattEventType.externalDisplayToggle),
+      );
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: ExternalDisplayEventService start failed: $error');
+    }
+
+    try {
+      await _headphonesEventService.start();
+      _headphonesSubscription = _headphonesEventService.events.listen(
+        (_) => _handleSystemEvent(AnchwattEventType.headphonesToggle),
+      );
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: HeadphonesEventService start failed: $error');
     }
 
     try {
@@ -217,6 +271,12 @@ class AnchwattViewModel extends ChangeNotifier {
   void dispose() {
     _usbSubscription?.cancel();
     _usbEventService.stop();
+    _chargerSubscription?.cancel();
+    _chargerEventService.stop();
+    _externalDisplaySubscription?.cancel();
+    _externalDisplayEventService.stop();
+    _headphonesSubscription?.cancel();
+    _headphonesEventService.stop();
     _systemVolumeSubscription?.cancel();
     _systemVolumeService.stop();
     _soundService.dispose();

@@ -21,6 +21,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Pet Anchwatt: hold click and drag on the sprite to gain XP (independent random cooldown)
 - Random cry of the current evolution played while petting (independent cooldown)
 - Sparkle particle burst at cursor while petting
+- Add `chargerToggle`: react to the laptop AC adapter being plugged or unplugged (no-op on desktop Macs without a battery), playing a sound and granting XP like `usbToggle`
+- Add `externalDisplayToggle`: react to an external display being connected or disconnected (HDMI, USB-C video, DisplayPort, AirPlay, Sidecar), playing a sound and granting XP like `usbToggle`
+- Add `headphonesToggle`: react to the audio output switching to or from headphones / earphones (3.5mm jack or Bluetooth audio device), playing a sound and granting XP like `usbToggle`
+- Coalesce simultaneous system events within a 500 ms window so a single physical action — e.g. plugging in a USB-C dock — yields one sound and one XP gain instead of several
 
 ### Fixed
 

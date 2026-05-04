@@ -4,6 +4,9 @@ import FlutterMacOS
 class MainFlutterWindow: NSWindow {
   private var usbMonitor: UsbMonitor?
   private var systemVolumeMonitor: SystemVolumeMonitor?
+  private var chargerMonitor: ChargerMonitor?
+  private var externalDisplayMonitor: ExternalDisplayMonitor?
+  private var headphonesMonitor: HeadphonesMonitor?
 
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
@@ -41,6 +44,30 @@ class MainFlutterWindow: NSWindow {
     )
     volumeChannel.setStreamHandler(volumeMonitor)
     self.systemVolumeMonitor = volumeMonitor
+
+    let charger = ChargerMonitor()
+    let chargerChannel = FlutterEventChannel(
+      name: "com.anchwatt/charger_events",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    chargerChannel.setStreamHandler(charger)
+    self.chargerMonitor = charger
+
+    let externalDisplay = ExternalDisplayMonitor()
+    let externalDisplayChannel = FlutterEventChannel(
+      name: "com.anchwatt/external_display_events",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    externalDisplayChannel.setStreamHandler(externalDisplay)
+    self.externalDisplayMonitor = externalDisplay
+
+    let headphones = HeadphonesMonitor()
+    let headphonesChannel = FlutterEventChannel(
+      name: "com.anchwatt/headphones_events",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    headphonesChannel.setStreamHandler(headphones)
+    self.headphonesMonitor = headphones
 
     super.awakeFromNib()
   }
