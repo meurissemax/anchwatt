@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Move the update, system volume and sound mode badges to a dedicated top row in the Anchwatt view to avoid overlapping the level number and give the layout more breathing room
 - Rename the home view to the Anchwatt view (file, classes, route and l10n keys) so `lib/main/` reflects the project's main feature
 - Scale XP per event with the player level and the system volume
 - Remove `AnchwattSettings.xpPerEvent`

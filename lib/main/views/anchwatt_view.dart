@@ -42,54 +42,49 @@ class _AnchwattViewBody extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 36, 24, 20),
-          child: Stack(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: 8,
                 children: [
-                  const _LevelHeader(),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  const Expanded(
-                    child: Align(
-                      alignment: Alignment(0.1, 0),
-                      child: _SpriteSelector(),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  const _XpGauge(),
-                  const SizedBox(
-                    height: 6,
-                  ),
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: _XpCounterText(),
-                  ),
-                  if (Settings.isDev) ...[
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    const _DebugAddXpButton(),
-                  ],
+                  _UpdateBadge(),
+                  SystemVolumePill(),
+                  SoundModePill(),
                 ],
               ),
-              const Positioned(
-                top: 0,
-                right: 0,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 8,
-                  children: [
-                    _UpdateBadge(),
-                    SystemVolumePill(),
-                    SoundModePill(),
-                  ],
+              const SizedBox(
+                height: 8,
+              ),
+              const _LevelHeader(),
+              const SizedBox(
+                height: 8,
+              ),
+              const Expanded(
+                child: Align(
+                  alignment: Alignment(0.1, 0),
+                  child: _SpriteSelector(),
                 ),
               ),
+              const SizedBox(
+                height: 12,
+              ),
+              const _XpGauge(),
+              const SizedBox(
+                height: 6,
+              ),
+              const Align(
+                alignment: Alignment.centerRight,
+                child: _XpCounterText(),
+              ),
+              if (Settings.isDev) ...[
+                const SizedBox(
+                  height: 16,
+                ),
+                const _DebugAddXpButton(),
+              ],
             ],
           ),
         ),
