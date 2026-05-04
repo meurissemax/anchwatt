@@ -15,6 +15,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add a background mode that hides the window into a menu-bar status item when the user closes it via the red traffic-light, with a left-click to restore and a right-click "Quitter Anchwatt" menu
 - Add a sound mode toggle (Corporate / Friday) in the Anchwatt view's top-right pill, persisting the chosen mode and filtering random sound playback to that mode's folder
 - Add GitHub issues and pull requests templates
 - Change the Flutter SDK version to 3.41.9

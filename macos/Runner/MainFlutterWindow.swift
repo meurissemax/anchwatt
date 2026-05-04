@@ -69,6 +69,9 @@ class MainFlutterWindow: NSWindow {
     headphonesChannel.setStreamHandler(headphones)
     self.headphonesMonitor = headphones
 
+    let backgroundModeController = BackgroundModeController(window: self)
+    (NSApp.delegate as? AppDelegate)?.backgroundModeController = backgroundModeController
+
     super.awakeFromNib()
   }
 }

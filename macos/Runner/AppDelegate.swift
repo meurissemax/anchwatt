@@ -7,12 +7,92 @@ import IOKit.usb
 
 @main
 class AppDelegate: FlutterAppDelegate {
+  // Strong reference required: dropping it makes the NSStatusItem disappear
+  // silently when the app enters background mode.
+  var backgroundModeController: BackgroundModeController?
+
   override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-    return true
+    return false
   }
 
   override func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
     return true
+  }
+}
+
+final class BackgroundModeController: NSObject, NSWindowDelegate {
+  // User-facing label for the right-click "quit" menu item. Hardcoded in
+  // French because Anchwatt is FR-only (see lib/settings.dart). If the app
+  // ever becomes multi-locale, route this through a MethodChannel from Dart.
+  private static let quitMenuLabel = "Quitter Anchwatt"
+
+  private weak var window: NSWindow?
+  private var statusItem: NSStatusItem?
+
+  init(window: NSWindow) {
+    self.window = window
+    super.init()
+    window.delegate = self
+    buildStatusItem()
+  }
+
+  func enterBackgroundMode() {
+    window?.orderOut(nil)
+    NSApp.setActivationPolicy(.accessory)
+    statusItem?.isVisible = true
+  }
+
+  func exitBackgroundMode() {
+    statusItem?.isVisible = false
+    NSApp.setActivationPolicy(.regular)
+    // Some macOS versions leave the window behind other apps without an
+    // explicit activation call after the policy switch.
+    NSApp.activate(ignoringOtherApps: true)
+    window?.makeKeyAndOrderFront(nil)
+  }
+
+  func windowShouldClose(_ sender: NSWindow) -> Bool {
+    enterBackgroundMode()
+    return false
+  }
+
+  private func buildStatusItem() {
+    let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    let image = NSImage(named: "StatusBarIcon")
+    image?.isTemplate = true
+    image?.accessibilityDescription = "Anchwatt"
+    item.button?.image = image
+    item.button?.target = self
+    item.button?.action = #selector(handleStatusItemClick(_:))
+    item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+    item.isVisible = false
+    self.statusItem = item
+  }
+
+  @objc private func handleStatusItemClick(_ sender: NSStatusBarButton) {
+    guard let event = NSApp.currentEvent else { return }
+    switch event.type {
+    case .rightMouseUp:
+      // Temporarily attach the menu, perform the click to pop it, then detach
+      // so the next left-click keeps invoking our action instead of the menu.
+      let menu = NSMenu()
+      let item = NSMenuItem(
+        title: BackgroundModeController.quitMenuLabel,
+        action: #selector(quit(_:)),
+        keyEquivalent: ""
+      )
+      item.target = self
+      menu.addItem(item)
+      statusItem?.menu = menu
+      sender.performClick(nil)
+      statusItem?.menu = nil
+    default:
+      exitBackgroundMode()
+    }
+  }
+
+  @objc private func quit(_ sender: Any?) {
+    NSApp.terminate(nil)
   }
 }
 
