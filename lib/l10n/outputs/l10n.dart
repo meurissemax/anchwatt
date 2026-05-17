@@ -104,6 +104,36 @@ class L10n {
     return Intl.message('Lampéroie', name: 'lamperoie', desc: '', args: []);
   }
 
+  /// `Anchwatt apparaît dans la barre des menus dès l'ouverture de session, fenêtre masquée. Clique sur l'icône pour la rouvrir.`
+  String get launchAtLoginDescription {
+    return Intl.message(
+      'Anchwatt apparaît dans la barre des menus dès l\'ouverture de session, fenêtre masquée. Clique sur l\'icône pour la rouvrir.',
+      name: 'launchAtLoginDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Raté, macOS a dit non`
+  String get launchAtLoginError {
+    return Intl.message(
+      'Raté, macOS a dit non',
+      name: 'launchAtLoginError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Démarrer à l'ouverture de session`
+  String get launchAtLoginLabel {
+    return Intl.message(
+      'Démarrer à l\'ouverture de session',
+      name: 'launchAtLoginLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Ohmassacre`
   String get ohmassacre {
     return Intl.message('Ohmassacre', name: 'ohmassacre', desc: '', args: []);

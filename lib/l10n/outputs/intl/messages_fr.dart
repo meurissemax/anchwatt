@@ -41,6 +41,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "anchwattXpCounter": m1,
     "anchwattXpGain": m2,
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
+    "launchAtLoginDescription": MessageLookupByLibrary.simpleMessage(
+      "Anchwatt apparaît dans la barre des menus dès l\'ouverture de session, fenêtre masquée. Clique sur l\'icône pour la rouvrir.",
+    ),
+    "launchAtLoginError": MessageLookupByLibrary.simpleMessage(
+      "Raté, macOS a dit non",
+    ),
+    "launchAtLoginLabel": MessageLookupByLibrary.simpleMessage(
+      "Démarrer à l\'ouverture de session",
+    ),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
     "optionsAppVersion": m3,
     "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(

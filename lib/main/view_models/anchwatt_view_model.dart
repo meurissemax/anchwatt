@@ -5,6 +5,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/charger_event_service.dart';
 import 'package:anchwatt/main/services/external_display_event_service.dart';
 import 'package:anchwatt/main/services/headphones_event_service.dart';
+import 'package:anchwatt/main/services/launch_at_login_service.dart';
 import 'package:anchwatt/main/services/playback_volume_sampler.dart';
 import 'package:anchwatt/main/services/silent_mode_service.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
@@ -29,6 +30,7 @@ class AnchwattViewModel extends ChangeNotifier {
   final ChargerEventService _chargerEventService = ChargerEventService();
   final ExternalDisplayEventService _externalDisplayEventService = ExternalDisplayEventService();
   final HeadphonesEventService _headphonesEventService = HeadphonesEventService();
+  final LaunchAtLoginService _launchAtLoginService = LaunchAtLoginService();
   final SilentModeService _silentModeService = SilentModeService();
   final SoundService _soundService = SoundService();
   final UpdateService _updateService = UpdateService();
@@ -66,6 +68,7 @@ class AnchwattViewModel extends ChangeNotifier {
   SystemVolumeState get systemVolumeState => _systemVolumeState;
   ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
   ValueNotifier<bool> get silentModeNotifier => _silentModeService.enabledNotifier;
+  ValueNotifier<bool> get launchAtLoginNotifier => _launchAtLoginService.enabledNotifier;
   Stream<int> get xpGainStream => _xpGainController.stream;
 
   /* Methods */
@@ -73,6 +76,10 @@ class AnchwattViewModel extends ChangeNotifier {
   Future<void> toggleSoundMode() => _soundService.toggleMode();
 
   Future<void> toggleSilentMode() => _silentModeService.toggle();
+
+  Future<void> refreshLaunchAtLogin() => _launchAtLoginService.refresh();
+
+  Future<void> setLaunchAtLogin(bool value) => _launchAtLoginService.setEnabled(value);
 
   Future<void> addXp(int amount) {
     final Future<void> next = (_pending ?? Future<void>.value()).then((_) => _process(amount));
@@ -218,6 +225,12 @@ class AnchwattViewModel extends ChangeNotifier {
     }
 
     try {
+      await _launchAtLoginService.refresh();
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: LaunchAtLoginService refresh failed: $error');
+    }
+
+    try {
       await _soundService.init();
     } on Object catch (error) {
       debugPrint('AnchwattViewModel: SoundService init failed: $error');
@@ -347,6 +360,7 @@ class AnchwattViewModel extends ChangeNotifier {
     _systemVolumeService.stop();
     _silentModeService.enabledNotifier.removeListener(_onSilentModeChanged);
     _silentModeService.dispose();
+    _launchAtLoginService.dispose();
     _soundService.dispose();
     _xpGainController.close();
     super.dispose();

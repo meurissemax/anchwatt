@@ -72,6 +72,14 @@ class MainFlutterWindow: NSWindow {
     let backgroundModeController = BackgroundModeController(window: self)
     (NSApp.delegate as? AppDelegate)?.backgroundModeController = backgroundModeController
 
+    let launchAtLogin = LaunchAtLoginController()
+    let launchAtLoginChannel = FlutterMethodChannel(
+      name: "com.anchwatt/launch_at_login",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    launchAtLoginChannel.setMethodCallHandler(launchAtLogin.handle)
+    (NSApp.delegate as? AppDelegate)?.launchAtLoginController = launchAtLogin
+
     super.awakeFromNib()
   }
 }

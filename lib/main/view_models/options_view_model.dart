@@ -19,6 +19,7 @@ class OptionsViewModel extends ChangeNotifier {
 
   String? _version;
   OptionsUpdateCheck _checkState = const OptionsUpdateIdle();
+  OptionsLaunchAtLoginState _launchAtLoginState = const OptionsLaunchAtLoginIdle();
   UpdateAvailable? _availableUpdate;
   Timer? _upToDateDismissTimer;
   bool _disposed = false;
@@ -28,6 +29,7 @@ class OptionsViewModel extends ChangeNotifier {
   OptionsViewModel(this._parent) {
     _parent.soundModeNotifier.addListener(_onSoundModeChanged);
     _parent.silentModeNotifier.addListener(_onSilentModeChanged);
+    _parent.launchAtLoginNotifier.addListener(_onLaunchAtLoginChanged);
     _boot();
   }
 
@@ -36,6 +38,8 @@ class OptionsViewModel extends ChangeNotifier {
   String? get version => _version;
   SoundMode get soundMode => _parent.soundModeNotifier.value;
   bool get silentModeEnabled => _parent.silentModeNotifier.value;
+  bool get launchAtLoginEnabled => _parent.launchAtLoginNotifier.value;
+  OptionsLaunchAtLoginState get launchAtLoginState => _launchAtLoginState;
   OptionsUpdateCheck get checkState => _checkState;
   UpdateAvailable? get availableUpdate => _availableUpdate;
 
@@ -55,6 +59,10 @@ class OptionsViewModel extends ChangeNotifier {
     }
 
     notifyListeners();
+
+    // Refresh from the native bridge to catch out-of-band changes (e.g. user
+    // toggled the entry from System Settings since the last app session).
+    unawaited(_parent.refreshLaunchAtLogin());
   }
 
   Future<String?> _readVersion() async {
@@ -85,6 +93,14 @@ class OptionsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _onLaunchAtLoginChanged() {
+    if (_disposed) {
+      return;
+    }
+
+    notifyListeners();
+  }
+
   Future<void> setSoundMode(SoundMode mode) async {
     if (_parent.soundModeNotifier.value == mode) {
       return;
@@ -99,6 +115,31 @@ class OptionsViewModel extends ChangeNotifier {
     }
 
     await _parent.toggleSilentMode();
+  }
+
+  Future<void> setLaunchAtLogin(bool value) async {
+    if (_parent.launchAtLoginNotifier.value == value) {
+      return;
+    }
+
+    if (_launchAtLoginState is OptionsLaunchAtLoginError) {
+      _launchAtLoginState = const OptionsLaunchAtLoginIdle();
+      notifyListeners();
+    }
+
+    try {
+      await _parent.setLaunchAtLogin(value);
+    } on Object catch (error) {
+      debugPrint('OptionsViewModel: setLaunchAtLogin failed: $error');
+
+      if (_disposed) {
+        return;
+      }
+
+      _launchAtLoginState = const OptionsLaunchAtLoginError();
+
+      notifyListeners();
+    }
   }
 
   Future<void> checkForUpdatesNow() async {
@@ -168,9 +209,22 @@ class OptionsViewModel extends ChangeNotifier {
     _upToDateDismissTimer?.cancel();
     _parent.soundModeNotifier.removeListener(_onSoundModeChanged);
     _parent.silentModeNotifier.removeListener(_onSilentModeChanged);
+    _parent.launchAtLoginNotifier.removeListener(_onLaunchAtLoginChanged);
 
     super.dispose();
   }
+}
+
+sealed class OptionsLaunchAtLoginState {
+  const OptionsLaunchAtLoginState();
+}
+
+class OptionsLaunchAtLoginIdle extends OptionsLaunchAtLoginState {
+  const OptionsLaunchAtLoginIdle();
+}
+
+class OptionsLaunchAtLoginError extends OptionsLaunchAtLoginState {
+  const OptionsLaunchAtLoginError();
 }
 
 sealed class OptionsUpdateCheck {

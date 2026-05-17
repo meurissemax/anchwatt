@@ -10,6 +10,25 @@ class AppDelegate: FlutterAppDelegate {
   // Strong reference required: dropping it makes the NSStatusItem disappear
   // silently when the app enters background mode.
   var backgroundModeController: BackgroundModeController?
+  var launchAtLoginController: LaunchAtLoginController?
+  private var launchedAsLoginItem = false
+
+  override func applicationWillFinishLaunching(_ notification: Notification) {
+    super.applicationWillFinishLaunching(notification)
+    // currentAppleEvent is populated by AppKit while the open-application
+    // event is being processed, before the main window is ordered front.
+    let event = NSAppleEventManager.shared().currentAppleEvent
+    launchedAsLoginItem =
+      event?.eventID == AEEventID(kAEOpenApplication) &&
+      event?.paramDescriptor(forKeyword: keyAEPropData)?.enumCodeValue == keyAELaunchedAsLogInItem
+  }
+
+  override func applicationDidFinishLaunching(_ notification: Notification) {
+    super.applicationDidFinishLaunching(notification)
+    if launchedAsLoginItem {
+      backgroundModeController?.enterBackgroundMode()
+    }
+  }
 
   override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
     return false

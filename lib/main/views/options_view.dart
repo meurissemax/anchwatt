@@ -74,6 +74,10 @@ class OptionsView extends StatelessWidget {
                       SizedBox(
                         height: _sectionSpacing,
                       ),
+                      _LaunchAtLoginOption(),
+                      SizedBox(
+                        height: _sectionSpacing,
+                      ),
                       _GithubOption(),
                       SizedBox(
                         height: _sectionSpacing,
@@ -361,6 +365,90 @@ class _SilentModeOption extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _LaunchAtLoginOption extends StatelessWidget {
+  static const Duration _errorAnimationDuration = Duration(milliseconds: 150);
+  static const EdgeInsets _errorPadding = EdgeInsets.only(top: 6);
+
+  const _LaunchAtLoginOption();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Selector<OptionsViewModel, bool>(
+          selector: (_, vm) => vm.launchAtLoginEnabled,
+          builder: (_, enabled, _) => Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.launchAtLoginLabel,
+                      style: textOptionsSectionLabel,
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      l10n.launchAtLoginDescription,
+                      style: textOptionsSectionDescription,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: OptionsView._itemSpacing,
+              ),
+              Transform.scale(
+                scale: 0.75,
+                child: Switch(
+                  value: enabled,
+                  activeThumbColor: Colors.white,
+                  activeTrackColor: colorWarning,
+                  inactiveThumbColor: colorMutedDark,
+                  inactiveTrackColor: colorNeutralLight,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  trackOutlineColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) => states.contains(WidgetState.selected) ? colorWarning : colorNeutralLight,
+                  ),
+                  onChanged: (value) => context.read<OptionsViewModel>().setLaunchAtLogin(value),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Selector<OptionsViewModel, OptionsLaunchAtLoginState>(
+          selector: (_, vm) => vm.launchAtLoginState,
+          builder: (_, state, _) {
+            final Widget? feedback = switch (state) {
+              OptionsLaunchAtLoginError() => Padding(
+                padding: _errorPadding,
+                child: Text(
+                  l10n.launchAtLoginError,
+                  style: textOptionsSectionDescription.copyWith(
+                    color: colorError,
+                  ),
+                ),
+              ),
+              OptionsLaunchAtLoginIdle() => null,
+            };
+
+            return AnimatedSwitcher(
+              duration: _errorAnimationDuration,
+              child: feedback ?? const SizedBox.shrink(),
+            );
+          },
+        ),
+      ],
     );
   }
 }
