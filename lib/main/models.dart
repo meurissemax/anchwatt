@@ -239,6 +239,51 @@ class SystemVolumeSettings {
 }
 
 @immutable
+class BusyEvent {
+  final String id;
+  final String title;
+  final DateTime endTime;
+
+  const BusyEvent({
+    required this.id,
+    required this.title,
+    required this.endTime,
+  });
+
+  static BusyEvent? fromMap(Map<Object?, Object?> map) {
+    final Object? rawId = map['id'];
+    final Object? rawTitle = map['title'];
+    final Object? rawEnd = map['endTime'];
+
+    if (rawId is! String || rawId.isEmpty) {
+      return null;
+    }
+    if (rawEnd is! int) {
+      return null;
+    }
+
+    return BusyEvent(
+      id: rawId,
+      title: rawTitle is String ? rawTitle : '',
+      endTime: DateTime.fromMillisecondsSinceEpoch(rawEnd),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BusyEvent && other.id == id && other.title == title && other.endTime == endTime);
+
+  @override
+  int get hashCode => Object.hash(id, title, endTime);
+}
+
+enum CalendarAutoMuteError {
+  permissionDenied,
+  fetchFailed,
+}
+
+@immutable
 class SystemVolumeState {
   final double volume;
   final bool muted;

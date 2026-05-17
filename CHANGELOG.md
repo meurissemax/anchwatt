@@ -15,6 +15,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add an "auto-mute during meetings" toggle in the options dialog: when enabled, Anchwatt watches macOS Calendar via EventKit and turns the "Ne pas déranger" mode on automatically while a busy (non all-day) event is in progress; toggling the silent mode off during such an event opts out for the remainder of that event only, the next event re-engages the mute naturally
 - Add a "Launch at login" toggle in the options dialog: when enabled, Anchwatt registers as a macOS background login item via `SMAppService` and starts silently in the status bar at the next session opening, with the window hidden until the icon is clicked
 - Add a "Ne pas déranger" mode togglable from the options dialog and a dedicated app-bar chip, which cuts any in-flight sound the moment it turns on and gates incoming system events so neither sounds nor XP are awarded while it is active; state is persisted between launches
 - Add an options dialog accessible from the app bar, exposing app info, the Friday/Corporate mode toggle with descriptions, a GitHub repository link, and a manual update check

@@ -71,6 +71,11 @@ class OptionsView extends StatelessWidget {
                         height: _sectionSpacing,
                       ),
                       _SilentModeOption(),
+                      _SilentModeActiveReason(),
+                      SizedBox(
+                        height: _sectionSpacing,
+                      ),
+                      _AutoMuteOption(),
                       SizedBox(
                         height: _sectionSpacing,
                       ),
@@ -365,6 +370,136 @@ class _SilentModeOption extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SilentModeActiveReason extends StatelessWidget {
+  static const Duration _animationDuration = Duration(milliseconds: 200);
+  static const EdgeInsets _padding = EdgeInsets.only(top: 6);
+
+  const _SilentModeActiveReason();
+
+  static String _formatTime(DateTime time) {
+    final String hh = time.hour.toString().padLeft(2, '0');
+    final String mm = time.minute.toString().padLeft(2, '0');
+
+    return '$hh:$mm';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Selector<OptionsViewModel, BusyEvent?>(
+      selector: (_, vm) => vm.autoMuteActiveEvent,
+      builder: (_, event, _) => AnimatedSwitcher(
+        duration: _animationDuration,
+        child: event == null
+            ? const SizedBox.shrink()
+            : Padding(
+                padding: _padding,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l10n.autoMuteActiveReason(event.title, _formatTime(event.endTime)),
+                    style: textOptionsSectionDescription,
+                  ),
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class _AutoMuteOption extends StatelessWidget {
+  static const Duration _errorAnimationDuration = Duration(milliseconds: 200);
+  static const EdgeInsets _errorPadding = EdgeInsets.only(top: 6);
+
+  const _AutoMuteOption();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Selector<OptionsViewModel, bool>(
+          selector: (_, vm) => vm.autoMuteEnabled,
+          builder: (_, enabled, _) => Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.autoMuteLabel,
+                      style: textOptionsSectionLabel,
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      l10n.autoMuteDescription,
+                      style: textOptionsSectionDescription,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: OptionsView._itemSpacing,
+              ),
+              Transform.scale(
+                scale: 0.75,
+                child: Switch(
+                  value: enabled,
+                  activeThumbColor: Colors.white,
+                  activeTrackColor: colorWarning,
+                  inactiveThumbColor: colorMutedDark,
+                  inactiveTrackColor: colorNeutralLight,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  trackOutlineColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) => states.contains(WidgetState.selected) ? colorWarning : colorNeutralLight,
+                  ),
+                  onChanged: (value) => context.read<OptionsViewModel>().setAutoMute(value),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Selector<OptionsViewModel, CalendarAutoMuteError?>(
+          selector: (_, vm) => vm.autoMuteError,
+          builder: (_, error, _) => AnimatedSwitcher(
+            duration: _errorAnimationDuration,
+            child: error == null
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: _errorPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.autoMutePermissionDenied,
+                          style: textOptionsSectionDescription.copyWith(
+                            color: colorError,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        _OptionButton(
+                          iconData: Icons.open_in_new,
+                          label: l10n.autoMuteOpenSystemSettings,
+                          onPressed: () => context.read<OptionsViewModel>().openCalendarSystemSettings(),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ),
+      ],
     );
   }
 }

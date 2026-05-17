@@ -1,5 +1,6 @@
 import Cocoa
 import CoreAudio
+import EventKit
 import FlutterMacOS
 import IOKit
 import IOKit.ps
@@ -11,6 +12,8 @@ class AppDelegate: FlutterAppDelegate {
   // silently when the app enters background mode.
   var backgroundModeController: BackgroundModeController?
   var launchAtLoginController: LaunchAtLoginController?
+  var calendarChannel: CalendarChannel?
+  var calendarChangesMonitor: CalendarChangesMonitor?
   private var launchedAsLoginItem = false
 
   override func applicationWillFinishLaunching(_ notification: Notification) {
@@ -782,5 +785,128 @@ final class HeadphonesMonitor: NSObject, FlutterStreamHandler {
       return nil
     }
     return value
+  }
+}
+
+// EventKit is not thread-safe on every API, so all calls are dispatched to the
+// main queue. This handler is request/response only — see CalendarChangesMonitor
+// for the EKEventStoreChanged stream that lets Dart trigger a fast re-fetch.
+final class CalendarChannel: NSObject {
+  private let eventStore = EKEventStore()
+
+  func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    DispatchQueue.main.async {
+      switch call.method {
+      case "authorizationStatus":
+        result(self.authorizationStatusString())
+      case "requestAccess":
+        self.requestAccess(result: result)
+      case "currentBusyEvent":
+        self.fetchCurrentBusyEvent(result: result)
+      case "openSystemSettings":
+        self.openSystemSettings(result: result)
+      default:
+        result(FlutterMethodNotImplemented)
+      }
+    }
+  }
+
+  private func authorizationStatusString() -> String {
+    let status = EKEventStore.authorizationStatus(for: .event)
+    switch status {
+    case .notDetermined:
+      return "notDetermined"
+    case .restricted:
+      return "restricted"
+    case .denied:
+      return "denied"
+    case .authorized:
+      return "authorized"
+    case .fullAccess:
+      return "authorized"
+    case .writeOnly:
+      // Write-only access cannot read events — treat as denied for our purposes.
+      return "denied"
+    @unknown default:
+      return "denied"
+    }
+  }
+
+  private func requestAccess(result: @escaping FlutterResult) {
+    if #available(macOS 14.0, *) {
+      eventStore.requestFullAccessToEvents { granted, _ in
+        DispatchQueue.main.async { result(granted) }
+      }
+    } else {
+      eventStore.requestAccess(to: .event) { granted, _ in
+        DispatchQueue.main.async { result(granted) }
+      }
+    }
+  }
+
+  // Look-ahead window large enough to catch an event that started slightly in
+  // the past and small enough to keep the predicate cheap. We only return the
+  // first event that covers "now" with availability == .busy and isAllDay == false.
+  private func fetchCurrentBusyEvent(result: @escaping FlutterResult) {
+    let now = Date()
+    let predicate = eventStore.predicateForEvents(
+      withStart: now.addingTimeInterval(-300),
+      end: now.addingTimeInterval(3600),
+      calendars: nil
+    )
+    let events = eventStore.events(matching: predicate)
+    let match = events.first { event in
+      event.availability == .busy
+        && !event.isAllDay
+        && event.startDate <= now
+        && event.endDate > now
+    }
+    if let match = match {
+      let endMillis = Int(match.endDate.timeIntervalSince1970 * 1000)
+      result([
+        "id": match.eventIdentifier ?? "",
+        "title": match.title ?? "",
+        "endTime": endMillis,
+      ])
+    } else {
+      result(nil)
+    }
+  }
+
+  private func openSystemSettings(result: @escaping FlutterResult) {
+    if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars") {
+      NSWorkspace.shared.open(url)
+    }
+    result(nil)
+  }
+}
+
+final class CalendarChangesMonitor: NSObject, FlutterStreamHandler {
+  private var sink: FlutterEventSink?
+  private let eventStore = EKEventStore()
+  private var observer: NSObjectProtocol?
+
+  func onListen(
+    withArguments arguments: Any?,
+    eventSink events: @escaping FlutterEventSink
+  ) -> FlutterError? {
+    self.sink = events
+    observer = NotificationCenter.default.addObserver(
+      forName: .EKEventStoreChanged,
+      object: eventStore,
+      queue: .main
+    ) { [weak self] _ in
+      self?.sink?(nil)
+    }
+    return nil
+  }
+
+  func onCancel(withArguments arguments: Any?) -> FlutterError? {
+    if let observer = observer {
+      NotificationCenter.default.removeObserver(observer)
+      self.observer = nil
+    }
+    sink = nil
+    return nil
   }
 }

@@ -1,5 +1,15 @@
 {
     "@@locale": "fr",
+    "@autoMuteActiveReason": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
     "@anchwattEvolutionLevel": {
         "placeholders": {
             "level": {
@@ -50,6 +60,11 @@
     },
     "anchwatt": "Anchwatt",
     "anchwattDebugAddXp": "Tricher : +XP",
+    "autoMuteActiveReason": "Activé auto : {title} jusqu'à {time}",
+    "autoMuteDescription": "Branche ton calendrier pour couper Anchwatt pile pendant les réunions.",
+    "autoMuteLabel": "Silence pendant les réunions",
+    "autoMuteOpenSystemSettings": "Ouvrir les Réglages Système",
+    "autoMutePermissionDenied": "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
     "anchwattEvolutionLevel": "{name} — Lvl {level}",
     "anchwattXpCounter": "{current} / {total}",
     "anchwattXpGain": "+{xp}xp",

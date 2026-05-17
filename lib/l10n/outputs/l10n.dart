@@ -69,6 +69,56 @@ class L10n {
     );
   }
 
+  /// `Activé auto : {title} jusqu'à {time}`
+  String autoMuteActiveReason(String title, String time) {
+    return Intl.message(
+      'Activé auto : $title jusqu\'à $time',
+      name: 'autoMuteActiveReason',
+      desc: '',
+      args: [title, time],
+    );
+  }
+
+  /// `Branche ton calendrier pour couper Anchwatt pile pendant les réunions.`
+  String get autoMuteDescription {
+    return Intl.message(
+      'Branche ton calendrier pour couper Anchwatt pile pendant les réunions.',
+      name: 'autoMuteDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Silence pendant les réunions`
+  String get autoMuteLabel {
+    return Intl.message(
+      'Silence pendant les réunions',
+      name: 'autoMuteLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ouvrir les Réglages Système`
+  String get autoMuteOpenSystemSettings {
+    return Intl.message(
+      'Ouvrir les Réglages Système',
+      name: 'autoMuteOpenSystemSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.`
+  String get autoMutePermissionDenied {
+    return Intl.message(
+      'Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.',
+      name: 'autoMutePermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `{name} — Lvl {level}`
   String anchwattEvolutionLevel(int level, String name) {
     return Intl.message(

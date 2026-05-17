@@ -26,12 +26,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(xp) => "+${xp}xp";
 
-  static String m3(version) => "v${version}";
+  static String m3(title, time) => "Activé auto : ${title} jusqu\'à ${time}";
 
-  static String m4(version) =>
+  static String m4(version) => "v${version}";
+
+  static String m5(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m5(percent) => "Volume : ${percent} %";
+  static String m6(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -40,6 +42,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "anchwattEvolutionLevel": m0,
     "anchwattXpCounter": m1,
     "anchwattXpGain": m2,
+    "autoMuteActiveReason": m3,
+    "autoMuteDescription": MessageLookupByLibrary.simpleMessage(
+      "Branche ton calendrier pour couper Anchwatt pile pendant les réunions.",
+    ),
+    "autoMuteLabel": MessageLookupByLibrary.simpleMessage(
+      "Silence pendant les réunions",
+    ),
+    "autoMuteOpenSystemSettings": MessageLookupByLibrary.simpleMessage(
+      "Ouvrir les Réglages Système",
+    ),
+    "autoMutePermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
+    ),
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "launchAtLoginDescription": MessageLookupByLibrary.simpleMessage(
       "Anchwatt apparaît dans la barre des menus dès l\'ouverture de session, fenêtre masquée. Clique sur l\'icône pour la rouvrir.",
@@ -51,7 +66,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Démarrer à l\'ouverture de session",
     ),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
-    "optionsAppVersion": m3,
+    "optionsAppVersion": m4,
     "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Bidouiller Anchwatt",
     ),
@@ -67,7 +82,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "À fond la caisse, c\'est presque le week-end.",
     ),
     "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
-    "optionsUpdatesAvailable": m4,
+    "optionsUpdatesAvailable": m5,
     "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
       "Chercher du neuf",
     ),
@@ -97,7 +112,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
       "Hop, Friday",
     ),
-    "systemVolumeTooltip": m5,
+    "systemVolumeTooltip": m6,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

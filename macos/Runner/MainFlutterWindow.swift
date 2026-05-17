@@ -80,6 +80,22 @@ class MainFlutterWindow: NSWindow {
     launchAtLoginChannel.setMethodCallHandler(launchAtLogin.handle)
     (NSApp.delegate as? AppDelegate)?.launchAtLoginController = launchAtLogin
 
+    let calendarChannelHandler = CalendarChannel()
+    let calendarMethodChannel = FlutterMethodChannel(
+      name: "com.anchwatt/calendar",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    calendarMethodChannel.setMethodCallHandler(calendarChannelHandler.handle)
+    (NSApp.delegate as? AppDelegate)?.calendarChannel = calendarChannelHandler
+
+    let calendarChangesMonitor = CalendarChangesMonitor()
+    let calendarChangesChannel = FlutterEventChannel(
+      name: "com.anchwatt/calendar_changes",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    calendarChangesChannel.setStreamHandler(calendarChangesMonitor)
+    (NSApp.delegate as? AppDelegate)?.calendarChangesMonitor = calendarChangesMonitor
+
     super.awakeFromNib()
   }
 }

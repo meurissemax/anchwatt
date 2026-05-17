@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/calendar_auto_mute_service.dart';
 import 'package:anchwatt/main/services/charger_event_service.dart';
 import 'package:anchwatt/main/services/external_display_event_service.dart';
 import 'package:anchwatt/main/services/headphones_event_service.dart';
@@ -32,6 +33,7 @@ class AnchwattViewModel extends ChangeNotifier {
   final HeadphonesEventService _headphonesEventService = HeadphonesEventService();
   final LaunchAtLoginService _launchAtLoginService = LaunchAtLoginService();
   final SilentModeService _silentModeService = SilentModeService();
+  late final CalendarAutoMuteService _calendarAutoMuteService = CalendarAutoMuteService(_silentModeService);
   final SoundService _soundService = SoundService();
   final UpdateService _updateService = UpdateService();
   final SystemVolumeService _systemVolumeService = SystemVolumeService();
@@ -69,13 +71,33 @@ class AnchwattViewModel extends ChangeNotifier {
   ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
   ValueNotifier<bool> get silentModeNotifier => _silentModeService.enabledNotifier;
   ValueNotifier<bool> get launchAtLoginNotifier => _launchAtLoginService.enabledNotifier;
+  ValueNotifier<bool> get autoMuteEnabledNotifier => _calendarAutoMuteService.enabledNotifier;
+  ValueNotifier<BusyEvent?> get autoMuteActiveEventNotifier => _calendarAutoMuteService.activeEventNotifier;
+  ValueNotifier<CalendarAutoMuteError?> get autoMuteErrorNotifier => _calendarAutoMuteService.errorNotifier;
   Stream<int> get xpGainStream => _xpGainController.stream;
 
   /* Methods */
 
   Future<void> toggleSoundMode() => _soundService.toggleMode();
 
-  Future<void> toggleSilentMode() => _silentModeService.toggle();
+  // The toggle reflects the combined DND state (manual OR calendar). When the
+  // user turns it off while a calendar event is driving DND, opt out of that
+  // event for the remainder of its duration; the manual flag is set to false
+  // either way so a subsequent calendar transition can re-enable DND naturally.
+  Future<void> toggleSilentMode() async {
+    if (_silentModeService.isEnabled) {
+      if (_silentModeService.calendarEnabled) {
+        _calendarAutoMuteService.captureCurrentEventAsOverride();
+      }
+      await _silentModeService.setManualEnabled(false);
+    } else {
+      await _silentModeService.setManualEnabled(true);
+    }
+  }
+
+  Future<void> setAutoMuteEnabled(bool value) => _calendarAutoMuteService.setEnabled(value);
+
+  Future<void> openCalendarSystemSettings() => _calendarAutoMuteService.openSystemSettings();
 
   Future<void> refreshLaunchAtLogin() => _launchAtLoginService.refresh();
 
@@ -225,6 +247,12 @@ class AnchwattViewModel extends ChangeNotifier {
     }
 
     try {
+      await _calendarAutoMuteService.init();
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: CalendarAutoMuteService init failed: $error');
+    }
+
+    try {
       await _launchAtLoginService.refresh();
     } on Object catch (error) {
       debugPrint('AnchwattViewModel: LaunchAtLoginService refresh failed: $error');
@@ -359,6 +387,7 @@ class AnchwattViewModel extends ChangeNotifier {
     _systemVolumeSubscription?.cancel();
     _systemVolumeService.stop();
     _silentModeService.enabledNotifier.removeListener(_onSilentModeChanged);
+    _calendarAutoMuteService.dispose();
     _silentModeService.dispose();
     _launchAtLoginService.dispose();
     _soundService.dispose();
