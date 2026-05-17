@@ -9,6 +9,60 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  group('shouldNotifyLevelUp', () {
+    test('fires only when notifications enabled, DND off, window hidden', () {
+      expect(
+        AnchwattViewModel.shouldNotifyLevelUp(
+          notificationsEnabled: true,
+          silentModeEnabled: false,
+          windowHidden: true,
+        ),
+        true,
+      );
+    });
+
+    test('does not fire when notifications are disabled', () {
+      for (final bool dnd in <bool>[true, false]) {
+        for (final bool hidden in <bool>[true, false]) {
+          expect(
+            AnchwattViewModel.shouldNotifyLevelUp(
+              notificationsEnabled: false,
+              silentModeEnabled: dnd,
+              windowHidden: hidden,
+            ),
+            false,
+            reason: 'enabled=false, dnd=$dnd, hidden=$hidden should not fire',
+          );
+        }
+      }
+    });
+
+    test('does not fire when DND is on', () {
+      for (final bool hidden in <bool>[true, false]) {
+        expect(
+          AnchwattViewModel.shouldNotifyLevelUp(
+            notificationsEnabled: true,
+            silentModeEnabled: true,
+            windowHidden: hidden,
+          ),
+          false,
+          reason: 'dnd=true, hidden=$hidden should not fire',
+        );
+      }
+    });
+
+    test('does not fire when the window is visible', () {
+      expect(
+        AnchwattViewModel.shouldNotifyLevelUp(
+          notificationsEnabled: true,
+          silentModeEnabled: false,
+          windowHidden: false,
+        ),
+        false,
+      );
+    });
+  });
+
   test('AnchwattViewModel addXp crosses evolution boundaries and caps at levelMax', () async {
     final AnchwattViewModel vm = AnchwattViewModel(
       levelUpDwell: Duration.zero,

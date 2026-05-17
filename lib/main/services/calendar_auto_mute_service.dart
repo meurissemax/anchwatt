@@ -24,6 +24,12 @@ class CalendarAutoMuteService {
   final ValueNotifier<BusyEvent?> activeEventNotifier = ValueNotifier<BusyEvent?>(null);
   final ValueNotifier<CalendarAutoMuteError?> errorNotifier = ValueNotifier<CalendarAutoMuteError?>(null);
 
+  // Broadcast stream of transitions caused by the real timing of a calendar
+  // event (event start / event end). Transitions caused by the user — toggle
+  // off mid-event, or that override expiring — are intentionally never
+  // emitted, so listeners can dispatch notifications only for "natural" flips.
+  final StreamController<CalendarMuteTransition> _transitionsController = StreamController<CalendarMuteTransition>.broadcast();
+
   String? _overrideEventId;
   Timer? _pollTimer;
   StreamSubscription<void>? _changesSubscription;
@@ -43,6 +49,7 @@ class CalendarAutoMuteService {
   /* Getters */
 
   bool get isEnabled => enabledNotifier.value;
+  Stream<CalendarMuteTransition> get transitions => _transitionsController.stream;
 
   /* Methods */
 
@@ -164,6 +171,12 @@ class CalendarAutoMuteService {
     errorNotifier.value = null;
 
     final BusyEvent? event = raw is Map<Object?, Object?> ? BusyEvent.fromMap(raw) : null;
+    // Snapshot the state we're about to mutate so we can detect "natural"
+    // transitions (event start / event end) and emit on the transitions
+    // stream — override-driven changes don't move `_silentModeService.calendarEnabled`
+    // here, so they never trigger an emission.
+    final BusyEvent? previousActiveEvent = activeEventNotifier.value;
+    final bool wasCalendarEnabled = _silentModeService.calendarEnabled;
 
     if (event == null) {
       // No event in flight — clear any override since the event holding it
@@ -171,6 +184,12 @@ class CalendarAutoMuteService {
       _overrideEventId = null;
       activeEventNotifier.value = null;
       _silentModeService.setCalendarEnabled(false);
+
+      if (wasCalendarEnabled && previousActiveEvent != null) {
+        _transitionsController.add(
+          CalendarMuteDeactivated(endedEvent: previousActiveEvent),
+        );
+      }
 
       return;
     }
@@ -187,6 +206,10 @@ class CalendarAutoMuteService {
     _overrideEventId = null;
     activeEventNotifier.value = event;
     _silentModeService.setCalendarEnabled(true);
+
+    if (!wasCalendarEnabled) {
+      _transitionsController.add(CalendarMuteActivated(event: event));
+    }
   }
 
   Future<bool> _requestAccess() async {
@@ -216,6 +239,7 @@ class CalendarAutoMuteService {
   void dispose() {
     _disposed = true;
     _stopPolling();
+    unawaited(_transitionsController.close());
     enabledNotifier.dispose();
     activeEventNotifier.dispose();
     errorNotifier.dispose();

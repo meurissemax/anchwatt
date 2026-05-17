@@ -28,12 +28,19 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(title, time) => "Activé auto : ${title} jusqu\'à ${time}";
 
-  static String m4(version) => "v${version}";
+  static String m4(title, time) =>
+      "Silence pendant ${title}, jusqu\'à ${time}.";
 
-  static String m5(version) =>
+  static String m5(title) => "${title} terminé — Anchwatt reprend du service.";
+
+  static String m6(name) => "${name} vient d\'évoluer.";
+
+  static String m7(version) => "v${version}";
+
+  static String m8(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m6(percent) => "Volume : ${percent} %";
+  static String m9(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -65,8 +72,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "launchAtLoginLabel": MessageLookupByLibrary.simpleMessage(
       "Démarrer à l\'ouverture de session",
     ),
+    "notificationDndActivatedBody": m4,
+    "notificationDndActivatedTitle": MessageLookupByLibrary.simpleMessage(
+      "Mode silencieux activé",
+    ),
+    "notificationDndDeactivatedBody": m5,
+    "notificationDndDeactivatedTitle": MessageLookupByLibrary.simpleMessage(
+      "Mode silencieux désactivé",
+    ),
+    "notificationLevelUpBody": m6,
+    "notificationLevelUpTitle": MessageLookupByLibrary.simpleMessage(
+      "Anchwatt monte en grade !",
+    ),
+    "notificationsDescription": MessageLookupByLibrary.simpleMessage(
+      "macOS t\'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s\'allume/s\'éteint tout seul.",
+    ),
+    "notificationsLabel": MessageLookupByLibrary.simpleMessage("Notifications"),
+    "notificationsPermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.",
+    ),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
-    "optionsAppVersion": m4,
+    "optionsAppVersion": m7,
     "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Bidouiller Anchwatt",
     ),
@@ -82,7 +108,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "À fond la caisse, c\'est presque le week-end.",
     ),
     "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
-    "optionsUpdatesAvailable": m5,
+    "optionsUpdatesAvailable": m8,
     "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
       "Chercher du neuf",
     ),
@@ -112,7 +138,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
       "Hop, Friday",
     ),
-    "systemVolumeTooltip": m6,
+    "systemVolumeTooltip": m9,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

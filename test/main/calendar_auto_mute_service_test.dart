@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/calendar_auto_mute_service.dart';
 import 'package:anchwatt/main/services/silent_mode_service.dart';
@@ -264,6 +266,180 @@ void main() {
     expect(silent.calendarEnabled, false);
     expect(calls.where((c) => c.method == 'currentBusyEvent'), isEmpty);
 
+    service.dispose();
+  });
+
+  test('a natural activation emits CalendarMuteActivated with the event', () async {
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+
+    final List<CalendarMuteTransition> transitions = <CalendarMuteTransition>[];
+    final StreamSubscription<CalendarMuteTransition> sub = service.transitions.listen(transitions.add);
+
+    final DateTime endTime = DateTime.now().add(const Duration(minutes: 30));
+    currentEvent = <Object?, Object?>{
+      'id': 'event-1',
+      'title': 'Daily standup',
+      'endTime': endTime.millisecondsSinceEpoch,
+    };
+
+    await service.setEnabled(true);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(transitions.length, 1);
+    expect(transitions.single, isA<CalendarMuteActivated>());
+    expect((transitions.single as CalendarMuteActivated).event.id, 'event-1');
+    expect((transitions.single as CalendarMuteActivated).event.title, 'Daily standup');
+
+    await sub.cancel();
+    service.dispose();
+  });
+
+  test('a natural deactivation emits CalendarMuteDeactivated with the ended event', () async {
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+
+    final List<CalendarMuteTransition> transitions = <CalendarMuteTransition>[];
+    final StreamSubscription<CalendarMuteTransition> sub = service.transitions.listen(transitions.add);
+
+    currentEvent = <Object?, Object?>{
+      'id': 'event-1',
+      'title': 'Daily standup',
+      'endTime': DateTime.now().add(const Duration(minutes: 30)).millisecondsSinceEpoch,
+    };
+    await service.setEnabled(true);
+    await Future<void>.delayed(Duration.zero);
+
+    transitions.clear();
+
+    // Meeting ends.
+    currentEvent = null;
+    streamHandler.sink?.success(null);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(transitions.length, 1);
+    expect(transitions.single, isA<CalendarMuteDeactivated>());
+    expect((transitions.single as CalendarMuteDeactivated).endedEvent.id, 'event-1');
+
+    await sub.cancel();
+    service.dispose();
+  });
+
+  test('a user override (toggle DND off mid-event) emits no transition', () async {
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+
+    currentEvent = <Object?, Object?>{
+      'id': 'event-1',
+      'title': 'Daily standup',
+      'endTime': DateTime.now().add(const Duration(minutes: 30)).millisecondsSinceEpoch,
+    };
+    await service.setEnabled(true);
+    await Future<void>.delayed(Duration.zero);
+
+    final List<CalendarMuteTransition> transitions = <CalendarMuteTransition>[];
+    final StreamSubscription<CalendarMuteTransition> sub = service.transitions.listen(transitions.add);
+
+    service.captureCurrentEventAsOverride();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(transitions, isEmpty);
+
+    await sub.cancel();
+    service.dispose();
+  });
+
+  test('override expiration (overridden event ends with no new event) emits no transition', () async {
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+
+    currentEvent = <Object?, Object?>{
+      'id': 'event-1',
+      'title': 'Daily standup',
+      'endTime': DateTime.now().add(const Duration(minutes: 30)).millisecondsSinceEpoch,
+    };
+    await service.setEnabled(true);
+    await Future<void>.delayed(Duration.zero);
+
+    service.captureCurrentEventAsOverride();
+    await Future<void>.delayed(Duration.zero);
+
+    final List<CalendarMuteTransition> transitions = <CalendarMuteTransition>[];
+    final StreamSubscription<CalendarMuteTransition> sub = service.transitions.listen(transitions.add);
+
+    // Event ends, no new event.
+    currentEvent = null;
+    streamHandler.sink?.success(null);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(transitions, isEmpty);
+
+    await sub.cancel();
+    service.dispose();
+  });
+
+  test('setEnabled(false) during an active event emits no transition', () async {
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+
+    currentEvent = <Object?, Object?>{
+      'id': 'event-1',
+      'title': 'Daily standup',
+      'endTime': DateTime.now().add(const Duration(minutes: 30)).millisecondsSinceEpoch,
+    };
+    await service.setEnabled(true);
+    await Future<void>.delayed(Duration.zero);
+
+    final List<CalendarMuteTransition> transitions = <CalendarMuteTransition>[];
+    final StreamSubscription<CalendarMuteTransition> sub = service.transitions.listen(transitions.add);
+
+    await service.setEnabled(false);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(transitions, isEmpty);
+
+    await sub.cancel();
+    service.dispose();
+  });
+
+  test('switching from an overridden event to a fresh event emits a natural activation', () async {
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+
+    currentEvent = <Object?, Object?>{
+      'id': 'event-1',
+      'title': 'Daily standup',
+      'endTime': DateTime.now().add(const Duration(minutes: 30)).millisecondsSinceEpoch,
+    };
+    await service.setEnabled(true);
+    await Future<void>.delayed(Duration.zero);
+
+    service.captureCurrentEventAsOverride();
+    await Future<void>.delayed(Duration.zero);
+
+    final List<CalendarMuteTransition> transitions = <CalendarMuteTransition>[];
+    final StreamSubscription<CalendarMuteTransition> sub = service.transitions.listen(transitions.add);
+
+    // The override event ends and a new one begins.
+    currentEvent = <Object?, Object?>{
+      'id': 'event-2',
+      'title': 'Sync',
+      'endTime': DateTime.now().add(const Duration(minutes: 30)).millisecondsSinceEpoch,
+    };
+    streamHandler.sink?.success(null);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(transitions.length, 1);
+    expect(transitions.single, isA<CalendarMuteActivated>());
+    expect((transitions.single as CalendarMuteActivated).event.id, 'event-2');
+
+    await sub.cancel();
     service.dispose();
   });
 }

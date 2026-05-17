@@ -184,6 +184,96 @@ class L10n {
     );
   }
 
+  /// `Silence pendant {title}, jusqu'à {time}.`
+  String notificationDndActivatedBody(String title, String time) {
+    return Intl.message(
+      'Silence pendant $title, jusqu\'à $time.',
+      name: 'notificationDndActivatedBody',
+      desc: '',
+      args: [title, time],
+    );
+  }
+
+  /// `Mode silencieux activé`
+  String get notificationDndActivatedTitle {
+    return Intl.message(
+      'Mode silencieux activé',
+      name: 'notificationDndActivatedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{title} terminé — Anchwatt reprend du service.`
+  String notificationDndDeactivatedBody(String title) {
+    return Intl.message(
+      '$title terminé — Anchwatt reprend du service.',
+      name: 'notificationDndDeactivatedBody',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Mode silencieux désactivé`
+  String get notificationDndDeactivatedTitle {
+    return Intl.message(
+      'Mode silencieux désactivé',
+      name: 'notificationDndDeactivatedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name} vient d'évoluer.`
+  String notificationLevelUpBody(String name) {
+    return Intl.message(
+      '$name vient d\'évoluer.',
+      name: 'notificationLevelUpBody',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Anchwatt monte en grade !`
+  String get notificationLevelUpTitle {
+    return Intl.message(
+      'Anchwatt monte en grade !',
+      name: 'notificationLevelUpTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `macOS t'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s'allume/s'éteint tout seul.`
+  String get notificationsDescription {
+    return Intl.message(
+      'macOS t\'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s\'allume/s\'éteint tout seul.',
+      name: 'notificationsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notifications`
+  String get notificationsLabel {
+    return Intl.message(
+      'Notifications',
+      name: 'notificationsLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.`
+  String get notificationsPermissionDenied {
+    return Intl.message(
+      'Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.',
+      name: 'notificationsPermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Ohmassacre`
   String get ohmassacre {
     return Intl.message('Ohmassacre', name: 'ohmassacre', desc: '', args: []);

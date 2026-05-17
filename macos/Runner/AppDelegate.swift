@@ -14,6 +14,7 @@ class AppDelegate: FlutterAppDelegate {
   var launchAtLoginController: LaunchAtLoginController?
   var calendarChannel: CalendarChannel?
   var calendarChangesMonitor: CalendarChangesMonitor?
+  var windowStateController: WindowStateController?
   private var launchedAsLoginItem = false
 
   override func applicationWillFinishLaunching(_ notification: Notification) {
@@ -51,6 +52,11 @@ final class BackgroundModeController: NSObject, NSWindowDelegate {
   private weak var window: NSWindow?
   private var statusItem: NSStatusItem?
 
+  // Mirrors whether the main window is currently ordered-out into the status
+  // bar. Exposed via WindowStateController so Dart can gate level-up
+  // notifications on "window not visible right now".
+  private(set) var isHidden: Bool = false
+
   init(window: NSWindow) {
     self.window = window
     super.init()
@@ -62,6 +68,7 @@ final class BackgroundModeController: NSObject, NSWindowDelegate {
     window?.orderOut(nil)
     NSApp.setActivationPolicy(.accessory)
     statusItem?.isVisible = true
+    isHidden = true
   }
 
   func exitBackgroundMode() {
@@ -71,6 +78,7 @@ final class BackgroundModeController: NSObject, NSWindowDelegate {
     // explicit activation call after the policy switch.
     NSApp.activate(ignoringOtherApps: true)
     window?.makeKeyAndOrderFront(nil)
+    isHidden = false
   }
 
   func windowShouldClose(_ sender: NSWindow) -> Bool {

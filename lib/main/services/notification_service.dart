@@ -1,0 +1,296 @@
+import 'package:anchwatt/l10n/outputs/l10n.dart';
+import 'package:anchwatt/locator.dart';
+import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/storages/notification_storage.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+// Thin seam over `flutter_local_notifications` so tests can plug a fake
+// implementation without mocking the plugin's internal pigeon channels. The
+// default implementation `_FlutterLocalNotificationsPlatform` below forwards
+// to the real plugin; production code never constructs the seam directly.
+@visibleForTesting
+abstract class NotificationPlatform {
+  Future<void> initialize({
+    required void Function() onTap,
+  });
+
+  Future<bool> requestPermission();
+
+  Future<bool> hasPermission();
+
+  Future<void> show({
+    required int id,
+    required String title,
+    required String body,
+  });
+}
+
+class NotificationService {
+  /* Static variables */
+
+  // Stable IDs — re-using the same int makes a new notification of the same
+  // kind replace the previous one in the macOS Notification Center, which is
+  // the desired behaviour for back-to-back level-ups or DND transitions.
+  static const int _idLevelUp = 1;
+  static const int _idCalendarDndActivated = 2;
+  static const int _idCalendarDndDeactivated = 3;
+
+  static const String _systemSettingsUrl =
+      'x-apple.systempreferences:com.apple.preference.security?Privacy_Notifications';
+
+  /* Variables */
+
+  final NotificationPlatform _platform;
+  final NotificationStorage _storage;
+  final VoidCallback? _onNotificationTap;
+
+  final ValueNotifier<bool> enabledNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<NotificationServiceError?> errorNotifier = ValueNotifier<NotificationServiceError?>(null);
+
+  bool _disposed = false;
+
+  /* Constructor */
+
+  NotificationService({
+    NotificationPlatform? platform,
+    NotificationStorage? storage,
+    VoidCallback? onNotificationTap,
+  }) : _platform = platform ?? _FlutterLocalNotificationsPlatform(),
+       _storage = storage ?? NotificationStorage(),
+       _onNotificationTap = onNotificationTap;
+
+  /* Getters */
+
+  bool get isEnabled => enabledNotifier.value;
+
+  /* Methods */
+
+  Future<void> init() async {
+    await _storage.init();
+
+    try {
+      await _platform.initialize(onTap: _onTap);
+    } on Object catch (error) {
+      debugPrint('NotificationService: initialize failed: $error');
+      errorNotifier.value = NotificationServiceError.initFailed;
+
+      return;
+    }
+
+    final bool persisted = _storage.readEnabled();
+    if (!persisted) {
+      return;
+    }
+
+    // The user authorized notifications in a previous session but may have
+    // revoked the permission from System Settings since — verify before
+    // claiming the toggle is on so the UI never silently keeps a stale flag.
+    final bool authorized = await _platform.hasPermission();
+    if (!authorized) {
+      await _storage.writeEnabled(false);
+      errorNotifier.value = NotificationServiceError.permissionDenied;
+
+      return;
+    }
+
+    enabledNotifier.value = true;
+  }
+
+  Future<void> setEnabled(bool value) async {
+    if (_disposed) {
+      return;
+    }
+
+    if (value == enabledNotifier.value) {
+      return;
+    }
+
+    if (value) {
+      final bool granted = await _platform.requestPermission();
+      if (!granted) {
+        errorNotifier.value = NotificationServiceError.permissionDenied;
+
+        return;
+      }
+
+      errorNotifier.value = null;
+      enabledNotifier.value = true;
+      await _storage.writeEnabled(true);
+    } else {
+      enabledNotifier.value = false;
+      errorNotifier.value = null;
+      await _storage.writeEnabled(false);
+    }
+  }
+
+  Future<void> openSystemSettings() async {
+    try {
+      await launchUrl(Uri.parse(_systemSettingsUrl));
+    } on Object catch (error) {
+      debugPrint('NotificationService: openSystemSettings failed: $error');
+    }
+  }
+
+  Future<void> showLevelUp(Evolution stage) async {
+    if (!await _ensureCanFire()) {
+      return;
+    }
+
+    final L10n l10n = locator<L10n>();
+    await _safeShow(
+      id: _idLevelUp,
+      title: l10n.notificationLevelUpTitle,
+      body: l10n.notificationLevelUpBody(stage.label(l10n)),
+    );
+  }
+
+  Future<void> showCalendarDndActivated(String eventTitle, DateTime endTime) async {
+    if (!await _ensureCanFire()) {
+      return;
+    }
+
+    final L10n l10n = locator<L10n>();
+    await _safeShow(
+      id: _idCalendarDndActivated,
+      title: l10n.notificationDndActivatedTitle,
+      body: l10n.notificationDndActivatedBody(eventTitle, _formatTime(endTime)),
+    );
+  }
+
+  Future<void> showCalendarDndDeactivated(String eventTitle) async {
+    if (!await _ensureCanFire()) {
+      return;
+    }
+
+    final L10n l10n = locator<L10n>();
+    await _safeShow(
+      id: _idCalendarDndDeactivated,
+      title: l10n.notificationDndDeactivatedTitle,
+      body: l10n.notificationDndDeactivatedBody(eventTitle),
+    );
+  }
+
+  // Returns true iff the service is currently authorized to fire. If the
+  // permission was revoked from System Settings while the master flag stayed
+  // on, force the flag off and surface the error so the UI keeps in sync.
+  Future<bool> _ensureCanFire() async {
+    if (_disposed || !enabledNotifier.value) {
+      return false;
+    }
+
+    final bool authorized = await _platform.hasPermission();
+    if (!authorized) {
+      enabledNotifier.value = false;
+      errorNotifier.value = NotificationServiceError.permissionDenied;
+      await _storage.writeEnabled(false);
+
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<void> _safeShow({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    try {
+      await _platform.show(id: id, title: title, body: body);
+    } on Object catch (error) {
+      debugPrint('NotificationService: show(id=$id) failed: $error');
+    }
+  }
+
+  void _onTap() {
+    _onNotificationTap?.call();
+  }
+
+  static String _formatTime(DateTime time) {
+    final String hh = time.hour.toString().padLeft(2, '0');
+    final String mm = time.minute.toString().padLeft(2, '0');
+
+    return '$hh:$mm';
+  }
+
+  void dispose() {
+    _disposed = true;
+    enabledNotifier.dispose();
+    errorNotifier.dispose();
+  }
+}
+
+class _FlutterLocalNotificationsPlatform implements NotificationPlatform {
+  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+
+  @override
+  Future<void> initialize({
+    required void Function() onTap,
+  }) async {
+    await _plugin.initialize(
+      const InitializationSettings(
+        macOS: DarwinInitializationSettings(
+          // Permission prompts are routed through the service so the user sees
+          // them only when they opt in, not at every cold start.
+          requestAlertPermission: false,
+          requestSoundPermission: false,
+          requestBadgePermission: false,
+        ),
+      ),
+      onDidReceiveNotificationResponse: (_) => onTap(),
+    );
+  }
+
+  @override
+  Future<bool> requestPermission() async {
+    try {
+      final bool? granted = await _plugin
+          .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            sound: true,
+          );
+
+      return granted ?? false;
+    } on Object catch (error) {
+      debugPrint('NotificationService: requestPermissions failed: $error');
+
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> hasPermission() async {
+    try {
+      final NotificationsEnabledOptions? options = await _plugin
+          .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
+          ?.checkPermissions();
+
+      // Alert is the minimum we need to display the notification body to the
+      // user — sound is nice-to-have but not blocking.
+      return options?.isAlertEnabled ?? false;
+    } on Object catch (error) {
+      debugPrint('NotificationService: checkPermissions failed: $error');
+
+      return false;
+    }
+  }
+
+  @override
+  Future<void> show({
+    required int id,
+    required String title,
+    required String body,
+  }) {
+    return _plugin.show(
+      id,
+      title,
+      body,
+      const NotificationDetails(
+        macOS: DarwinNotificationDetails(),
+      ),
+    );
+  }
+}

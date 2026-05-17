@@ -283,6 +283,36 @@ enum CalendarAutoMuteError {
   fetchFailed,
 }
 
+// Emitted by `CalendarAutoMuteService` only on transitions caused by the real
+// timing of a calendar event (event start, event end) — never on user-driven
+// transitions (the user toggling DND off mid-event, or that override expiring).
+// The distinction matters for the notification trigger: we only fire a notif
+// for transitions the user did not initiate themselves.
+sealed class CalendarMuteTransition {
+  const CalendarMuteTransition();
+}
+
+class CalendarMuteActivated extends CalendarMuteTransition {
+  final BusyEvent event;
+
+  const CalendarMuteActivated({
+    required this.event,
+  });
+}
+
+class CalendarMuteDeactivated extends CalendarMuteTransition {
+  final BusyEvent endedEvent;
+
+  const CalendarMuteDeactivated({
+    required this.endedEvent,
+  });
+}
+
+enum NotificationServiceError {
+  permissionDenied,
+  initFailed,
+}
+
 @immutable
 class SystemVolumeState {
   final double volume;

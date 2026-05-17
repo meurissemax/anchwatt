@@ -33,6 +33,8 @@ class OptionsViewModel extends ChangeNotifier {
     _parent.autoMuteEnabledNotifier.addListener(_onAutoMuteChanged);
     _parent.autoMuteActiveEventNotifier.addListener(_onAutoMuteChanged);
     _parent.autoMuteErrorNotifier.addListener(_onAutoMuteChanged);
+    _parent.notificationsEnabledNotifier.addListener(_onNotificationsChanged);
+    _parent.notificationsErrorNotifier.addListener(_onNotificationsChanged);
     _boot();
   }
 
@@ -45,6 +47,8 @@ class OptionsViewModel extends ChangeNotifier {
   bool get autoMuteEnabled => _parent.autoMuteEnabledNotifier.value;
   BusyEvent? get autoMuteActiveEvent => _parent.autoMuteActiveEventNotifier.value;
   CalendarAutoMuteError? get autoMuteError => _parent.autoMuteErrorNotifier.value;
+  bool get notificationsEnabled => _parent.notificationsEnabledNotifier.value;
+  NotificationServiceError? get notificationsError => _parent.notificationsErrorNotifier.value;
   OptionsLaunchAtLoginState get launchAtLoginState => _launchAtLoginState;
   OptionsUpdateCheck get checkState => _checkState;
   UpdateAvailable? get availableUpdate => _availableUpdate;
@@ -115,6 +119,14 @@ class OptionsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _onNotificationsChanged() {
+    if (_disposed) {
+      return;
+    }
+
+    notifyListeners();
+  }
+
   Future<void> setSoundMode(SoundMode mode) async {
     if (_parent.soundModeNotifier.value == mode) {
       return;
@@ -144,6 +156,20 @@ class OptionsViewModel extends ChangeNotifier {
   }
 
   Future<void> openCalendarSystemSettings() => _parent.openCalendarSystemSettings();
+
+  Future<void> setNotifications(bool value) async {
+    if (_parent.notificationsEnabledNotifier.value == value) {
+      return;
+    }
+
+    try {
+      await _parent.setNotificationsEnabled(value);
+    } on Object catch (error) {
+      debugPrint('OptionsViewModel: setNotifications failed: $error');
+    }
+  }
+
+  Future<void> openNotificationsSystemSettings() => _parent.openNotificationsSystemSettings();
 
   Future<void> setLaunchAtLogin(bool value) async {
     if (_parent.launchAtLoginNotifier.value == value) {
@@ -241,6 +267,8 @@ class OptionsViewModel extends ChangeNotifier {
     _parent.autoMuteEnabledNotifier.removeListener(_onAutoMuteChanged);
     _parent.autoMuteActiveEventNotifier.removeListener(_onAutoMuteChanged);
     _parent.autoMuteErrorNotifier.removeListener(_onAutoMuteChanged);
+    _parent.notificationsEnabledNotifier.removeListener(_onNotificationsChanged);
+    _parent.notificationsErrorNotifier.removeListener(_onNotificationsChanged);
 
     super.dispose();
   }

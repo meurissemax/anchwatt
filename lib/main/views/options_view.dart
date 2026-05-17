@@ -79,6 +79,10 @@ class OptionsView extends StatelessWidget {
                       SizedBox(
                         height: _sectionSpacing,
                       ),
+                      _NotificationsOption(),
+                      SizedBox(
+                        height: _sectionSpacing,
+                      ),
                       _LaunchAtLoginOption(),
                       SizedBox(
                         height: _sectionSpacing,
@@ -493,6 +497,98 @@ class _AutoMuteOption extends StatelessWidget {
                           iconData: Icons.open_in_new,
                           label: l10n.autoMuteOpenSystemSettings,
                           onPressed: () => context.read<OptionsViewModel>().openCalendarSystemSettings(),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NotificationsOption extends StatelessWidget {
+  static const Duration _errorAnimationDuration = Duration(milliseconds: 200);
+  static const EdgeInsets _errorPadding = EdgeInsets.only(top: 6);
+
+  const _NotificationsOption();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Selector<OptionsViewModel, bool>(
+          selector: (_, vm) => vm.notificationsEnabled,
+          builder: (_, enabled, _) => Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.notificationsLabel,
+                      style: textOptionsSectionLabel,
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      l10n.notificationsDescription,
+                      style: textOptionsSectionDescription,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: OptionsView._itemSpacing,
+              ),
+              Transform.scale(
+                scale: 0.75,
+                child: Switch(
+                  value: enabled,
+                  activeThumbColor: Colors.white,
+                  activeTrackColor: colorWarning,
+                  inactiveThumbColor: colorMutedDark,
+                  inactiveTrackColor: colorNeutralLight,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  trackOutlineColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) => states.contains(WidgetState.selected) ? colorWarning : colorNeutralLight,
+                  ),
+                  onChanged: (value) => context.read<OptionsViewModel>().setNotifications(value),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Selector<OptionsViewModel, NotificationServiceError?>(
+          selector: (_, vm) => vm.notificationsError,
+          builder: (_, error, _) => AnimatedSwitcher(
+            duration: _errorAnimationDuration,
+            child: error == null
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: _errorPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.notificationsPermissionDenied,
+                          style: textOptionsSectionDescription.copyWith(
+                            color: colorError,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        _OptionButton(
+                          iconData: Icons.open_in_new,
+                          label: l10n.autoMuteOpenSystemSettings,
+                          onPressed: () => context.read<OptionsViewModel>().openNotificationsSystemSettings(),
                         ),
                       ],
                     ),

@@ -10,6 +10,30 @@
             }
         }
     },
+    "@notificationDndActivatedBody": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "@notificationDndDeactivatedBody": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "@notificationLevelUpBody": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
     "@anchwattEvolutionLevel": {
         "placeholders": {
             "level": {
@@ -72,6 +96,15 @@
     "launchAtLoginDescription": "Anchwatt apparaît dans la barre des menus dès l'ouverture de session, fenêtre masquée. Clique sur l'icône pour la rouvrir.",
     "launchAtLoginError": "Raté, macOS a dit non",
     "launchAtLoginLabel": "Démarrer à l'ouverture de session",
+    "notificationDndActivatedBody": "Silence pendant {title}, jusqu'à {time}.",
+    "notificationDndActivatedTitle": "Mode silencieux activé",
+    "notificationDndDeactivatedBody": "{title} terminé — Anchwatt reprend du service.",
+    "notificationDndDeactivatedTitle": "Mode silencieux désactivé",
+    "notificationLevelUpBody": "{name} vient d'évoluer.",
+    "notificationLevelUpTitle": "Anchwatt monte en grade !",
+    "notificationsDescription": "macOS t'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s'allume/s'éteint tout seul.",
+    "notificationsLabel": "Notifications",
+    "notificationsPermissionDenied": "Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.",
     "ohmassacre": "Ohmassacre",
     "optionsAppVersion": "v{version}",
     "optionsButtonTooltip": "Bidouiller Anchwatt",

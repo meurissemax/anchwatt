@@ -7,12 +7,14 @@ import 'package:anchwatt/main/services/charger_event_service.dart';
 import 'package:anchwatt/main/services/external_display_event_service.dart';
 import 'package:anchwatt/main/services/headphones_event_service.dart';
 import 'package:anchwatt/main/services/launch_at_login_service.dart';
+import 'package:anchwatt/main/services/notification_service.dart';
 import 'package:anchwatt/main/services/playback_volume_sampler.dart';
 import 'package:anchwatt/main/services/silent_mode_service.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
 import 'package:anchwatt/main/services/system_volume_service.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/services/usb_event_service.dart';
+import 'package:anchwatt/main/services/window_state_service.dart';
 import 'package:anchwatt/main/storages/anchwatt_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,6 +36,10 @@ class AnchwattViewModel extends ChangeNotifier {
   final LaunchAtLoginService _launchAtLoginService = LaunchAtLoginService();
   final SilentModeService _silentModeService = SilentModeService();
   late final CalendarAutoMuteService _calendarAutoMuteService = CalendarAutoMuteService(_silentModeService);
+  final WindowStateService _windowStateService = WindowStateService();
+  late final NotificationService _notificationService = NotificationService(
+    onNotificationTap: () => unawaited(_windowStateService.showWindow()),
+  );
   final SoundService _soundService = SoundService();
   final UpdateService _updateService = UpdateService();
   final SystemVolumeService _systemVolumeService = SystemVolumeService();
@@ -43,6 +49,7 @@ class AnchwattViewModel extends ChangeNotifier {
   StreamSubscription<void>? _externalDisplaySubscription;
   StreamSubscription<void>? _headphonesSubscription;
   StreamSubscription<SystemVolumeState>? _systemVolumeSubscription;
+  StreamSubscription<CalendarMuteTransition>? _calendarTransitionSubscription;
   final StreamController<int> _xpGainController = StreamController<int>.broadcast();
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
@@ -74,6 +81,8 @@ class AnchwattViewModel extends ChangeNotifier {
   ValueNotifier<bool> get autoMuteEnabledNotifier => _calendarAutoMuteService.enabledNotifier;
   ValueNotifier<BusyEvent?> get autoMuteActiveEventNotifier => _calendarAutoMuteService.activeEventNotifier;
   ValueNotifier<CalendarAutoMuteError?> get autoMuteErrorNotifier => _calendarAutoMuteService.errorNotifier;
+  ValueNotifier<bool> get notificationsEnabledNotifier => _notificationService.enabledNotifier;
+  ValueNotifier<NotificationServiceError?> get notificationsErrorNotifier => _notificationService.errorNotifier;
   Stream<int> get xpGainStream => _xpGainController.stream;
 
   /* Methods */
@@ -98,6 +107,10 @@ class AnchwattViewModel extends ChangeNotifier {
   Future<void> setAutoMuteEnabled(bool value) => _calendarAutoMuteService.setEnabled(value);
 
   Future<void> openCalendarSystemSettings() => _calendarAutoMuteService.openSystemSettings();
+
+  Future<void> setNotificationsEnabled(bool value) => _notificationService.setEnabled(value);
+
+  Future<void> openNotificationsSystemSettings() => _notificationService.openSystemSettings();
 
   Future<void> refreshLaunchAtLogin() => _launchAtLoginService.refresh();
 
@@ -183,6 +196,40 @@ class AnchwattViewModel extends ChangeNotifier {
     }
   }
 
+  void _onCalendarTransition(CalendarMuteTransition transition) {
+    switch (transition) {
+      case CalendarMuteActivated(:final event):
+        unawaited(_notificationService.showCalendarDndActivated(event.title, event.endTime));
+
+      case CalendarMuteDeactivated(:final endedEvent):
+        unawaited(_notificationService.showCalendarDndDeactivated(endedEvent.title));
+    }
+  }
+
+  Future<void> _maybeFireLevelUpNotification(Evolution stage) async {
+    final bool windowHidden = await _windowStateService.isWindowHidden();
+    if (!shouldNotifyLevelUp(
+      notificationsEnabled: _notificationService.isEnabled,
+      silentModeEnabled: _silentModeService.isEnabled,
+      windowHidden: windowHidden,
+    )) {
+      return;
+    }
+
+    await _notificationService.showLevelUp(stage);
+  }
+
+  // Pure decision for the level-up notification trigger, kept as a static
+  // helper so the truth table can be unit-tested without spinning up the full
+  // ViewModel and its underlying native channels.
+  @visibleForTesting
+  static bool shouldNotifyLevelUp({
+    required bool notificationsEnabled,
+    required bool silentModeEnabled,
+    required bool windowHidden,
+  }) =>
+      notificationsEnabled && !silentModeEnabled && windowHidden;
+
   // Single coalescence point for every native system event (USB, charger,
   // external display, headphones). One physical action — e.g. plugging in a
   // USB-C dock — can fan out into several events in quick succession; we let
@@ -248,8 +295,15 @@ class AnchwattViewModel extends ChangeNotifier {
 
     try {
       await _calendarAutoMuteService.init();
+      _calendarTransitionSubscription = _calendarAutoMuteService.transitions.listen(_onCalendarTransition);
     } on Object catch (error) {
       debugPrint('AnchwattViewModel: CalendarAutoMuteService init failed: $error');
+    }
+
+    try {
+      await _notificationService.init();
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: NotificationService init failed: $error');
     }
 
     try {
@@ -360,8 +414,14 @@ class AnchwattViewModel extends ChangeNotifier {
 
       await Future<void>.delayed(_levelUpDwell);
 
+      final Evolution previousEvolution = Evolution.fromLevel(_level);
       _level += 1;
       _xp = carry;
+      final Evolution newEvolution = Evolution.fromLevel(_level);
+
+      if (newEvolution != previousEvolution) {
+        unawaited(_maybeFireLevelUpNotification(newEvolution));
+      }
     }
 
     if (_level >= AnchwattSettings.levelMax) {
@@ -386,8 +446,10 @@ class AnchwattViewModel extends ChangeNotifier {
     _headphonesEventService.stop();
     _systemVolumeSubscription?.cancel();
     _systemVolumeService.stop();
+    _calendarTransitionSubscription?.cancel();
     _silentModeService.enabledNotifier.removeListener(_onSilentModeChanged);
     _calendarAutoMuteService.dispose();
+    _notificationService.dispose();
     _silentModeService.dispose();
     _launchAtLoginService.dispose();
     _soundService.dispose();

@@ -41,6 +41,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # A cross platform plugin for displaying and scheduling local notifications.
+  flutter_local_notifications: ^19.0.0
+
   # Flutter localizations library, from the Flutter SDK.
   flutter_localizations:
     sdk: flutter
