@@ -70,13 +70,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "optionsUpdatesUpToDate": MessageLookupByLibrary.simpleMessage(
       "Tout est à jour, bravo !",
     ),
+    "silentModeDescription": MessageLookupByLibrary.simpleMessage(
+      "Coupe le sifflet à Anchwatt quand t\'es en réunion. Aucun son, aucun XP gagné non plus.",
+    ),
+    "silentModeLabel": MessageLookupByLibrary.simpleMessage("Ne pas déranger"),
+    "silentModeTooltipDisabled": MessageLookupByLibrary.simpleMessage(
+      "Chut, on bosse",
+    ),
+    "silentModeTooltipEnabled": MessageLookupByLibrary.simpleMessage(
+      "La récré reprend",
+    ),
     "soundModeCorporate": MessageLookupByLibrary.simpleMessage("Corporate"),
     "soundModeFriday": MessageLookupByLibrary.simpleMessage("Friday"),
     "soundModeSwitchToCorporate": MessageLookupByLibrary.simpleMessage(
-      "Hop, en mode Corporate",
+      "Hop, Corporate",
     ),
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
-      "Hop, en mode Friday",
+      "Hop, Friday",
     ),
     "systemVolumeTooltip": m5,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(

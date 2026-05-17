@@ -6,6 +6,7 @@ import 'package:anchwatt/main/services/charger_event_service.dart';
 import 'package:anchwatt/main/services/external_display_event_service.dart';
 import 'package:anchwatt/main/services/headphones_event_service.dart';
 import 'package:anchwatt/main/services/playback_volume_sampler.dart';
+import 'package:anchwatt/main/services/silent_mode_service.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
 import 'package:anchwatt/main/services/system_volume_service.dart';
 import 'package:anchwatt/main/services/update_service.dart';
@@ -28,6 +29,7 @@ class AnchwattViewModel extends ChangeNotifier {
   final ChargerEventService _chargerEventService = ChargerEventService();
   final ExternalDisplayEventService _externalDisplayEventService = ExternalDisplayEventService();
   final HeadphonesEventService _headphonesEventService = HeadphonesEventService();
+  final SilentModeService _silentModeService = SilentModeService();
   final SoundService _soundService = SoundService();
   final UpdateService _updateService = UpdateService();
   final SystemVolumeService _systemVolumeService = SystemVolumeService();
@@ -63,11 +65,14 @@ class AnchwattViewModel extends ChangeNotifier {
   UpdateStatus get updateStatus => _updateStatus;
   SystemVolumeState get systemVolumeState => _systemVolumeState;
   ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
+  ValueNotifier<bool> get silentModeNotifier => _silentModeService.enabledNotifier;
   Stream<int> get xpGainStream => _xpGainController.stream;
 
   /* Methods */
 
   Future<void> toggleSoundMode() => _soundService.toggleMode();
+
+  Future<void> toggleSilentMode() => _silentModeService.toggle();
 
   Future<void> addXp(int amount) {
     final Future<void> next = (_pending ?? Future<void>.value()).then((_) => _process(amount));
@@ -92,6 +97,12 @@ class AnchwattViewModel extends ChangeNotifier {
   );
 
   void onPetTick() {
+    // Gate before touching the cooldown so a flurry of pets under DND does
+    // not silently push the next cry's cooldown forward.
+    if (_silentModeService.isEnabled) {
+      return;
+    }
+
     final DateTime now = DateTime.now();
 
     if (_lastPetCryAt != null && now.difference(_lastPetCryAt!) < _nextPetCryCooldown) {
@@ -137,6 +148,12 @@ class AnchwattViewModel extends ChangeNotifier {
   Duration _rollPetCooldown({required int min, required int max}) =>
       Duration(milliseconds: min * 1000 + _petRandom.nextInt((max - min) * 1000 + 1));
 
+  void _onSilentModeChanged() {
+    if (_silentModeService.isEnabled) {
+      unawaited(_soundService.stopAll());
+    }
+  }
+
   // Single coalescence point for every native system event (USB, charger,
   // external display, headphones). One physical action — e.g. plugging in a
   // USB-C dock — can fan out into several events in quick succession; we let
@@ -144,6 +161,12 @@ class AnchwattViewModel extends ChangeNotifier {
   // rest. Per-channel debounces (the 1500ms USB iPhone-handshake one) still
   // run upstream of this method.
   Future<void> _handleSystemEvent(AnchwattEventType type) async {
+    // Gate before the coalesce-window update so a stream of events during
+    // DND does not poison the window the moment DND turns off.
+    if (_silentModeService.isEnabled) {
+      return;
+    }
+
     final DateTime now = DateTime.now();
     final DateTime? last = _lastSystemEventAt;
     if (last != null && now.difference(last) < AnchwattSettings.systemEventCoalesceWindow) {
@@ -186,6 +209,13 @@ class AnchwattViewModel extends ChangeNotifier {
     _level = initial.level;
     _xp = initial.xp;
     notifyListeners();
+
+    try {
+      await _silentModeService.init();
+      _silentModeService.enabledNotifier.addListener(_onSilentModeChanged);
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: SilentModeService init failed: $error');
+    }
 
     try {
       await _soundService.init();
@@ -315,6 +345,8 @@ class AnchwattViewModel extends ChangeNotifier {
     _headphonesEventService.stop();
     _systemVolumeSubscription?.cancel();
     _systemVolumeService.stop();
+    _silentModeService.enabledNotifier.removeListener(_onSilentModeChanged);
+    _silentModeService.dispose();
     _soundService.dispose();
     _xpGainController.close();
     super.dispose();

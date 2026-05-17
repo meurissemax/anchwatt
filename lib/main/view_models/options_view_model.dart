@@ -27,6 +27,7 @@ class OptionsViewModel extends ChangeNotifier {
 
   OptionsViewModel(this._parent) {
     _parent.soundModeNotifier.addListener(_onSoundModeChanged);
+    _parent.silentModeNotifier.addListener(_onSilentModeChanged);
     _boot();
   }
 
@@ -34,6 +35,7 @@ class OptionsViewModel extends ChangeNotifier {
 
   String? get version => _version;
   SoundMode get soundMode => _parent.soundModeNotifier.value;
+  bool get silentModeEnabled => _parent.silentModeNotifier.value;
   OptionsUpdateCheck get checkState => _checkState;
   UpdateAvailable? get availableUpdate => _availableUpdate;
 
@@ -75,12 +77,28 @@ class OptionsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _onSilentModeChanged() {
+    if (_disposed) {
+      return;
+    }
+
+    notifyListeners();
+  }
+
   Future<void> setSoundMode(SoundMode mode) async {
     if (_parent.soundModeNotifier.value == mode) {
       return;
     }
 
     await _parent.toggleSoundMode();
+  }
+
+  Future<void> setSilentMode(bool value) async {
+    if (_parent.silentModeNotifier.value == value) {
+      return;
+    }
+
+    await _parent.toggleSilentMode();
   }
 
   Future<void> checkForUpdatesNow() async {
@@ -149,6 +167,7 @@ class OptionsViewModel extends ChangeNotifier {
     _disposed = true;
     _upToDateDismissTimer?.cancel();
     _parent.soundModeNotifier.removeListener(_onSoundModeChanged);
+    _parent.silentModeNotifier.removeListener(_onSilentModeChanged);
 
     super.dispose();
   }

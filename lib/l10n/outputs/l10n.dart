@@ -249,6 +249,46 @@ class L10n {
     );
   }
 
+  /// `Coupe le sifflet à Anchwatt quand t'es en réunion. Aucun son, aucun XP gagné non plus.`
+  String get silentModeDescription {
+    return Intl.message(
+      'Coupe le sifflet à Anchwatt quand t\'es en réunion. Aucun son, aucun XP gagné non plus.',
+      name: 'silentModeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ne pas déranger`
+  String get silentModeLabel {
+    return Intl.message(
+      'Ne pas déranger',
+      name: 'silentModeLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chut, on bosse`
+  String get silentModeTooltipDisabled {
+    return Intl.message(
+      'Chut, on bosse',
+      name: 'silentModeTooltipDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `La récré reprend`
+  String get silentModeTooltipEnabled {
+    return Intl.message(
+      'La récré reprend',
+      name: 'silentModeTooltipEnabled',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Corporate`
   String get soundModeCorporate {
     return Intl.message(
@@ -264,20 +304,20 @@ class L10n {
     return Intl.message('Friday', name: 'soundModeFriday', desc: '', args: []);
   }
 
-  /// `Hop, en mode Corporate`
+  /// `Hop, Corporate`
   String get soundModeSwitchToCorporate {
     return Intl.message(
-      'Hop, en mode Corporate',
+      'Hop, Corporate',
       name: 'soundModeSwitchToCorporate',
       desc: '',
       args: [],
     );
   }
 
-  /// `Hop, en mode Friday`
+  /// `Hop, Friday`
   String get soundModeSwitchToFriday {
     return Intl.message(
-      'Hop, en mode Friday',
+      'Hop, Friday',
       name: 'soundModeSwitchToFriday',
       desc: '',
       args: [],

@@ -18,8 +18,8 @@ class OptionsView extends StatelessWidget {
     vertical: 28,
   );
   static const EdgeInsets _bodyPadding = EdgeInsets.fromLTRB(20, 44, 20, 20);
-  static const double _spriteSize = 72;
-  static const double _sectionSpacing = 20;
+  static const double _spriteSize = 56;
+  static const double _sectionSpacing = 24;
   static const double _itemSpacing = 10;
 
   const OptionsView._();
@@ -67,6 +67,10 @@ class OptionsView extends StatelessWidget {
                         height: _sectionSpacing,
                       ),
                       _ModeOption(),
+                      SizedBox(
+                        height: _sectionSpacing,
+                      ),
+                      _SilentModeOption(),
                       SizedBox(
                         height: _sectionSpacing,
                       ),
@@ -124,8 +128,9 @@ class _CloseButton extends StatelessWidget {
 class _AboutSection extends StatelessWidget {
   static const EdgeInsets _padding = EdgeInsets.symmetric(
     horizontal: 20,
-    vertical: 18,
+    vertical: 12,
   );
+  static const double _spriteToNameSpacing = 6;
 
   const _AboutSection();
 
@@ -152,7 +157,7 @@ class _AboutSection extends StatelessWidget {
                 filterQuality: FilterQuality.none,
               ),
               const SizedBox(
-                height: OptionsView._itemSpacing,
+                height: _spriteToNameSpacing,
               ),
               Text(
                 l10n.anchwatt,
@@ -301,6 +306,60 @@ class _ModeTogglePill extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SilentModeOption extends StatelessWidget {
+  const _SilentModeOption();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Selector<OptionsViewModel, bool>(
+      selector: (_, vm) => vm.silentModeEnabled,
+      builder: (_, enabled, _) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.silentModeLabel,
+                  style: textOptionsSectionLabel,
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  l10n.silentModeDescription,
+                  style: textOptionsSectionDescription,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: OptionsView._itemSpacing,
+          ),
+          Transform.scale(
+            scale: 0.75,
+            child: Switch(
+              value: enabled,
+              activeThumbColor: Colors.white,
+              activeTrackColor: colorWarning,
+              inactiveThumbColor: colorMutedDark,
+              inactiveTrackColor: colorNeutralLight,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              trackOutlineColor: WidgetStateProperty.resolveWith<Color>(
+                (states) => states.contains(WidgetState.selected) ? colorWarning : colorNeutralLight,
+              ),
+              onChanged: (value) => context.read<OptionsViewModel>().setSilentMode(value),
+            ),
+          ),
+        ],
       ),
     );
   }

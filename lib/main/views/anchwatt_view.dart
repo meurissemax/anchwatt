@@ -53,6 +53,7 @@ class _AnchwattViewBody extends StatelessWidget {
                 children: [
                   SystemVolumePill(),
                   SoundModePill(),
+                  _SilentModeButton(),
                   _OptionsButton(),
                 ],
               ),
@@ -279,6 +280,49 @@ class _DebugAddXpButton extends StatelessWidget {
         textStyle: textDebugButton,
       ),
       child: Text(l10n.anchwattDebugAddXp),
+    );
+  }
+}
+
+class _SilentModeButton extends StatelessWidget {
+  static const double _iconSize = 14;
+  static const Duration _animationDuration = Duration(milliseconds: 150);
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    horizontal: 6,
+    vertical: 6,
+  );
+
+  const _SilentModeButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+    final ValueNotifier<bool> notifier = context.read<AnchwattViewModel>().silentModeNotifier;
+
+    return ValueListenableBuilder<bool>(
+      valueListenable: notifier,
+      builder: (_, enabled, _) => MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Tooltip(
+          message: enabled ? l10n.silentModeTooltipEnabled : l10n.silentModeTooltipDisabled,
+          child: GestureDetector(
+            onTap: () => context.read<AnchwattViewModel>().toggleSilentMode(),
+            child: AnimatedContainer(
+              duration: _animationDuration,
+              decoration: BoxDecoration(
+                color: enabled ? colorWarning : colorNeutralLight,
+                borderRadius: borderRadiusOptionsButton,
+              ),
+              padding: _padding,
+              child: Icon(
+                Icons.bedtime,
+                size: _iconSize,
+                color: enabled ? Colors.white : colorMutedDark,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

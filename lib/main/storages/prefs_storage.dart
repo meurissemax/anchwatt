@@ -15,6 +15,20 @@ class PrefsStorage {
     prefs = await SharedPreferences.getInstance();
   }
 
+  bool readBool({
+    required String key,
+    bool fallback = false,
+  }) {
+    return prefs?.getBool(key) ?? fallback;
+  }
+
+  Future<void> writeBool({
+    required String key,
+    required bool value,
+  }) async {
+    await prefs?.setBool(key, value);
+  }
+
   int readInt({
     required String key,
     int fallback = 0,

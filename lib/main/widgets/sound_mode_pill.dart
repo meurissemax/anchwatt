@@ -3,16 +3,15 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/styles/borders.dart';
-import 'package:anchwatt/styles/texts.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SoundModePill extends StatelessWidget {
   static const double _iconSize = 14;
-  static const double _spacing = 4;
+  static const Duration _animationDuration = Duration(milliseconds: 150);
   static const EdgeInsets _padding = EdgeInsets.symmetric(
-    horizontal: 8,
-    vertical: 4,
+    horizontal: 6,
+    vertical: 6,
   );
 
   const SoundModePill({super.key});
@@ -30,28 +29,17 @@ class SoundModePill extends StatelessWidget {
           message: mode.switchTooltip(l10n),
           child: GestureDetector(
             onTap: () => context.read<AnchwattViewModel>().toggleSoundMode(),
-            child: DecoratedBox(
+            child: AnimatedContainer(
+              duration: _animationDuration,
               decoration: BoxDecoration(
                 color: mode.accentColor,
-                borderRadius: borderRadiusSoundModePill,
+                borderRadius: borderRadiusOptionsButton,
               ),
-              child: Padding(
-                padding: _padding,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: _spacing,
-                  children: [
-                    Icon(
-                      mode.iconData,
-                      color: Colors.white,
-                      size: _iconSize,
-                    ),
-                    Text(
-                      mode.label(l10n),
-                      style: textSoundModePill,
-                    ),
-                  ],
-                ),
+              padding: _padding,
+              child: Icon(
+                mode.iconData,
+                color: Colors.white,
+                size: _iconSize,
               ),
             ),
           ),

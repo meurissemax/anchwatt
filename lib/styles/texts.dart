@@ -69,6 +69,7 @@ const TextStyle textOptionsSectionDescription = TextStyle(
   fontFamily: fontFamily,
   fontSize: 11,
   fontWeight: FontWeight.w400,
+  height: 1.4,
 );
 
 const TextStyle textOptionsSectionLabel = TextStyle(
@@ -85,12 +86,6 @@ const TextStyle textStageLabel = TextStyle(
   fontWeight: FontWeight.w500,
 );
 
-const TextStyle textSoundModePill = TextStyle(
-  color: Colors.white,
-  fontFamily: fontFamily,
-  fontSize: 11,
-  fontWeight: FontWeight.w600,
-);
 
 const TextStyle textSystemVolumeLabel = TextStyle(
   color: colorSystemVolumeForeground,

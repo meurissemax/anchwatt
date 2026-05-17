@@ -18,7 +18,7 @@ class SoundService {
   /* Variables */
 
   final AudioCache _cache = AudioCache(prefix: '');
-  final Set<AudioPlayer> _activePlayers = {};
+  final Map<AudioPlayer, Future<void> Function()> _activePlayers = {};
   final Random _random = Random();
   final SoundStorage _storage = SoundStorage();
   final ValueNotifier<SoundMode> modeNotifier = ValueNotifier<SoundMode>(SoundMode.corporate);
@@ -130,7 +130,6 @@ class SoundService {
     // Bind the player to our prefix-less cache so AssetSource resolves to the
     // exact key we preloaded with. The default global cache prepends 'assets/'.
     player.audioCache = _cache;
-    _activePlayers.add(player);
 
     final Completer<void> completer = Completer<void>();
     late final StreamSubscription<void> sub;
@@ -144,6 +143,8 @@ class SoundService {
       await sub.cancel();
       await player.dispose();
     }
+
+    _activePlayers[player] = finish;
 
     sub = player.onPlayerComplete.listen((_) => finish());
 
@@ -161,15 +162,20 @@ class SoundService {
     await _storage.writeMode(next);
   }
 
-  Future<void> dispose() async {
-    final List<AudioPlayer> players = _activePlayers.toList();
-    _activePlayers.clear();
+  // Stops every in-flight playback and resolves the futures returned by
+  // [playRandom] / [playCry] via their cached [finish] closures, so awaiting
+  // callers don't hang when the user flips Do Not Disturb on mid-sound.
+  Future<void> stopAll() async {
+    final List<MapEntry<AudioPlayer, Future<void> Function()>> entries = _activePlayers.entries.toList();
 
-    for (final AudioPlayer player in players) {
-      await player.stop();
-      await player.dispose();
+    for (final MapEntry<AudioPlayer, Future<void> Function()> entry in entries) {
+      await entry.key.stop();
+      await entry.value();
     }
+  }
 
+  Future<void> dispose() async {
+    await stopAll();
     modeNotifier.dispose();
   }
 }

@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Restyle the Friday/Corporate pill in the top row as an icon-only accent-coloured chip matching the new "Ne pas déranger" button, so the three top-row chips share one visual language
 - Scale the pet XP gain with the system volume, with a non-zero floor when the system is muted so petting still grants a small amount of XP
 - Grant 1.5× XP in Friday mode for events that play a random sound (USB, charger, external display, headphones); the pet action is unaffected
 - Average the system volume over each sound's playback duration when computing XP, instead of reading the instantaneous volume at event time, so muting mid-playback no longer awards full XP
@@ -14,6 +15,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add a "Ne pas déranger" mode togglable from the options dialog and a dedicated app-bar chip, which cuts any in-flight sound the moment it turns on and gates incoming system events so neither sounds nor XP are awarded while it is active; state is persisted between launches
 - Add an options dialog accessible from the app bar, exposing app info, the Friday/Corporate mode toggle with descriptions, a GitHub repository link, and a manual update check
 
 ## 1.3.0 - 2026-05-05

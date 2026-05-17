@@ -69,10 +69,14 @@
     "optionsUpdatesError": "Raté, GitHub fait la sourde oreille",
     "optionsUpdatesLabel": "Nouveautés",
     "optionsUpdatesUpToDate": "Tout est à jour, bravo !",
+    "silentModeDescription": "Coupe le sifflet à Anchwatt quand t'es en réunion. Aucun son, aucun XP gagné non plus.",
+    "silentModeLabel": "Ne pas déranger",
+    "silentModeTooltipDisabled": "Chut, on bosse",
+    "silentModeTooltipEnabled": "La récré reprend",
     "soundModeCorporate": "Corporate",
     "soundModeFriday": "Friday",
-    "soundModeSwitchToCorporate": "Hop, en mode Corporate",
-    "soundModeSwitchToFriday": "Hop, en mode Friday",
+    "soundModeSwitchToCorporate": "Hop, Corporate",
+    "soundModeSwitchToFriday": "Hop, Friday",
     "systemVolumeTooltip": "Volume : {percent} %",
     "systemVolumeTooltipMuted": "Silence radio"
 }
