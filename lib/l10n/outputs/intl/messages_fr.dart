@@ -22,38 +22,65 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(level, name) => "${name} — Lvl ${level}";
 
-  static String m1(version) => "↑ v${version}";
+  static String m1(current, total) => "${current} / ${total}";
 
-  static String m2(current, total) => "${current} / ${total}";
+  static String m2(xp) => "+${xp}xp";
 
-  static String m3(xp) => "+${xp}xp";
+  static String m3(version) => "v${version}";
 
-  static String m4(percent) => "Volume système : ${percent} %";
+  static String m4(version) =>
+      "Une nouvelle version a pointé son nez : ${version}";
+
+  static String m5(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
-    "anchwattDebugAddXp": MessageLookupByLibrary.simpleMessage("DEBUG: +XP"),
+    "anchwattDebugAddXp": MessageLookupByLibrary.simpleMessage("Tricher : +XP"),
     "anchwattEvolutionLevel": m0,
-    "anchwattUpdateBadgeLabel": m1,
-    "anchwattUpdateBadgeTooltip": MessageLookupByLibrary.simpleMessage(
-      "Mise à jour disponible !",
-    ),
-    "anchwattXpCounter": m2,
-    "anchwattXpGain": m3,
+    "anchwattXpCounter": m1,
+    "anchwattXpGain": m2,
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
+    "optionsAppVersion": m3,
+    "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(
+      "Bidouiller Anchwatt",
+    ),
+    "optionsCloseTooltip": MessageLookupByLibrary.simpleMessage("Fermer"),
+    "optionsGithubButton": MessageLookupByLibrary.simpleMessage(
+      "Fouiner sur GitHub",
+    ),
+    "optionsGithubLabel": MessageLookupByLibrary.simpleMessage("Coulisses"),
+    "optionsModeDescriptionCorporate": MessageLookupByLibrary.simpleMessage(
+      "Sons sages pour quand le boss traîne par là.",
+    ),
+    "optionsModeDescriptionFriday": MessageLookupByLibrary.simpleMessage(
+      "À fond la caisse, c\'est presque le week-end.",
+    ),
+    "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
+    "optionsUpdatesAvailable": m4,
+    "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
+      "Chercher du neuf",
+    ),
+    "optionsUpdatesDownload": MessageLookupByLibrary.simpleMessage("Choper"),
+    "optionsUpdatesError": MessageLookupByLibrary.simpleMessage(
+      "Raté, GitHub fait la sourde oreille",
+    ),
+    "optionsUpdatesLabel": MessageLookupByLibrary.simpleMessage("Nouveautés"),
+    "optionsUpdatesUpToDate": MessageLookupByLibrary.simpleMessage(
+      "Tout est à jour, bravo !",
+    ),
     "soundModeCorporate": MessageLookupByLibrary.simpleMessage("Corporate"),
     "soundModeFriday": MessageLookupByLibrary.simpleMessage("Friday"),
     "soundModeSwitchToCorporate": MessageLookupByLibrary.simpleMessage(
-      "Passer en mode Corporate",
+      "Hop, en mode Corporate",
     ),
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
-      "Passer en mode Friday",
+      "Hop, en mode Friday",
     ),
-    "systemVolumeTooltip": m4,
+    "systemVolumeTooltip": m5,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
-      "Son coupé",
+      "Silence radio",
     ),
   };
 }

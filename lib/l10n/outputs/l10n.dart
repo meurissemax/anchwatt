@@ -59,10 +59,10 @@ class L10n {
     return Intl.message('Anchwatt', name: 'anchwatt', desc: '', args: []);
   }
 
-  /// `DEBUG: +XP`
+  /// `Tricher : +XP`
   String get anchwattDebugAddXp {
     return Intl.message(
-      'DEBUG: +XP',
+      'Tricher : +XP',
       name: 'anchwattDebugAddXp',
       desc: '',
       args: [],
@@ -76,26 +76,6 @@ class L10n {
       name: 'anchwattEvolutionLevel',
       desc: '',
       args: [level, name],
-    );
-  }
-
-  /// `↑ v{version}`
-  String anchwattUpdateBadgeLabel(String version) {
-    return Intl.message(
-      '↑ v$version',
-      name: 'anchwattUpdateBadgeLabel',
-      desc: '',
-      args: [version],
-    );
-  }
-
-  /// `Mise à jour disponible !`
-  String get anchwattUpdateBadgeTooltip {
-    return Intl.message(
-      'Mise à jour disponible !',
-      name: 'anchwattUpdateBadgeTooltip',
-      desc: '',
-      args: [],
     );
   }
 
@@ -129,6 +109,146 @@ class L10n {
     return Intl.message('Ohmassacre', name: 'ohmassacre', desc: '', args: []);
   }
 
+  /// `v{version}`
+  String optionsAppVersion(String version) {
+    return Intl.message(
+      'v$version',
+      name: 'optionsAppVersion',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `Bidouiller Anchwatt`
+  String get optionsButtonTooltip {
+    return Intl.message(
+      'Bidouiller Anchwatt',
+      name: 'optionsButtonTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fermer`
+  String get optionsCloseTooltip {
+    return Intl.message(
+      'Fermer',
+      name: 'optionsCloseTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fouiner sur GitHub`
+  String get optionsGithubButton {
+    return Intl.message(
+      'Fouiner sur GitHub',
+      name: 'optionsGithubButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Coulisses`
+  String get optionsGithubLabel {
+    return Intl.message(
+      'Coulisses',
+      name: 'optionsGithubLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sons sages pour quand le boss traîne par là.`
+  String get optionsModeDescriptionCorporate {
+    return Intl.message(
+      'Sons sages pour quand le boss traîne par là.',
+      name: 'optionsModeDescriptionCorporate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `À fond la caisse, c'est presque le week-end.`
+  String get optionsModeDescriptionFriday {
+    return Intl.message(
+      'À fond la caisse, c\'est presque le week-end.',
+      name: 'optionsModeDescriptionFriday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ambiance`
+  String get optionsModeLabel {
+    return Intl.message(
+      'Ambiance',
+      name: 'optionsModeLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Une nouvelle version a pointé son nez : {version}`
+  String optionsUpdatesAvailable(String version) {
+    return Intl.message(
+      'Une nouvelle version a pointé son nez : $version',
+      name: 'optionsUpdatesAvailable',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `Chercher du neuf`
+  String get optionsUpdatesCheckButton {
+    return Intl.message(
+      'Chercher du neuf',
+      name: 'optionsUpdatesCheckButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choper`
+  String get optionsUpdatesDownload {
+    return Intl.message(
+      'Choper',
+      name: 'optionsUpdatesDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Raté, GitHub fait la sourde oreille`
+  String get optionsUpdatesError {
+    return Intl.message(
+      'Raté, GitHub fait la sourde oreille',
+      name: 'optionsUpdatesError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nouveautés`
+  String get optionsUpdatesLabel {
+    return Intl.message(
+      'Nouveautés',
+      name: 'optionsUpdatesLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tout est à jour, bravo !`
+  String get optionsUpdatesUpToDate {
+    return Intl.message(
+      'Tout est à jour, bravo !',
+      name: 'optionsUpdatesUpToDate',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Corporate`
   String get soundModeCorporate {
     return Intl.message(
@@ -144,40 +264,40 @@ class L10n {
     return Intl.message('Friday', name: 'soundModeFriday', desc: '', args: []);
   }
 
-  /// `Passer en mode Corporate`
+  /// `Hop, en mode Corporate`
   String get soundModeSwitchToCorporate {
     return Intl.message(
-      'Passer en mode Corporate',
+      'Hop, en mode Corporate',
       name: 'soundModeSwitchToCorporate',
       desc: '',
       args: [],
     );
   }
 
-  /// `Passer en mode Friday`
+  /// `Hop, en mode Friday`
   String get soundModeSwitchToFriday {
     return Intl.message(
-      'Passer en mode Friday',
+      'Hop, en mode Friday',
       name: 'soundModeSwitchToFriday',
       desc: '',
       args: [],
     );
   }
 
-  /// `Volume système : {percent} %`
+  /// `Volume : {percent} %`
   String systemVolumeTooltip(int percent) {
     return Intl.message(
-      'Volume système : $percent %',
+      'Volume : $percent %',
       name: 'systemVolumeTooltip',
       desc: '',
       args: [percent],
     );
   }
 
-  /// `Son coupé`
+  /// `Silence radio`
   String get systemVolumeTooltipMuted {
     return Intl.message(
-      'Son coupé',
+      'Silence radio',
       name: 'systemVolumeTooltipMuted',
       desc: '',
       args: [],

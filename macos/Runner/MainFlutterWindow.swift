@@ -14,7 +14,7 @@ class MainFlutterWindow: NSWindow {
 
     self.title = "Anchwatt"
 
-    let size = NSSize(width: 340, height: 450)
+    let size = NSSize(width: 380, height: 500)
     self.setContentSize(size)
     self.contentMinSize = size
     self.contentMaxSize = size

@@ -29,6 +29,55 @@ const TextStyle textLevel = TextStyle(
   letterSpacing: -2,
 );
 
+const TextStyle textOptionsAppMeta = TextStyle(
+  color: colorMutedDark,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 11,
+  fontWeight: FontWeight.w400,
+);
+
+const TextStyle textOptionsAppName = TextStyle(
+  color: colorText,
+  fontFamily: fontFamily,
+  fontSize: 15,
+  fontWeight: FontWeight.w700,
+);
+
+const TextStyle textOptionsCompactButton = TextStyle(
+  fontFamily: fontFamily,
+  fontSize: 11,
+  fontWeight: FontWeight.w600,
+);
+
+const TextStyle textOptionsModePillActive = TextStyle(
+  color: Colors.white,
+  fontFamily: fontFamily,
+  fontSize: 11,
+  fontWeight: FontWeight.w600,
+);
+
+const TextStyle textOptionsModePillInactive = TextStyle(
+  color: colorMutedDark,
+  fontFamily: fontFamily,
+  fontSize: 11,
+  fontWeight: FontWeight.w600,
+);
+
+const TextStyle textOptionsSectionDescription = TextStyle(
+  color: colorMutedDark,
+  fontFamily: fontFamily,
+  fontSize: 11,
+  fontWeight: FontWeight.w400,
+);
+
+const TextStyle textOptionsSectionLabel = TextStyle(
+  color: colorNeutralDark,
+  fontFamily: fontFamily,
+  fontSize: 12,
+  fontWeight: FontWeight.w600,
+);
+
 const TextStyle textStageLabel = TextStyle(
   color: colorMutedDark,
   fontFamily: fontFamily,
@@ -49,14 +98,6 @@ const TextStyle textSystemVolumeLabel = TextStyle(
   fontFeatures: [FontFeature.tabularFigures()],
   fontSize: 11,
   fontWeight: FontWeight.w500,
-);
-
-const TextStyle textUpdateBadge = TextStyle(
-  color: Colors.white,
-  fontFamily: fontFamily,
-  fontFeatures: [FontFeature.tabularFigures()],
-  fontSize: 11,
-  fontWeight: FontWeight.w600,
 );
 
 const TextStyle textXpCounter = TextStyle(

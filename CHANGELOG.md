@@ -2,6 +2,12 @@
 
 This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
+## Unreleased
+
+### Added
+
+- Add an options dialog accessible from the app bar, exposing app info, the Friday/Corporate mode toggle with descriptions, a GitHub repository link, and a manual update check
+
 ## 1.3.0 - 2026-05-05
 
 ### Added

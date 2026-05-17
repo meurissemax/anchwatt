@@ -27,6 +27,7 @@ const Color colorEvolutionLamperoie = Color(0xffeab308);
 const Color colorEvolutionOhmassacre = Color(0xfff43f5e);
 
 // Widgets
+const Color colorOptionsAboutCard = Color(0xfff3f4f6);
 const Color colorSoundModeCorporate = Color(0xff1e88e5);
 const Color colorSoundModeFriday = Color(0xffab47bc);
 const Color colorSparkleCore = Color(0xfffff7c2);

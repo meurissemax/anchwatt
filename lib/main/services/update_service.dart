@@ -97,7 +97,7 @@ class UpdateService {
 
   /* Methods */
 
-  Future<UpdateStatus> check() async {
+  Future<UpdateStatus> check({bool force = false}) async {
     await _storage.init();
 
     final _SemanticVersion? localVersion = await _readLocalVersion();
@@ -109,7 +109,7 @@ class UpdateService {
 
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int? lastCheckAt = cache.lastCheckAt;
-    final bool cooldownActive = lastCheckAt != null && (now - lastCheckAt) < _cooldown.inMilliseconds;
+    final bool cooldownActive = !force && lastCheckAt != null && (now - lastCheckAt) < _cooldown.inMilliseconds;
 
     if (cooldownActive) {
       return _statusFromCache(localVersion, cache);

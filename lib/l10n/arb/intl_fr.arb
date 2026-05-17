@@ -10,13 +10,6 @@
             }
         }
     },
-    "@anchwattUpdateBadgeLabel": {
-        "placeholders": {
-            "version": {
-                "type": "String"
-            }
-        }
-    },
     "@anchwattXpCounter": {
         "placeholders": {
             "current": {
@@ -34,6 +27,20 @@
             }
         }
     },
+    "@optionsAppVersion": {
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    },
+    "@optionsUpdatesAvailable": {
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    },
     "@systemVolumeTooltip": {
         "placeholders": {
             "percent": {
@@ -42,18 +49,30 @@
         }
     },
     "anchwatt": "Anchwatt",
-    "anchwattDebugAddXp": "DEBUG: +XP",
+    "anchwattDebugAddXp": "Tricher : +XP",
     "anchwattEvolutionLevel": "{name} — Lvl {level}",
-    "anchwattUpdateBadgeLabel": "↑ v{version}",
-    "anchwattUpdateBadgeTooltip": "Mise à jour disponible !",
     "anchwattXpCounter": "{current} / {total}",
     "anchwattXpGain": "+{xp}xp",
     "lamperoie": "Lampéroie",
     "ohmassacre": "Ohmassacre",
+    "optionsAppVersion": "v{version}",
+    "optionsButtonTooltip": "Bidouiller Anchwatt",
+    "optionsCloseTooltip": "Fermer",
+    "optionsGithubButton": "Fouiner sur GitHub",
+    "optionsGithubLabel": "Coulisses",
+    "optionsModeDescriptionCorporate": "Sons sages pour quand le boss traîne par là.",
+    "optionsModeDescriptionFriday": "À fond la caisse, c'est presque le week-end.",
+    "optionsModeLabel": "Ambiance",
+    "optionsUpdatesAvailable": "Une nouvelle version a pointé son nez : {version}",
+    "optionsUpdatesCheckButton": "Chercher du neuf",
+    "optionsUpdatesDownload": "Choper",
+    "optionsUpdatesError": "Raté, GitHub fait la sourde oreille",
+    "optionsUpdatesLabel": "Nouveautés",
+    "optionsUpdatesUpToDate": "Tout est à jour, bravo !",
     "soundModeCorporate": "Corporate",
     "soundModeFriday": "Friday",
-    "soundModeSwitchToCorporate": "Passer en mode Corporate",
-    "soundModeSwitchToFriday": "Passer en mode Friday",
-    "systemVolumeTooltip": "Volume système : {percent} %",
-    "systemVolumeTooltipMuted": "Son coupé"
+    "soundModeSwitchToCorporate": "Hop, en mode Corporate",
+    "soundModeSwitchToFriday": "Hop, en mode Friday",
+    "systemVolumeTooltip": "Volume : {percent} %",
+    "systemVolumeTooltipMuted": "Silence radio"
 }

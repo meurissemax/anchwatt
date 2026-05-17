@@ -5,6 +5,7 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
+import 'package:anchwatt/main/views/options_view.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/pet_gesture_surface.dart';
 import 'package:anchwatt/main/widgets/sound_mode_pill.dart';
@@ -42,38 +43,44 @@ class _AnchwattViewBody extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
+          padding: const EdgeInsets.fromLTRB(28, 20, 28, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                spacing: 8,
+                spacing: 10,
                 children: [
-                  _UpdateBadge(),
                   SystemVolumePill(),
                   SoundModePill(),
+                  _OptionsButton(),
                 ],
               ),
               const SizedBox(
-                height: 8,
+                height: 20,
               ),
               const _LevelHeader(),
               const SizedBox(
-                height: 8,
+                height: 16,
               ),
               const Expanded(
-                child: Align(
-                  alignment: Alignment(0.1, 0),
-                  child: _SpriteSelector(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 24,
+                  ),
+                  child: Align(
+                    alignment: Alignment(0.1, 0),
+                    child: _SpriteSelector(),
+                  ),
                 ),
               ),
               const SizedBox(
-                height: 12,
+                height: 20,
               ),
               const _XpGauge(),
               const SizedBox(
-                height: 6,
+                height: 10,
               ),
               const Align(
                 alignment: Alignment.centerRight,
@@ -81,7 +88,7 @@ class _AnchwattViewBody extends StatelessWidget {
               ),
               if (Settings.isDev) ...[
                 const SizedBox(
-                  height: 16,
+                  height: 20,
                 ),
                 const _DebugAddXpButton(),
               ],
@@ -276,48 +283,84 @@ class _DebugAddXpButton extends StatelessWidget {
   }
 }
 
-class _UpdateBadge extends StatelessWidget {
+class _OptionsButton extends StatelessWidget {
+  static const double _iconSize = 14;
+  static const double _dotSize = 7;
   static const EdgeInsets _padding = EdgeInsets.symmetric(
-    horizontal: 8,
-    vertical: 4,
+    horizontal: 6,
+    vertical: 6,
   );
 
-  const _UpdateBadge();
+  const _OptionsButton();
 
   @override
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<AnchwattViewModel, UpdateStatus>(
-      selector: (_, vm) => vm.updateStatus,
-      builder: (_, status, _) {
-        if (status is! UpdateAvailable) {
-          return const SizedBox.shrink();
-        }
-
-        return MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: Tooltip(
-            message: l10n.anchwattUpdateBadgeTooltip,
-            child: GestureDetector(
-              onTap: () => context.read<AnchwattViewModel>().openLatestRelease(),
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: colorUpdateBadge,
-                  borderRadius: borderRadiusUpdateBadge,
-                ),
-                child: Padding(
-                  padding: _padding,
-                  child: Text(
-                    l10n.anchwattUpdateBadgeLabel(status.latestVersion),
-                    style: textUpdateBadge,
-                  ),
+    return Selector<AnchwattViewModel, bool>(
+      selector: (_, vm) => vm.updateStatus is UpdateAvailable,
+      builder: (_, hasUpdate, _) => MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Tooltip(
+          message: l10n.optionsButtonTooltip,
+          child: GestureDetector(
+            onTap: () => OptionsView.show(context),
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                color: colorNeutralLight,
+                borderRadius: borderRadiusOptionsButton,
+              ),
+              child: Padding(
+                padding: _padding,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(
+                      Icons.tune,
+                      size: _iconSize,
+                      color: colorMutedDark,
+                    ),
+                    if (hasUpdate)
+                      const Positioned(
+                        top: -3,
+                        right: -3,
+                        child: _UpdateDot(
+                          size: _dotSize,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+}
+
+class _UpdateDot extends StatelessWidget {
+  final double size;
+
+  const _UpdateDot({
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        color: colorUpdateBadge,
+        shape: BoxShape.circle,
+        border: Border.fromBorderSide(
+          BorderSide(
+            color: colorScaffoldBackground,
+            width: 1.5,
+          ),
+        ),
+      ),
     );
   }
 }

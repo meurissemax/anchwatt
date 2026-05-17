@@ -236,6 +236,15 @@ class AnchwattViewModel extends ChangeNotifier {
     );
   }
 
+  Future<UpdateStatus> forceCheckUpdates() async {
+    final UpdateStatus status = await _updateService.check(force: true);
+    _updateStatus = status;
+
+    notifyListeners();
+
+    return status;
+  }
+
   Future<void> _process(int amount) async {
     if (_level >= AnchwattSettings.levelMax) {
       return;
