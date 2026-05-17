@@ -87,6 +87,7 @@ class AnchwattViewModel extends ChangeNotifier {
     AnchwattSettings.xpForEvent(
       type: AnchwattEventType.usbToggle,
       level: _level,
+      mode: _soundService.modeNotifier.value,
       systemVolume: 1,
     ),
   );
@@ -98,6 +99,8 @@ class AnchwattViewModel extends ChangeNotifier {
       final int xp = AnchwattSettings.xpForEvent(
         type: AnchwattEventType.pet,
         level: _level,
+        mode: _soundService.modeNotifier.value,
+        systemVolume: _systemVolumeState.muted ? 0 : _systemVolumeState.volume,
       );
 
       if (xp > 0) {
@@ -142,6 +145,7 @@ class AnchwattViewModel extends ChangeNotifier {
     final int xp = AnchwattSettings.xpForEvent(
       type: type,
       level: _level,
+      mode: _soundService.modeNotifier.value,
       systemVolume: _systemVolumeState.muted ? 0 : _systemVolumeState.volume,
     );
 

@@ -14,6 +14,7 @@ class AnchwattSettings {
   static const int petCryCooldownMinSeconds = 2;
   static const int petXpCooldownMaxSeconds = 3;
   static const int petXpCooldownMinSeconds = 1;
+  static const double petVolumeFloor = 0.2;
   static const int xpBase = 25;
   static const int xpGrowthFactor = 2;
   // Cross-event coalescing window. A single physical action (e.g. plugging in
@@ -32,6 +33,16 @@ class AnchwattSettings {
   };
 
   static const Set<AnchwattEventType> volumeAffectedEvents = {
+    AnchwattEventType.pet,
+    AnchwattEventType.usbToggle,
+    AnchwattEventType.chargerToggle,
+    AnchwattEventType.externalDisplayToggle,
+    AnchwattEventType.headphonesToggle,
+  };
+
+  // Events that pick a random sound — eligible for [SoundMode.xpMultiplier].
+  // The pet plays Anchwatt's cry (same sound every time), so it is excluded.
+  static const Set<AnchwattEventType> randomSoundEvents = {
     AnchwattEventType.usbToggle,
     AnchwattEventType.chargerToggle,
     AnchwattEventType.externalDisplayToggle,
@@ -40,10 +51,12 @@ class AnchwattSettings {
 
   static int xpForLevel(int level) => xpBase + xpGrowthFactor * (level - 1) * (level - 1);
 
-  // Volume = 0 yields 0 XP — intentional (prevents farming with the system muted).
+  // Volume = 0 yields 0 XP for non-pet events (anti-farming when muted).
+  // The pet uses [petVolumeFloor] so it still grants a small gain when muted.
   static int xpForEvent({
     required AnchwattEventType type,
     required int level,
+    required SoundMode mode,
     double? systemVolume,
   }) {
     final double base = baseXpByEvent[type]!;
@@ -55,9 +68,15 @@ class AnchwattSettings {
       'systemVolume is required for volume-affected events',
     );
 
-    final double volumeMult = volumeAffected ? systemVolume!.clamp(0.0, 1.0) * maxVolumeMultiplier : 1.0;
+    final double volumeFloor = type == AnchwattEventType.pet ? petVolumeFloor : 0.0;
+    final double clamped = (systemVolume ?? 0.0).clamp(0.0, 1.0);
+    final double volumeMult = volumeAffected
+        ? (volumeFloor + (1.0 - volumeFloor) * clamped) * maxVolumeMultiplier
+        : 1.0;
 
-    return (base * levelMult * volumeMult).round();
+    final double modeMult = randomSoundEvents.contains(type) ? mode.xpMultiplier : 1.0;
+
+    return (base * levelMult * volumeMult * modeMult).round();
   }
 }
 
@@ -179,6 +198,18 @@ enum SoundMode {
 
       case SoundMode.friday:
         return SoundMode.corporate;
+    }
+  }
+
+  // Applied to XP from [AnchwattSettings.randomSoundEvents] only — the pet
+  // action is unaffected.
+  double get xpMultiplier {
+    switch (this) {
+      case SoundMode.corporate:
+        return 1;
+
+      case SoundMode.friday:
+        return 1.5;
     }
   }
 

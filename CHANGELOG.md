@@ -4,6 +4,11 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ## Unreleased
 
+### Changed
+
+- Scale the pet XP gain with the system volume, with a non-zero floor when the system is muted so petting still grants a small amount of XP
+- Grant 1.5× XP in Friday mode for events that play a random sound (USB, charger, external display, headphones); the pet action is unaffected
+
 ### Added
 
 - Add an options dialog accessible from the app bar, exposing app info, the Friday/Corporate mode toggle with descriptions, a GitHub repository link, and a manual update check
