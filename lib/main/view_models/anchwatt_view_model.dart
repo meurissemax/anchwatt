@@ -5,6 +5,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/charger_event_service.dart';
 import 'package:anchwatt/main/services/external_display_event_service.dart';
 import 'package:anchwatt/main/services/headphones_event_service.dart';
+import 'package:anchwatt/main/services/playback_volume_sampler.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
 import 'package:anchwatt/main/services/system_volume_service.dart';
 import 'package:anchwatt/main/services/update_service.dart';
@@ -42,9 +43,7 @@ class AnchwattViewModel extends ChangeNotifier {
   Future<void>? _pending;
   UpdateStatus _updateStatus = const UpdateUnknown();
   SystemVolumeState _systemVolumeState = SystemVolumeState.initial();
-  DateTime? _lastPetXpAt;
   DateTime? _lastPetCryAt;
-  Duration _nextPetXpCooldown = Duration.zero;
   Duration _nextPetCryCooldown = Duration.zero;
   DateTime? _lastSystemEventAt;
 
@@ -95,33 +94,43 @@ class AnchwattViewModel extends ChangeNotifier {
   void onPetTick() {
     final DateTime now = DateTime.now();
 
-    if (_lastPetXpAt == null || now.difference(_lastPetXpAt!) >= _nextPetXpCooldown) {
-      final int xp = AnchwattSettings.xpForEvent(
-        type: AnchwattEventType.pet,
-        level: _level,
-        mode: _soundService.modeNotifier.value,
-        systemVolume: _systemVolumeState.muted ? 0 : _systemVolumeState.volume,
-      );
-
-      if (xp > 0) {
-        addXp(xp);
-      }
-
-      _lastPetXpAt = now;
-      _nextPetXpCooldown = _rollPetCooldown(
-        min: AnchwattSettings.petXpCooldownMinSeconds,
-        max: AnchwattSettings.petXpCooldownMaxSeconds,
-      );
+    if (_lastPetCryAt != null && now.difference(_lastPetCryAt!) < _nextPetCryCooldown) {
+      return;
     }
 
-    if (_lastPetCryAt == null || now.difference(_lastPetCryAt!) >= _nextPetCryCooldown) {
-      _soundService.playCry(evolution);
+    _lastPetCryAt = now;
+    _nextPetCryCooldown = _rollPetCooldown(
+      min: AnchwattSettings.petCryCooldownMinSeconds,
+      max: AnchwattSettings.petCryCooldownMaxSeconds,
+    );
 
-      _lastPetCryAt = now;
-      _nextPetCryCooldown = _rollPetCooldown(
-        min: AnchwattSettings.petCryCooldownMinSeconds,
-        max: AnchwattSettings.petCryCooldownMaxSeconds,
-      );
+    unawaited(_playPetCryAndGrantXp());
+  }
+
+  Future<void> _playPetCryAndGrantXp() async {
+    final int level = _level;
+    final SoundMode mode = _soundService.modeNotifier.value;
+    final Evolution evo = evolution;
+    final SystemVolumeState start = _systemVolumeState;
+    final double initialVolume = start.muted ? 0.0 : start.volume;
+
+    final PlaybackVolumeSampler sampler = PlaybackVolumeSampler(
+      volumeStream: _systemVolumeService.events,
+      initialVolume: initialVolume,
+    );
+
+    await _soundService.playCry(evo);
+    final double meanVolume = sampler.stop();
+
+    final int xp = AnchwattSettings.xpForEvent(
+      type: AnchwattEventType.pet,
+      level: level,
+      mode: mode,
+      systemVolume: meanVolume,
+    );
+
+    if (xp > 0) {
+      await addXp(xp);
     }
   }
 
@@ -134,7 +143,7 @@ class AnchwattViewModel extends ChangeNotifier {
   // the first one in the window play a sound and grant XP, and absorb the
   // rest. Per-channel debounces (the 1500ms USB iPhone-handshake one) still
   // run upstream of this method.
-  void _handleSystemEvent(AnchwattEventType type) {
+  Future<void> _handleSystemEvent(AnchwattEventType type) async {
     final DateTime now = DateTime.now();
     final DateTime? last = _lastSystemEventAt;
     if (last != null && now.difference(last) < AnchwattSettings.systemEventCoalesceWindow) {
@@ -142,19 +151,33 @@ class AnchwattViewModel extends ChangeNotifier {
     }
     _lastSystemEventAt = now;
 
+    // Snapshot level and mode at event time so a level-up or mode change
+    // during playback does not retroactively shift the XP for this event.
+    final int level = _level;
+    final SoundMode mode = _soundService.modeNotifier.value;
+    final SystemVolumeState startState = _systemVolumeState;
+    final double initialVolume = startState.muted ? 0.0 : startState.volume;
+
+    final PlaybackVolumeSampler sampler = PlaybackVolumeSampler(
+      volumeStream: _systemVolumeService.events,
+      initialVolume: initialVolume,
+    );
+
+    await _soundService.playRandom();
+    final double meanVolume = sampler.stop();
+
     final int xp = AnchwattSettings.xpForEvent(
       type: type,
-      level: _level,
-      mode: _soundService.modeNotifier.value,
-      systemVolume: _systemVolumeState.muted ? 0 : _systemVolumeState.volume,
+      level: level,
+      mode: mode,
+      systemVolume: meanVolume,
     );
 
     if (xp <= 0) {
       return;
     }
 
-    _soundService.playRandom();
-    addXp(xp);
+    await addXp(xp);
   }
 
   Future<void> _bootServices() async {

@@ -74,16 +74,33 @@ class SoundService {
     await _cache.loadAll(toPreload);
   }
 
-  void playRandom() {
+  Future<void> playRandom() {
     final List<String> pool = _assetsByMode[modeNotifier.value] ?? const [];
 
     if (pool.isEmpty) {
       debugPrint('SoundService: no sounds available for mode ${modeNotifier.value.name}');
 
-      return;
+      return Future<void>.value();
     }
 
     final String asset = pool[_random.nextInt(pool.length)];
+
+    return _playAsset(asset, errorLabel: 'SoundService play error');
+  }
+
+  Future<void> playCry(Evolution evolution) {
+    final String? asset = _criesByEvolution[evolution];
+
+    if (asset == null) {
+      debugPrint('SoundService: no cry asset found for evolution ${evolution.name}');
+
+      return Future<void>.value();
+    }
+
+    return _playAsset(asset, errorLabel: 'SoundService cry play error');
+  }
+
+  Future<void> _playAsset(String asset, {required String errorLabel}) {
     final AudioPlayer player = AudioPlayer();
 
     // Bind the player to our prefix-less cache so AssetSource resolves to the
@@ -91,51 +108,27 @@ class SoundService {
     player.audioCache = _cache;
     _activePlayers.add(player);
 
+    final Completer<void> completer = Completer<void>();
     late final StreamSubscription<void> sub;
 
-    sub = player.onPlayerComplete.listen(
-      (_) async {
-        _activePlayers.remove(player);
-        await sub.cancel();
-        await player.dispose();
-      },
-    );
-
-    player
-        .play(AssetSource(asset))
-        .catchError(
-          (Object error) => debugPrint('SoundService play error: $error'),
-        );
-  }
-
-  void playCry(Evolution evolution) {
-    final String? asset = _criesByEvolution[evolution];
-
-    if (asset == null) {
-      debugPrint('SoundService: no cry asset found for evolution ${evolution.name}');
-
-      return;
+    Future<void> finish() async {
+      if (completer.isCompleted) {
+        return;
+      }
+      completer.complete();
+      _activePlayers.remove(player);
+      await sub.cancel();
+      await player.dispose();
     }
 
-    final AudioPlayer player = AudioPlayer();
-    player.audioCache = _cache;
-    _activePlayers.add(player);
+    sub = player.onPlayerComplete.listen((_) => finish());
 
-    late final StreamSubscription<void> sub;
+    player.play(AssetSource(asset)).catchError((Object error) {
+      debugPrint('$errorLabel: $error');
+      finish();
+    });
 
-    sub = player.onPlayerComplete.listen(
-      (_) async {
-        _activePlayers.remove(player);
-        await sub.cancel();
-        await player.dispose();
-      },
-    );
-
-    player
-        .play(AssetSource(asset))
-        .catchError(
-          (Object error) => debugPrint('SoundService cry play error: $error'),
-        );
+    return completer.future;
   }
 
   Future<void> toggleMode() async {

@@ -12,8 +12,6 @@ class AnchwattSettings {
   static const double maxVolumeMultiplier = 1.5;
   static const int petCryCooldownMaxSeconds = 4;
   static const int petCryCooldownMinSeconds = 2;
-  static const int petXpCooldownMaxSeconds = 3;
-  static const int petXpCooldownMinSeconds = 1;
   static const double petVolumeFloor = 0.2;
   static const int xpBase = 25;
   static const int xpGrowthFactor = 2;
