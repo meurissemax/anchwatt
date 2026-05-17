@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:anchwatt/main/models.dart';
@@ -24,6 +25,9 @@ class SoundService {
 
   final Map<SoundMode, List<String>> _assetsByMode = {
     for (final SoundMode mode in SoundMode.values) mode: <String>[],
+  };
+  final Map<SoundMode, Queue<String>> _recentByMode = {
+    for (final SoundMode mode in SoundMode.values) mode: ListQueue<String>(),
   };
   final Map<Evolution, String> _criesByEvolution = {};
 
@@ -75,15 +79,35 @@ class SoundService {
   }
 
   Future<void> playRandom() {
-    final List<String> pool = _assetsByMode[modeNotifier.value] ?? const [];
+    final SoundMode mode = modeNotifier.value;
+    final List<String> pool = _assetsByMode[mode] ?? const [];
 
     if (pool.isEmpty) {
-      debugPrint('SoundService: no sounds available for mode ${modeNotifier.value.name}');
+      debugPrint('SoundService: no sounds available for mode ${mode.name}');
 
       return Future<void>.value();
     }
 
-    final String asset = pool[_random.nextInt(pool.length)];
+    // Rolling-window exclusion: never repeat one of the last [effectiveK]
+    // picks for this mode. Clamped so a pool of 1 or 2 always has at least
+    // 2 eligible candidates (i.e. exclusion is skipped entirely below 3).
+    final Queue<String> recent = _recentByMode[mode]!;
+    final int effectiveK = pool.length <= 2
+        ? 0
+        : min(AnchwattSettings.randomSoundExclusionWindow, pool.length - 2);
+
+    final List<String> eligible = effectiveK > 0
+        ? pool.where((asset) => !recent.contains(asset)).toList()
+        : pool;
+
+    final String asset = eligible[_random.nextInt(eligible.length)];
+
+    if (effectiveK > 0) {
+      recent.addLast(asset);
+      while (recent.length > effectiveK) {
+        recent.removeFirst();
+      }
+    }
 
     return _playAsset(asset, errorLabel: 'SoundService play error');
   }

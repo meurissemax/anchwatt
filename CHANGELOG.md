@@ -10,6 +10,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Grant 1.5× XP in Friday mode for events that play a random sound (USB, charger, external display, headphones); the pet action is unaffected
 - Average the system volume over each sound's playback duration when computing XP, instead of reading the instantaneous volume at event time, so muting mid-playback no longer awards full XP
 - Couple pet XP to pet cry playback: XP is now granted on cry completion using the cry's average volume, replacing the previously independent pet XP cooldown
+- Exclude the 3 most recently played sounds per mode from random selection to reduce perceived repetition
 
 ### Added
 

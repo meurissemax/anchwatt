@@ -13,6 +13,7 @@ class AnchwattSettings {
   static const int petCryCooldownMaxSeconds = 4;
   static const int petCryCooldownMinSeconds = 2;
   static const double petVolumeFloor = 0.2;
+  static const int randomSoundExclusionWindow = 3;
   static const int xpBase = 25;
   static const int xpGrowthFactor = 2;
   // Cross-event coalescing window. A single physical action (e.g. plugging in
