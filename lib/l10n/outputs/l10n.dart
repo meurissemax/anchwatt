@@ -69,13 +69,43 @@ class L10n {
     );
   }
 
+  /// `{name} — Lvl {level}`
+  String anchwattEvolutionLevel(int level, String name) {
+    return Intl.message(
+      '$name — Lvl $level',
+      name: 'anchwattEvolutionLevel',
+      desc: '',
+      args: [level, name],
+    );
+  }
+
+  /// `{current} / {total}`
+  String anchwattXpCounter(int current, int total) {
+    return Intl.message(
+      '$current / $total',
+      name: 'anchwattXpCounter',
+      desc: '',
+      args: [current, total],
+    );
+  }
+
+  /// `+{xp}xp`
+  String anchwattXpGain(int xp) {
+    return Intl.message(
+      '+${xp}xp',
+      name: 'anchwattXpGain',
+      desc: '',
+      args: [xp],
+    );
+  }
+
   /// `Activé auto : {title} jusqu'à {time}`
-  String autoMuteActiveReason(String title, String time) {
+  String autoMuteActiveReason(String time, String title) {
     return Intl.message(
       'Activé auto : $title jusqu\'à $time',
       name: 'autoMuteActiveReason',
       desc: '',
-      args: [title, time],
+      args: [time, title],
     );
   }
 
@@ -119,36 +149,6 @@ class L10n {
     );
   }
 
-  /// `{name} — Lvl {level}`
-  String anchwattEvolutionLevel(int level, String name) {
-    return Intl.message(
-      '$name — Lvl $level',
-      name: 'anchwattEvolutionLevel',
-      desc: '',
-      args: [level, name],
-    );
-  }
-
-  /// `{current} / {total}`
-  String anchwattXpCounter(int current, int total) {
-    return Intl.message(
-      '$current / $total',
-      name: 'anchwattXpCounter',
-      desc: '',
-      args: [current, total],
-    );
-  }
-
-  /// `+{xp}xp`
-  String anchwattXpGain(int xp) {
-    return Intl.message(
-      '+${xp}xp',
-      name: 'anchwattXpGain',
-      desc: '',
-      args: [xp],
-    );
-  }
-
   /// `Lampéroie`
   String get lamperoie {
     return Intl.message('Lampéroie', name: 'lamperoie', desc: '', args: []);
@@ -185,12 +185,12 @@ class L10n {
   }
 
   /// `Silence pendant {title}, jusqu'à {time}.`
-  String notificationDndActivatedBody(String title, String time) {
+  String notificationDndActivatedBody(String time, String title) {
     return Intl.message(
       'Silence pendant $title, jusqu\'à $time.',
       name: 'notificationDndActivatedBody',
       desc: '',
-      args: [title, time],
+      args: [time, title],
     );
   }
 

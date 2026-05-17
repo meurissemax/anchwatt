@@ -26,9 +26,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(xp) => "+${xp}xp";
 
-  static String m3(title, time) => "Activé auto : ${title} jusqu\'à ${time}";
+  static String m3(time, title) => "Activé auto : ${title} jusqu\'à ${time}";
 
-  static String m4(title, time) =>
+  static String m4(time, title) =>
       "Silence pendant ${title}, jusqu\'à ${time}.";
 
   static String m5(title) => "${title} terminé — Anchwatt reprend du service.";
