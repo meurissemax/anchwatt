@@ -83,7 +83,8 @@
         }
     },
     "anchwatt": "Anchwatt",
-    "anchwattDebugAddXp": "Tricher : +XP",
+    "anchwattDebugAddXp": "Ajouter de l'XP",
+    "anchwattDebugSimulateEvent": "Simuler un événement",
     "anchwattEvolutionLevel": "{name} — Lvl {level}",
     "anchwattXpCounter": "{current} / {total}",
     "anchwattXpGain": "+{xp}xp",

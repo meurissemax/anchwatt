@@ -92,6 +92,10 @@ class _AnchwattViewBody extends StatelessWidget {
                   height: 20,
                 ),
                 const _DebugAddXpButton(),
+                const SizedBox(
+                  height: 8,
+                ),
+                const _DebugSimulateEventButton(),
               ],
             ],
           ),
@@ -280,6 +284,33 @@ class _DebugAddXpButton extends StatelessWidget {
         textStyle: textDebugButton,
       ),
       child: Text(l10n.anchwattDebugAddXp),
+    );
+  }
+}
+
+class _DebugSimulateEventButton extends StatelessWidget {
+  const _DebugSimulateEventButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return OutlinedButton(
+      onPressed: () => context.read<AnchwattViewModel>().debugSimulateEvent(),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colorNeutralDark,
+        side: const BorderSide(
+          color: colorNeutralLight,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: borderRadiusDebugButton,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        textStyle: textDebugButton,
+      ),
+      child: Text(l10n.anchwattDebugSimulateEvent),
     );
   }
 }

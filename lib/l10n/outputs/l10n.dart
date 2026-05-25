@@ -59,11 +59,21 @@ class L10n {
     return Intl.message('Anchwatt', name: 'anchwatt', desc: '', args: []);
   }
 
-  /// `Tricher : +XP`
+  /// `Ajouter de l'XP`
   String get anchwattDebugAddXp {
     return Intl.message(
-      'Tricher : +XP',
+      'Ajouter de l\'XP',
       name: 'anchwattDebugAddXp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Simuler un événement`
+  String get anchwattDebugSimulateEvent {
+    return Intl.message(
+      'Simuler un événement',
+      name: 'anchwattDebugSimulateEvent',
       desc: '',
       args: [],
     );

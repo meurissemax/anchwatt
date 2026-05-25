@@ -4,6 +4,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ## Unreleased
 
+### Added
+
+- Add a debug button to simulate a system event through the full pipeline (random sound, volume sampling, silent-mode gate, coalesce window), hidden outside the dev environment
+
 ### Changed
 
 - Change the Flutter SDK version to 3.44.0

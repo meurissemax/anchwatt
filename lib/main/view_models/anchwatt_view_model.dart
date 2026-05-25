@@ -138,6 +138,8 @@ class AnchwattViewModel extends ChangeNotifier {
     ),
   );
 
+  Future<void> debugSimulateEvent() => _handleSystemEvent(AnchwattEventType.usbToggle);
+
   void onPetTick() {
     // Gate before touching the cooldown so a flurry of pets under DND does
     // not silently push the next cry's cooldown forward.
