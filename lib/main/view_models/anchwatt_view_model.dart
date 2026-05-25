@@ -62,7 +62,7 @@ class AnchwattViewModel extends ChangeNotifier {
 
   /* Constructor */
 
-  AnchwattViewModel({Duration levelUpDwell = defaultLevelUpDwell}) : _levelUpDwell = levelUpDwell {
+  AnchwattViewModel({this._levelUpDwell = defaultLevelUpDwell}) {
     _bootServices();
   }
 
@@ -227,8 +227,7 @@ class AnchwattViewModel extends ChangeNotifier {
     required bool notificationsEnabled,
     required bool silentModeEnabled,
     required bool windowHidden,
-  }) =>
-      notificationsEnabled && !silentModeEnabled && windowHidden;
+  }) => notificationsEnabled && !silentModeEnabled && windowHidden;
 
   // Single coalescence point for every native system event (USB, charger,
   // external display, headphones). One physical action — e.g. plugging in a

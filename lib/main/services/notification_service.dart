@@ -56,10 +56,9 @@ class NotificationService {
   NotificationService({
     NotificationPlatform? platform,
     NotificationStorage? storage,
-    VoidCallback? onNotificationTap,
+    this._onNotificationTap,
   }) : _platform = platform ?? _FlutterLocalNotificationsPlatform(),
-       _storage = storage ?? NotificationStorage(),
-       _onNotificationTap = onNotificationTap;
+       _storage = storage ?? NotificationStorage();
 
   /* Getters */
 
@@ -230,7 +229,7 @@ class _FlutterLocalNotificationsPlatform implements NotificationPlatform {
     required void Function() onTap,
   }) async {
     await _plugin.initialize(
-      const InitializationSettings(
+      settings: const InitializationSettings(
         macOS: DarwinInitializationSettings(
           // Permission prompts are routed through the service so the user sees
           // them only when they opt in, not at every cold start.
@@ -285,10 +284,10 @@ class _FlutterLocalNotificationsPlatform implements NotificationPlatform {
     required String body,
   }) {
     return _plugin.show(
-      id,
-      title,
-      body,
-      const NotificationDetails(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(
         macOS: DarwinNotificationDetails(),
       ),
     );

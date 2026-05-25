@@ -16,10 +16,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.4.0+5
+version: 1.5.0+6
 
 environment:
-  sdk: ^3.11.5
+  sdk: ^3.12.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -42,7 +42,7 @@ dependencies:
     sdk: flutter
 
   # A cross platform plugin for displaying and scheduling local notifications.
-  flutter_local_notifications: ^19.0.0
+  flutter_local_notifications: ^21.0.0
 
   # Flutter localizations library, from the Flutter SDK.
   flutter_localizations:
