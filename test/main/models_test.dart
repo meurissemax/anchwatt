@@ -11,7 +11,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 30);
+      expect(xp, 60);
     });
 
     test('usbToggle with zero volume awards 0 XP (anti-farming)', () {
@@ -33,7 +33,7 @@ void main() {
         systemVolume: 0.5,
       );
 
-      expect(xp, 15);
+      expect(xp, 30);
     });
 
     test('usbToggle scales with player level', () {
@@ -44,7 +44,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 471);
+      expect(xp, 942);
     });
 
     test('usbToggle clamps systemVolume above 1 to 1', () {
@@ -55,7 +55,7 @@ void main() {
         systemVolume: 1.5,
       );
 
-      expect(xp, 30);
+      expect(xp, 60);
     });
 
     test('usbToggle clamps negative systemVolume to 0', () {
@@ -88,7 +88,7 @@ void main() {
         systemVolume: 0,
       );
 
-      expect(xp, 1);
+      expect(xp, 2);
     });
 
     test('pet at level 1 with full volume awards floored base * maxVolumeMultiplier', () {
@@ -99,10 +99,10 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 3);
+      expect(xp, 8);
     });
 
-    test('pet stays an order of magnitude below usbToggle at full volume', () {
+    test('pet stays well below usbToggle at full volume', () {
       final int petXp = AnchwattSettings.xpForEvent(
         type: AnchwattEventType.pet,
         level: 1,
@@ -116,7 +116,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(petXp * 10, usbXp);
+      expect(petXp * 5, lessThanOrEqualTo(usbXp));
     });
 
     test('pet without systemVolume triggers assertion', () {
@@ -138,7 +138,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 45);
+      expect(xp, 90);
     });
 
     test('usbToggle in friday mode with zero volume still awards 0 XP', () {

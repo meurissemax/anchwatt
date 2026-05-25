@@ -7,6 +7,9 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 ### Changed
 
 - Change the Flutter SDK version to 3.44.0
+- Lower the XP requirement per level by flattening the growth curve
+- Double the base XP gain for system events (USB, charger, external display, headphones)
+- Raise the pet base XP gain from 2 to 5
 
 ## 1.4.0 - 2026-05-17
 
