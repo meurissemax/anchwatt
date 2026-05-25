@@ -109,13 +109,13 @@ class L10n {
     );
   }
 
-  /// `Activé auto : {title} jusqu'à {time}`
-  String autoMuteActiveReason(String time, String title) {
+  /// `Activé auto : {eventTitle} jusqu'à {time}`
+  String autoMuteActiveReason(String eventTitle, String time) {
     return Intl.message(
-      'Activé auto : $title jusqu\'à $time',
+      'Activé auto : $eventTitle jusqu\'à $time',
       name: 'autoMuteActiveReason',
       desc: '',
-      args: [time, title],
+      args: [eventTitle, time],
     );
   }
 
@@ -194,70 +194,124 @@ class L10n {
     );
   }
 
-  /// `Silence pendant {title}, jusqu'à {time}.`
-  String notificationDndActivatedBody(String time, String title) {
+  /// `un événement`
+  String get notificationCalendarEventFallbackName {
     return Intl.message(
-      'Silence pendant $title, jusqu\'à $time.',
-      name: 'notificationDndActivatedBody',
+      'un événement',
+      name: 'notificationCalendarEventFallbackName',
       desc: '',
-      args: [time, title],
+      args: [],
     );
   }
 
-  /// `Mode silencieux activé`
+  /// `Anchwatt se tait pendant {eventTitle} (jusqu'à {time}).`
+  String notificationDndActivatedBody(String eventTitle, String time) {
+    return Intl.message(
+      'Anchwatt se tait pendant $eventTitle (jusqu\'à $time).',
+      name: 'notificationDndActivatedBody',
+      desc: '',
+      args: [eventTitle, time],
+    );
+  }
+
+  /// `Mode Ne pas déranger activé`
   String get notificationDndActivatedTitle {
     return Intl.message(
-      'Mode silencieux activé',
+      'Mode Ne pas déranger activé',
       name: 'notificationDndActivatedTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `{title} terminé — Anchwatt reprend du service.`
-  String notificationDndDeactivatedBody(String title) {
+  /// `{eventTitle} est terminé. Anchwatt reprend du service.`
+  String notificationDndDeactivatedBody(String eventTitle) {
     return Intl.message(
-      '$title terminé — Anchwatt reprend du service.',
+      '$eventTitle est terminé. Anchwatt reprend du service.',
       name: 'notificationDndDeactivatedBody',
       desc: '',
-      args: [title],
+      args: [eventTitle],
     );
   }
 
-  /// `Mode silencieux désactivé`
+  /// `Mode Ne pas déranger désactivé`
   String get notificationDndDeactivatedTitle {
     return Intl.message(
-      'Mode silencieux désactivé',
+      'Mode Ne pas déranger désactivé',
       name: 'notificationDndDeactivatedTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `{name} vient d'évoluer.`
+  /// `{from} évolue en {to}.`
+  String notificationEvolutionBody(String from, String to) {
+    return Intl.message(
+      '$from évolue en $to.',
+      name: 'notificationEvolutionBody',
+      desc: '',
+      args: [from, to],
+    );
+  }
+
+  /// `Évolution !`
+  String get notificationEvolutionTitle {
+    return Intl.message(
+      'Évolution !',
+      name: 'notificationEvolutionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Niveau {level} atteint. {from} évolue en {to}.`
+  String notificationLevelUpAndEvolutionBody(
+    String from,
+    int level,
+    String to,
+  ) {
+    return Intl.message(
+      'Niveau $level atteint. $from évolue en $to.',
+      name: 'notificationLevelUpAndEvolutionBody',
+      desc: '',
+      args: [from, level, to],
+    );
+  }
+
+  /// `Évolution !`
+  String get notificationLevelUpAndEvolutionTitle {
+    return Intl.message(
+      'Évolution !',
+      name: 'notificationLevelUpAndEvolutionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name} a gagné un niveau.`
   String notificationLevelUpBody(String name) {
     return Intl.message(
-      '$name vient d\'évoluer.',
+      '$name a gagné un niveau.',
       name: 'notificationLevelUpBody',
       desc: '',
       args: [name],
     );
   }
 
-  /// `Anchwatt monte en grade !`
-  String get notificationLevelUpTitle {
+  /// `Niveau {level} atteint`
+  String notificationLevelUpTitle(int level) {
     return Intl.message(
-      'Anchwatt monte en grade !',
+      'Niveau $level atteint',
       name: 'notificationLevelUpTitle',
       desc: '',
-      args: [],
+      args: [level],
     );
   }
 
-  /// `macOS t'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s'allume/s'éteint tout seul.`
+  /// `macOS t'envoie une notif quand Anchwatt monte de niveau ou évolue, et quand le mode silencieux s'allume/s'éteint tout seul.`
   String get notificationsDescription {
     return Intl.message(
-      'macOS t\'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s\'allume/s\'éteint tout seul.',
+      'macOS t\'envoie une notif quand Anchwatt monte de niveau ou évolue, et quand le mode silencieux s\'allume/s\'éteint tout seul.',
       name: 'notificationsDescription',
       desc: '',
       args: [],

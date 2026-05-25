@@ -29,27 +29,50 @@
     },
     "@autoMuteActiveReason": {
         "placeholders": {
-            "time": {
+            "eventTitle": {
                 "type": "String"
             },
-            "title": {
+            "time": {
                 "type": "String"
             }
         }
     },
     "@notificationDndActivatedBody": {
         "placeholders": {
-            "time": {
+            "eventTitle": {
                 "type": "String"
             },
-            "title": {
+            "time": {
                 "type": "String"
             }
         }
     },
     "@notificationDndDeactivatedBody": {
         "placeholders": {
-            "title": {
+            "eventTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "@notificationEvolutionBody": {
+        "placeholders": {
+            "from": {
+                "type": "String"
+            },
+            "to": {
+                "type": "String"
+            }
+        }
+    },
+    "@notificationLevelUpAndEvolutionBody": {
+        "placeholders": {
+            "from": {
+                "type": "String"
+            },
+            "level": {
+                "type": "int"
+            },
+            "to": {
                 "type": "String"
             }
         }
@@ -58,6 +81,13 @@
         "placeholders": {
             "name": {
                 "type": "String"
+            }
+        }
+    },
+    "@notificationLevelUpTitle": {
+        "placeholders": {
+            "level": {
+                "type": "int"
             }
         }
     },
@@ -88,7 +118,7 @@
     "anchwattEvolutionLevel": "{name} — Lvl {level}",
     "anchwattXpCounter": "{current} / {total}",
     "anchwattXpGain": "+{xp}xp",
-    "autoMuteActiveReason": "Activé auto : {title} jusqu'à {time}",
+    "autoMuteActiveReason": "Activé auto : {eventTitle} jusqu'à {time}",
     "autoMuteDescription": "Branche ton calendrier pour couper Anchwatt pile pendant les réunions.",
     "autoMuteLabel": "Silence pendant les réunions",
     "autoMuteOpenSystemSettings": "Ouvrir les Réglages Système",
@@ -97,13 +127,18 @@
     "launchAtLoginDescription": "Anchwatt apparaît dans la barre des menus dès l'ouverture de session, fenêtre masquée. Clique sur l'icône pour la rouvrir.",
     "launchAtLoginError": "Raté, macOS a dit non",
     "launchAtLoginLabel": "Démarrer à l'ouverture de session",
-    "notificationDndActivatedBody": "Silence pendant {title}, jusqu'à {time}.",
-    "notificationDndActivatedTitle": "Mode silencieux activé",
-    "notificationDndDeactivatedBody": "{title} terminé — Anchwatt reprend du service.",
-    "notificationDndDeactivatedTitle": "Mode silencieux désactivé",
-    "notificationLevelUpBody": "{name} vient d'évoluer.",
-    "notificationLevelUpTitle": "Anchwatt monte en grade !",
-    "notificationsDescription": "macOS t'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s'allume/s'éteint tout seul.",
+    "notificationCalendarEventFallbackName": "un événement",
+    "notificationDndActivatedBody": "Anchwatt se tait pendant {eventTitle} (jusqu'à {time}).",
+    "notificationDndActivatedTitle": "Mode Ne pas déranger activé",
+    "notificationDndDeactivatedBody": "{eventTitle} est terminé. Anchwatt reprend du service.",
+    "notificationDndDeactivatedTitle": "Mode Ne pas déranger désactivé",
+    "notificationEvolutionBody": "{from} évolue en {to}.",
+    "notificationEvolutionTitle": "Évolution !",
+    "notificationLevelUpAndEvolutionBody": "Niveau {level} atteint. {from} évolue en {to}.",
+    "notificationLevelUpAndEvolutionTitle": "Évolution !",
+    "notificationLevelUpBody": "{name} a gagné un niveau.",
+    "notificationLevelUpTitle": "Niveau {level} atteint",
+    "notificationsDescription": "macOS t'envoie une notif quand Anchwatt monte de niveau ou évolue, et quand le mode silencieux s'allume/s'éteint tout seul.",
     "notificationsLabel": "Notifications",
     "notificationsPermissionDenied": "Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.",
     "ohmassacre": "Ohmassacre",

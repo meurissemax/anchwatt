@@ -26,21 +26,30 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(xp) => "+${xp}xp";
 
-  static String m3(time, title) => "Activé auto : ${title} jusqu\'à ${time}";
+  static String m3(eventTitle, time) =>
+      "Activé auto : ${eventTitle} jusqu\'à ${time}";
 
-  static String m4(time, title) =>
-      "Silence pendant ${title}, jusqu\'à ${time}.";
+  static String m4(eventTitle, time) =>
+      "Anchwatt se tait pendant ${eventTitle} (jusqu\'à ${time}).";
 
-  static String m5(title) => "${title} terminé — Anchwatt reprend du service.";
+  static String m5(eventTitle) =>
+      "${eventTitle} est terminé. Anchwatt reprend du service.";
 
-  static String m6(name) => "${name} vient d\'évoluer.";
+  static String m6(from, to) => "${from} évolue en ${to}.";
 
-  static String m7(version) => "v${version}";
+  static String m7(from, level, to) =>
+      "Niveau ${level} atteint. ${from} évolue en ${to}.";
 
-  static String m8(version) =>
+  static String m8(name) => "${name} a gagné un niveau.";
+
+  static String m9(level) => "Niveau ${level} atteint";
+
+  static String m10(version) => "v${version}";
+
+  static String m11(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m9(percent) => "Volume : ${percent} %";
+  static String m12(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -77,27 +86,34 @@ class MessageLookup extends MessageLookupByLibrary {
     "launchAtLoginLabel": MessageLookupByLibrary.simpleMessage(
       "Démarrer à l\'ouverture de session",
     ),
+    "notificationCalendarEventFallbackName":
+        MessageLookupByLibrary.simpleMessage("un événement"),
     "notificationDndActivatedBody": m4,
     "notificationDndActivatedTitle": MessageLookupByLibrary.simpleMessage(
-      "Mode silencieux activé",
+      "Mode Ne pas déranger activé",
     ),
     "notificationDndDeactivatedBody": m5,
     "notificationDndDeactivatedTitle": MessageLookupByLibrary.simpleMessage(
-      "Mode silencieux désactivé",
+      "Mode Ne pas déranger désactivé",
     ),
-    "notificationLevelUpBody": m6,
-    "notificationLevelUpTitle": MessageLookupByLibrary.simpleMessage(
-      "Anchwatt monte en grade !",
+    "notificationEvolutionBody": m6,
+    "notificationEvolutionTitle": MessageLookupByLibrary.simpleMessage(
+      "Évolution !",
     ),
+    "notificationLevelUpAndEvolutionBody": m7,
+    "notificationLevelUpAndEvolutionTitle":
+        MessageLookupByLibrary.simpleMessage("Évolution !"),
+    "notificationLevelUpBody": m8,
+    "notificationLevelUpTitle": m9,
     "notificationsDescription": MessageLookupByLibrary.simpleMessage(
-      "macOS t\'envoie une notif quand Anchwatt évolue ou quand le mode silencieux s\'allume/s\'éteint tout seul.",
+      "macOS t\'envoie une notif quand Anchwatt monte de niveau ou évolue, et quand le mode silencieux s\'allume/s\'éteint tout seul.",
     ),
     "notificationsLabel": MessageLookupByLibrary.simpleMessage("Notifications"),
     "notificationsPermissionDenied": MessageLookupByLibrary.simpleMessage(
       "Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.",
     ),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
-    "optionsAppVersion": m7,
+    "optionsAppVersion": m10,
     "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Bidouiller Anchwatt",
     ),
@@ -113,7 +129,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "À fond la caisse, c\'est presque le week-end.",
     ),
     "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
-    "optionsUpdatesAvailable": m8,
+    "optionsUpdatesAvailable": m11,
     "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
       "Chercher du neuf",
     ),
@@ -143,7 +159,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
       "Hop, Friday",
     ),
-    "systemVolumeTooltip": m9,
+    "systemVolumeTooltip": m12,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

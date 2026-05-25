@@ -4,6 +4,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/storages/notification_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // Thin seam over `flutter_local_notifications` so tests can plug a fake
@@ -32,10 +33,12 @@ class NotificationService {
 
   // Stable IDs — re-using the same int makes a new notification of the same
   // kind replace the previous one in the macOS Notification Center, which is
-  // the desired behaviour for back-to-back level-ups or DND transitions.
+  // the desired behaviour for back-to-back progression or DND transitions.
   static const int _idLevelUp = 1;
   static const int _idCalendarDndActivated = 2;
   static const int _idCalendarDndDeactivated = 3;
+  static const int _idEvolution = 4;
+  static const int _idLevelUpAndEvolution = 5;
 
   static const String _systemSettingsUrl =
       'x-apple.systempreferences:com.apple.preference.security?Privacy_Notifications';
@@ -45,6 +48,10 @@ class NotificationService {
   final NotificationPlatform _platform;
   final NotificationStorage _storage;
   final VoidCallback? _onNotificationTap;
+  // Foreground gate: when supplied, notifications are suppressed while the
+  // window is in front of the user. Optional so the seam stays trivial to
+  // wire in tests that don't care about this check.
+  final Future<bool> Function()? _isWindowHidden;
 
   final ValueNotifier<bool> enabledNotifier = ValueNotifier<bool>(false);
   final ValueNotifier<NotificationServiceError?> errorNotifier = ValueNotifier<NotificationServiceError?>(null);
@@ -56,6 +63,7 @@ class NotificationService {
   NotificationService({
     NotificationPlatform? platform,
     NotificationStorage? storage,
+    this._isWindowHidden,
     this._onNotificationTap,
   }) : _platform = platform ?? _FlutterLocalNotificationsPlatform(),
        _storage = storage ?? NotificationStorage();
@@ -132,7 +140,7 @@ class NotificationService {
     }
   }
 
-  Future<void> showLevelUp(Evolution stage) async {
+  Future<void> showLevelUp(int level, Evolution stage) async {
     if (!await _ensureCanFire()) {
       return;
     }
@@ -140,8 +148,34 @@ class NotificationService {
     final L10n l10n = locator<L10n>();
     await _safeShow(
       id: _idLevelUp,
-      title: l10n.notificationLevelUpTitle,
+      title: l10n.notificationLevelUpTitle(level),
       body: l10n.notificationLevelUpBody(stage.label(l10n)),
+    );
+  }
+
+  Future<void> showEvolution(Evolution oldStage, Evolution newStage) async {
+    if (!await _ensureCanFire()) {
+      return;
+    }
+
+    final L10n l10n = locator<L10n>();
+    await _safeShow(
+      id: _idEvolution,
+      title: l10n.notificationEvolutionTitle,
+      body: l10n.notificationEvolutionBody(oldStage.label(l10n), newStage.label(l10n)),
+    );
+  }
+
+  Future<void> showLevelUpAndEvolution(int level, Evolution oldStage, Evolution newStage) async {
+    if (!await _ensureCanFire()) {
+      return;
+    }
+
+    final L10n l10n = locator<L10n>();
+    await _safeShow(
+      id: _idLevelUpAndEvolution,
+      title: l10n.notificationLevelUpAndEvolutionTitle,
+      body: l10n.notificationLevelUpAndEvolutionBody(oldStage.label(l10n), level, newStage.label(l10n)),
     );
   }
 
@@ -151,10 +185,11 @@ class NotificationService {
     }
 
     final L10n l10n = locator<L10n>();
+    final String resolvedTitle = eventTitle.isEmpty ? l10n.notificationCalendarEventFallbackName : eventTitle;
     await _safeShow(
       id: _idCalendarDndActivated,
       title: l10n.notificationDndActivatedTitle,
-      body: l10n.notificationDndActivatedBody(eventTitle, _formatTime(endTime)),
+      body: l10n.notificationDndActivatedBody(resolvedTitle, DateFormat.Hm().format(endTime)),
     );
   }
 
@@ -164,16 +199,19 @@ class NotificationService {
     }
 
     final L10n l10n = locator<L10n>();
+    final String resolvedTitle = eventTitle.isEmpty ? l10n.notificationCalendarEventFallbackName : eventTitle;
     await _safeShow(
       id: _idCalendarDndDeactivated,
       title: l10n.notificationDndDeactivatedTitle,
-      body: l10n.notificationDndDeactivatedBody(eventTitle),
+      body: l10n.notificationDndDeactivatedBody(resolvedTitle),
     );
   }
 
   // Returns true iff the service is currently authorized to fire. If the
   // permission was revoked from System Settings while the master flag stayed
   // on, force the flag off and surface the error so the UI keeps in sync.
+  // Also enforces the foreground gate: when the window is in front of the
+  // user, the notification is dropped silently.
   Future<bool> _ensureCanFire() async {
     if (_disposed || !enabledNotifier.value) {
       return false;
@@ -186,6 +224,14 @@ class NotificationService {
       await _storage.writeEnabled(false);
 
       return false;
+    }
+
+    final Future<bool> Function()? isWindowHidden = _isWindowHidden;
+    if (isWindowHidden != null) {
+      final bool hidden = await isWindowHidden();
+      if (!hidden) {
+        return false;
+      }
     }
 
     return true;
@@ -205,13 +251,6 @@ class NotificationService {
 
   void _onTap() {
     _onNotificationTap?.call();
-  }
-
-  static String _formatTime(DateTime time) {
-    final String hh = time.hour.toString().padLeft(2, '0');
-    final String mm = time.minute.toString().padLeft(2, '0');
-
-    return '$hh:$mm';
   }
 
   void dispose() {

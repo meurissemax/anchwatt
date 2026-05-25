@@ -38,6 +38,7 @@ class AnchwattViewModel extends ChangeNotifier {
   late final CalendarAutoMuteService _calendarAutoMuteService = CalendarAutoMuteService(_silentModeService);
   final WindowStateService _windowStateService = WindowStateService();
   late final NotificationService _notificationService = NotificationService(
+    isWindowHidden: _windowStateService.isWindowHidden,
     onNotificationTap: () => unawaited(_windowStateService.showWindow()),
   );
   final SoundService _soundService = SoundService();
@@ -208,28 +209,30 @@ class AnchwattViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _maybeFireLevelUpNotification(Evolution stage) async {
-    final bool windowHidden = await _windowStateService.isWindowHidden();
-    if (!shouldNotifyLevelUp(
-      notificationsEnabled: _notificationService.isEnabled,
-      silentModeEnabled: _silentModeService.isEnabled,
-      windowHidden: windowHidden,
-    )) {
+  // DND silences level-up and evolution notifications (calendar DND notifs
+  // bypass this — they must fire to tell the user why Anchwatt just went
+  // quiet). Permission + foreground checks live inside NotificationService.
+  Future<void> _maybeFireProgressionNotification({
+    required int oldLevel,
+    required int newLevel,
+    required Evolution oldEvolution,
+    required Evolution newEvolution,
+  }) async {
+    if (_silentModeService.isEnabled) {
       return;
     }
 
-    await _notificationService.showLevelUp(stage);
-  }
+    final bool leveledUp = newLevel > oldLevel;
+    final bool evolved = newEvolution != oldEvolution;
 
-  // Pure decision for the level-up notification trigger, kept as a static
-  // helper so the truth table can be unit-tested without spinning up the full
-  // ViewModel and its underlying native channels.
-  @visibleForTesting
-  static bool shouldNotifyLevelUp({
-    required bool notificationsEnabled,
-    required bool silentModeEnabled,
-    required bool windowHidden,
-  }) => notificationsEnabled && !silentModeEnabled && windowHidden;
+    if (leveledUp && evolved) {
+      await _notificationService.showLevelUpAndEvolution(newLevel, oldEvolution, newEvolution);
+    } else if (evolved) {
+      await _notificationService.showEvolution(oldEvolution, newEvolution);
+    } else if (leveledUp) {
+      await _notificationService.showLevelUp(newLevel, newEvolution);
+    }
+  }
 
   // Single coalescence point for every native system event (USB, charger,
   // external display, headphones). One physical action — e.g. plugging in a
@@ -403,6 +406,12 @@ class AnchwattViewModel extends ChangeNotifier {
       return;
     }
 
+    // Snapshot before the loop so a multi-level gain (e.g. after a balance
+    // tweak that drops thresholds) collapses into a single notification for
+    // the final state, instead of one per palier crossed.
+    final int oldLevel = _level;
+    final Evolution oldEvolution = Evolution.fromLevel(oldLevel);
+
     _xp += amount;
     _xpGainController.add(amount);
 
@@ -415,14 +424,8 @@ class AnchwattViewModel extends ChangeNotifier {
 
       await Future<void>.delayed(_levelUpDwell);
 
-      final Evolution previousEvolution = Evolution.fromLevel(_level);
       _level += 1;
       _xp = carry;
-      final Evolution newEvolution = Evolution.fromLevel(_level);
-
-      if (newEvolution != previousEvolution) {
-        unawaited(_maybeFireLevelUpNotification(newEvolution));
-      }
     }
 
     if (_level >= AnchwattSettings.levelMax) {
@@ -433,6 +436,13 @@ class AnchwattViewModel extends ChangeNotifier {
     notifyListeners();
 
     await _storage.writeProgression(level: _level, xp: _xp);
+
+    unawaited(_maybeFireProgressionNotification(
+      oldLevel: oldLevel,
+      newLevel: _level,
+      oldEvolution: oldEvolution,
+      newEvolution: Evolution.fromLevel(_level),
+    ));
   }
 
   @override

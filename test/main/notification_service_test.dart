@@ -178,7 +178,9 @@ void main() {
     final NotificationService service = NotificationService(platform: platform);
     await service.init();
 
-    await service.showLevelUp(Evolution.lamperoie);
+    await service.showLevelUp(7, Evolution.anchwatt);
+    await service.showEvolution(Evolution.anchwatt, Evolution.lamperoie);
+    await service.showLevelUpAndEvolution(15, Evolution.anchwatt, Evolution.lamperoie);
     await service.showCalendarDndActivated('Daily standup', DateTime(2026, 5, 17, 14, 30));
     await service.showCalendarDndDeactivated('Daily standup');
 
@@ -187,35 +189,135 @@ void main() {
     service.dispose();
   });
 
-  test('showLevelUp fires once enabled and uses a stable id', () async {
+  test('showLevelUp embeds the level in the title and the stage label in the body', () async {
     final NotificationService service = NotificationService(platform: platform);
     await service.init();
     await service.setEnabled(true);
 
-    await service.showLevelUp(Evolution.lamperoie);
-    await service.showLevelUp(Evolution.ohmassacre);
+    await service.showLevelUp(7, Evolution.anchwatt);
+    await service.showLevelUp(20, Evolution.lamperoie);
 
     expect(platform.shown.length, 2);
     expect(platform.shown.every((s) => s.id == 1), true);
-    expect(platform.shown.last.body, contains('Ohmassacre'));
+    expect(platform.shown.first.title, contains('7'));
+    expect(platform.shown.first.body, contains('Anchwatt'));
+    expect(platform.shown.last.title, contains('20'));
+    expect(platform.shown.last.body, contains('Lampéroie'));
 
     service.dispose();
   });
 
-  test('showCalendarDndActivated and Deactivated use distinct stable ids and embed the event', () async {
+  test('showEvolution names both stages and uses a distinct stable id', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showEvolution(Evolution.anchwatt, Evolution.lamperoie);
+
+    expect(platform.shown.length, 1);
+    expect(platform.shown.single.id, 4);
+    expect(platform.shown.single.body, contains('Anchwatt'));
+    expect(platform.shown.single.body, contains('Lampéroie'));
+    expect(
+      platform.shown.single.body.indexOf('Anchwatt'),
+      lessThan(platform.shown.single.body.indexOf('Lampéroie')),
+    );
+
+    service.dispose();
+  });
+
+  test('showLevelUpAndEvolution embeds level, old stage then new stage', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showLevelUpAndEvolution(15, Evolution.anchwatt, Evolution.lamperoie);
+
+    expect(platform.shown.length, 1);
+    expect(platform.shown.single.id, 5);
+    expect(platform.shown.single.body, contains('15'));
+    expect(platform.shown.single.body, contains('Anchwatt'));
+    expect(platform.shown.single.body, contains('Lampéroie'));
+    expect(
+      platform.shown.single.body.indexOf('Anchwatt'),
+      lessThan(platform.shown.single.body.indexOf('Lampéroie')),
+    );
+
+    service.dispose();
+  });
+
+  test('showCalendarDndActivated puts the event title before the end time', () async {
     final NotificationService service = NotificationService(platform: platform);
     await service.init();
     await service.setEnabled(true);
 
     await service.showCalendarDndActivated('Daily standup', DateTime(2026, 5, 17, 14, 30));
+
+    expect(platform.shown.length, 1);
+    expect(platform.shown.single.id, 2);
+    expect(platform.shown.single.body, contains('Daily standup'));
+    expect(platform.shown.single.body, contains('14:30'));
+    // Regression guard: the previous build emitted "14:30 ... Daily standup"
+    // because the ARB placeholders were sorted alphabetically while the call
+    // site passed (title, time).
+    expect(
+      platform.shown.single.body.indexOf('Daily standup'),
+      lessThan(platform.shown.single.body.indexOf('14:30')),
+    );
+
+    service.dispose();
+  });
+
+  test('showCalendarDndDeactivated keeps a distinct stable id and embeds the event title', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
     await service.showCalendarDndDeactivated('Daily standup');
 
+    expect(platform.shown.length, 1);
+    expect(platform.shown.single.id, 3);
+    expect(platform.shown.single.body, contains('Daily standup'));
+
+    service.dispose();
+  });
+
+  test('DND notifications use a fallback label when the calendar event title is empty', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showCalendarDndActivated('', DateTime(2026, 5, 17, 14, 30));
+    await service.showCalendarDndDeactivated('');
+
     expect(platform.shown.length, 2);
-    expect(platform.shown[0].id, 2);
-    expect(platform.shown[0].body, contains('Daily standup'));
-    expect(platform.shown[0].body, contains('14:30'));
-    expect(platform.shown[1].id, 3);
-    expect(platform.shown[1].body, contains('Daily standup'));
+    expect(platform.shown[0].body, contains('un événement'));
+    expect(platform.shown[1].body, contains('un événement'));
+
+    service.dispose();
+  });
+
+  test('foreground gate suppresses every notification when the window is visible', () async {
+    bool windowHidden = false;
+    final NotificationService service = NotificationService(
+      platform: platform,
+      isWindowHidden: () async => windowHidden,
+    );
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showLevelUp(7, Evolution.anchwatt);
+    await service.showEvolution(Evolution.anchwatt, Evolution.lamperoie);
+    await service.showLevelUpAndEvolution(15, Evolution.anchwatt, Evolution.lamperoie);
+    await service.showCalendarDndActivated('Standup', DateTime(2026, 5, 17, 14, 30));
+    await service.showCalendarDndDeactivated('Standup');
+
+    expect(platform.shown, isEmpty, reason: 'no notification should fire while the window is visible');
+
+    windowHidden = true;
+    await service.showLevelUp(7, Evolution.anchwatt);
+
+    expect(platform.shown.length, 1);
 
     service.dispose();
   });
@@ -229,7 +331,7 @@ void main() {
     // Permission was revoked from System Settings between dispatches.
     platform.hasPermissionResult = false;
 
-    await service.showLevelUp(Evolution.lamperoie);
+    await service.showLevelUp(7, Evolution.anchwatt);
 
     expect(service.isEnabled, false);
     expect(service.errorNotifier.value, NotificationServiceError.permissionDenied);

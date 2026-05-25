@@ -9,6 +9,7 @@ import 'package:anchwatt/styles/shadows.dart';
 import 'package:anchwatt/styles/texts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class OptionsView extends StatelessWidget {
@@ -384,13 +385,6 @@ class _SilentModeActiveReason extends StatelessWidget {
 
   const _SilentModeActiveReason();
 
-  static String _formatTime(DateTime time) {
-    final String hh = time.hour.toString().padLeft(2, '0');
-    final String mm = time.minute.toString().padLeft(2, '0');
-
-    return '$hh:$mm';
-  }
-
   @override
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
@@ -406,7 +400,7 @@ class _SilentModeActiveReason extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    l10n.autoMuteActiveReason(event.title, _formatTime(event.endTime)),
+                    l10n.autoMuteActiveReason(event.title, DateFormat.Hm().format(event.endTime)),
                     style: textOptionsSectionDescription,
                   ),
                 ),

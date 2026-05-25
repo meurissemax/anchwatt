@@ -7,6 +7,9 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 ### Added
 
 - Add a debug button to simulate a system event through the full pipeline (random sound, volume sampling, silent-mode gate, coalesce window), hidden outside the dev environment
+- Notify on every level-up, not only on stage evolutions
+- Notify on every stage evolution as a dedicated notification, distinct from the level-up one
+- Fall back to "un événement" in calendar DND notifications when the event has no title
 
 ### Changed
 
@@ -14,6 +17,16 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Lower the XP requirement per level by flattening the growth curve
 - Double the base XP gain for system events (USB, charger, external display, headphones)
 - Raise the pet base XP gain from 2 to 5
+- Merge level-up and evolution into a single notification when they happen together
+- Coalesce a multi-level XP gain into a single progression notification matching the final state, instead of one per palier crossed
+- Suppress calendar DND notifications while the app window is visible, matching the level-up notification behaviour
+- Reword calendar DND notification titles to match the in-app "Ne pas déranger" wording
+- Format the calendar DND end time through `DateFormat.Hm` from `intl` instead of a hand-rolled formatter
+
+### Fixed
+
+- Restore the calendar DND activation notification so the event title and end time appear in the intended order
+- Restore the "Activé auto" hint under the silent-mode toggle so the event title and end time appear in the intended order
 
 ## 1.4.0 - 2026-05-17
 
