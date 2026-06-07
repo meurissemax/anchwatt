@@ -204,10 +204,10 @@ class L10n {
     );
   }
 
-  /// `Anchwatt se tait pendant {eventTitle} (jusqu'à {time}).`
+  /// `{eventTitle} commence bientôt. Anchwatt se tait jusqu'à {time}.`
   String notificationDndActivatedBody(String eventTitle, String time) {
     return Intl.message(
-      'Anchwatt se tait pendant $eventTitle (jusqu\'à $time).',
+      '$eventTitle commence bientôt. Anchwatt se tait jusqu\'à $time.',
       name: 'notificationDndActivatedBody',
       desc: '',
       args: [eventTitle, time],

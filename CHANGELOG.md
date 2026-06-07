@@ -25,6 +25,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Suppress calendar DND notifications while the app window is visible, matching the level-up notification behaviour
 - Reword calendar DND notification titles to match the in-app "Ne pas déranger" wording
 - Format the calendar DND end time through `DateFormat.Hm` from `intl` instead of a hand-rolled formatter
+- Trigger calendar DND (and its notification) five minutes before a busy event starts, instead of at the event's start time, and reword the activation notification to match
 
 ### Fixed
 

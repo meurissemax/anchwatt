@@ -802,6 +802,10 @@ final class HeadphonesMonitor: NSObject, FlutterStreamHandler {
 final class CalendarChannel: NSObject {
   private let eventStore = EKEventStore()
 
+  // Activate DND this far ahead of a busy event's start so the mode is already
+  // on when the event begins. Mirrors the look-back side of the predicate window.
+  private static let leadTime: TimeInterval = 300
+
   func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     DispatchQueue.main.async {
       switch call.method {
@@ -853,8 +857,9 @@ final class CalendarChannel: NSObject {
   }
 
   // Look-ahead window large enough to catch an event that started slightly in
-  // the past and small enough to keep the predicate cheap. We only return the
-  // first event that covers "now" with availability == .busy and isAllDay == false.
+  // the past and small enough to keep the predicate cheap. We return the first
+  // busy, non-all-day event that is in progress or about to start within
+  // `leadTime`, so DND is already on by the time it begins.
   private func fetchCurrentBusyEvent(result: @escaping FlutterResult) {
     let now = Date()
     let predicate = eventStore.predicateForEvents(
@@ -866,7 +871,7 @@ final class CalendarChannel: NSObject {
     let match = events.first { event in
       event.availability == .busy
         && !event.isAllDay
-        && event.startDate <= now
+        && event.startDate <= now.addingTimeInterval(CalendarChannel.leadTime)
         && event.endDate > now
     }
     if let match = match {

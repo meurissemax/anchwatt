@@ -28,7 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Activé auto : ${eventTitle} jusqu\'à ${time}";
 
   static String m3(eventTitle, time) =>
-      "Anchwatt se tait pendant ${eventTitle} (jusqu\'à ${time}).";
+      "${eventTitle} commence bientôt. Anchwatt se tait jusqu\'à ${time}.";
 
   static String m4(eventTitle) =>
       "${eventTitle} est terminé. Anchwatt reprend du service.";
