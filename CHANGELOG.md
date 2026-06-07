@@ -2,36 +2,31 @@
 
 This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
-## Unreleased
-
-### Added
-
-- Add a stats panel behind a new header button (left of the settings button) recapping the Anchwatt run: evolution stage and level, total XP earned, event wake-ups, favourite event, sounds played with the Corporate/Friday split, pet pokes and the member-since date
-- Slightly desaturate the Anchwatt sprite while "Ne pas déranger" is active, as an extra visual cue for the silent mode
-- Add a debug button to reset all stats (level and XP back to their initial values), hidden outside the dev environment
-- Add a debug button to simulate a system event through the full pipeline (random sound, volume sampling, silent-mode gate, coalesce window), hidden outside the dev environment
-- Notify on every level-up, not only on stage evolutions
-- Notify on every stage evolution as a dedicated notification, distinct from the level-up one
-- Fall back to "un événement" in calendar DND notifications when the event has no title
+## 1.5.0 - 2026-06-07
 
 ### Changed
 
 - Polish the level header — drop the redundant "— Lvl X" suffix (the level already shows in large type), slightly enlarge the Anchwatt name, baseline-align it with the level number, and add a touch more spacing between them
 - Lay out the debug buttons on a single row and shorten their labels to fit
 - Change the Flutter SDK version to 3.44.1
-- Increased base XP gain for system events and steepened per-level XP scaling for faster progression
-- Raised early-level XP requirements so the first levels feel earned
-- Merge level-up and evolution into a single notification when they happen together
-- Coalesce a multi-level XP gain into a single progression notification matching the final state, instead of one per palier crossed
+- Rebalance the XP curve for faster progression: increase base XP gain for system events, steepen per-level scaling, and raise early-level requirements so the first levels still feel earned
+- Coalesce progression notifications into one: merge a simultaneous level-up and evolution, and collapse a multi-level XP gain into a single notification matching the final state instead of one per palier crossed
 - Suppress calendar DND notifications while the app window is visible, matching the level-up notification behaviour
 - Reword calendar DND notification titles to match the in-app "Ne pas déranger" wording
 - Format the calendar DND end time through `DateFormat.Hm` from `intl` instead of a hand-rolled formatter
 - Trigger calendar DND (and its notification) five minutes before a busy event starts, instead of at the event's start time, and reword the activation notification to match
 
+### Added
+
+- Add a stats panel behind a new header button (left of the settings button) recapping the Anchwatt run: evolution stage and level, total XP earned, event wake-ups, favourite event, sounds played with the Corporate/Friday split, pet pokes and the member-since date
+- Slightly desaturate the Anchwatt sprite while "Ne pas déranger" is active, as an extra visual cue for the silent mode
+- Add two debug buttons (hidden outside the dev environment): one to reset all stats (level and XP back to their initial values), one to simulate a system event through the full pipeline (random sound, volume sampling, silent-mode gate, coalesce window)
+- Notify on every level-up (not only on stage evolutions), with stage evolutions firing a dedicated notification distinct from the level-up one
+- Fall back to "un événement" in calendar DND notifications when the event has no title
+
 ### Fixed
 
-- Restore the calendar DND activation notification so the event title and end time appear in the intended order
-- Restore the "Activé auto" hint under the silent-mode toggle so the event title and end time appear in the intended order
+- Restore the calendar DND activation notification and the "Activé auto" hint under the silent-mode toggle so the event title and end time appear in the intended order
 
 ## 1.4.0 - 2026-05-17
 
