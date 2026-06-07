@@ -8,13 +8,14 @@ class AnchwattSettings {
   static const int evolutionOhmassacreLevel = 40;
   static const int levelMax = 100;
   static const int levelMin = 1;
-  static const double levelXpCoef = 0.30;
+  static const double levelXpCoef = 0.40;
   static const double maxVolumeMultiplier = 1.5;
   static const int petCryCooldownMaxSeconds = 4;
   static const int petCryCooldownMinSeconds = 2;
   static const double petVolumeFloor = 0.2;
   static const int randomSoundExclusionWindow = 3;
-  static const int xpBase = 25;
+  static const int xpBase = 50;
+  static const int xpGrowthFactor = 2;
   // Cross-event coalescing window. A single physical action (e.g. plugging in
   // a USB-C dock) can fan out into several system events almost simultaneously
   // — USB + display + sometimes audio — and we only want one Anchwatt reaction
@@ -23,11 +24,11 @@ class AnchwattSettings {
   static const Duration systemEventCoalesceWindow = Duration(milliseconds: 500);
 
   static const Map<AnchwattEventType, double> baseXpByEvent = {
-    AnchwattEventType.pet: 5.0,
-    AnchwattEventType.usbToggle: 40.0,
-    AnchwattEventType.chargerToggle: 40.0,
-    AnchwattEventType.externalDisplayToggle: 40.0,
-    AnchwattEventType.headphonesToggle: 40.0,
+    AnchwattEventType.pet: 3.0,
+    AnchwattEventType.usbToggle: 25.0,
+    AnchwattEventType.chargerToggle: 25.0,
+    AnchwattEventType.externalDisplayToggle: 25.0,
+    AnchwattEventType.headphonesToggle: 25.0,
   };
 
   static const Set<AnchwattEventType> volumeAffectedEvents = {
@@ -47,7 +48,7 @@ class AnchwattSettings {
     AnchwattEventType.headphonesToggle,
   };
 
-  static int xpForLevel(int level) => xpBase + (level - 1) * (level - 1);
+  static int xpForLevel(int level) => xpBase + xpGrowthFactor * (level - 1) * (level - 1);
 
   // Volume = 0 yields 0 XP for non-pet events (anti-farming when muted).
   // The pet uses [petVolumeFloor] so it still grants a small gain when muted.
@@ -89,8 +90,7 @@ enum AnchwattEventType {
 enum Evolution {
   anchwatt,
   lamperoie,
-  ohmassacre
-  ;
+  ohmassacre;
 
   static Evolution fromLevel(int level) {
     if (level < AnchwattSettings.evolutionLamperoieLevel) {
@@ -146,8 +146,7 @@ enum Evolution {
 
 enum SoundMode {
   corporate,
-  friday
-  ;
+  friday;
 
   static SoundMode fromName(String? name) {
     for (final SoundMode mode in SoundMode.values) {

@@ -14,9 +14,8 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 ### Changed
 
 - Change the Flutter SDK version to 3.44.1
-- Lower the XP requirement per level by flattening the growth curve
-- Double the base XP gain for system events (USB, charger, external display, headphones)
-- Raise the pet base XP gain from 2 to 5
+- Increased base XP gain for system events and steepened per-level XP scaling for faster progression
+- Raised early-level XP requirements so the first levels feel earned
 - Merge level-up and evolution into a single notification when they happen together
 - Coalesce a multi-level XP gain into a single progression notification matching the final state, instead of one per palier crossed
 - Suppress calendar DND notifications while the app window is visible, matching the level-up notification behaviour

@@ -11,7 +11,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 60);
+      expect(xp, 38);
     });
 
     test('usbToggle with zero volume awards 0 XP (anti-farming)', () {
@@ -33,7 +33,7 @@ void main() {
         systemVolume: 0.5,
       );
 
-      expect(xp, 30);
+      expect(xp, 19);
     });
 
     test('usbToggle scales with player level', () {
@@ -44,7 +44,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 942);
+      expect(xp, 773);
     });
 
     test('usbToggle clamps systemVolume above 1 to 1', () {
@@ -55,7 +55,7 @@ void main() {
         systemVolume: 1.5,
       );
 
-      expect(xp, 60);
+      expect(xp, 38);
     });
 
     test('usbToggle clamps negative systemVolume to 0', () {
@@ -88,7 +88,7 @@ void main() {
         systemVolume: 0,
       );
 
-      expect(xp, 2);
+      expect(xp, 1);
     });
 
     test('pet at level 1 with full volume awards floored base * maxVolumeMultiplier', () {
@@ -99,7 +99,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 8);
+      expect(xp, 5);
     });
 
     test('pet stays well below usbToggle at full volume', () {
@@ -138,7 +138,7 @@ void main() {
         systemVolume: 1,
       );
 
-      expect(xp, 90);
+      expect(xp, 56);
     });
 
     test('usbToggle in friday mode with zero volume still awards 0 XP', () {
