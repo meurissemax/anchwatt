@@ -84,7 +84,26 @@ enum AnchwattEventType {
   usbToggle,
   chargerToggle,
   externalDisplayToggle,
-  headphonesToggle,
+  headphonesToggle;
+
+  String label(L10n l10n) {
+    switch (this) {
+      case AnchwattEventType.pet:
+        return l10n.eventTypePet;
+
+      case AnchwattEventType.usbToggle:
+        return l10n.eventTypeUsbToggle;
+
+      case AnchwattEventType.chargerToggle:
+        return l10n.eventTypeChargerToggle;
+
+      case AnchwattEventType.externalDisplayToggle:
+        return l10n.eventTypeExternalDisplayToggle;
+
+      case AnchwattEventType.headphonesToggle:
+        return l10n.eventTypeHeadphonesToggle;
+    }
+  }
 }
 
 enum Evolution {
@@ -140,6 +159,19 @@ enum Evolution {
 
       case Evolution.ohmassacre:
         return l10n.ohmassacre;
+    }
+  }
+
+  String flavor(L10n l10n) {
+    switch (this) {
+      case Evolution.anchwatt:
+        return l10n.evolutionFlavorAnchwatt;
+
+      case Evolution.lamperoie:
+        return l10n.evolutionFlavorLamperoie;
+
+      case Evolution.ohmassacre:
+        return l10n.evolutionFlavorOhmassacre;
     }
   }
 }

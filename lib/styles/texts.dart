@@ -86,6 +86,13 @@ const TextStyle textStageLabel = TextStyle(
   fontWeight: FontWeight.w500,
 );
 
+const TextStyle textStatValue = TextStyle(
+  color: colorMutedDark,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 12,
+  fontWeight: FontWeight.w500,
+);
 
 const TextStyle textSystemVolumeLabel = TextStyle(
   color: colorSystemVolumeForeground,

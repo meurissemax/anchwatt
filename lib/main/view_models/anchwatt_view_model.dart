@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/calendar_auto_mute_service.dart';
 import 'package:anchwatt/main/services/charger_event_service.dart';
@@ -11,6 +12,7 @@ import 'package:anchwatt/main/services/notification_service.dart';
 import 'package:anchwatt/main/services/playback_volume_sampler.dart';
 import 'package:anchwatt/main/services/silent_mode_service.dart';
 import 'package:anchwatt/main/services/sound_service.dart';
+import 'package:anchwatt/main/services/stats_service.dart';
 import 'package:anchwatt/main/services/system_volume_service.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/services/usb_event_service.dart';
@@ -44,6 +46,7 @@ class AnchwattViewModel extends ChangeNotifier {
   final SoundService _soundService = SoundService();
   final UpdateService _updateService = UpdateService();
   final SystemVolumeService _systemVolumeService = SystemVolumeService();
+  final StatsService _statsService = locator<StatsService>();
 
   StreamSubscription<void>? _usbSubscription;
   StreamSubscription<void>? _chargerSubscription;
@@ -148,6 +151,7 @@ class AnchwattViewModel extends ChangeNotifier {
     notifyListeners();
 
     await _storage.clear();
+    await _statsService.reset();
   }
 
   void onPetTick() {
@@ -168,6 +172,8 @@ class AnchwattViewModel extends ChangeNotifier {
       min: AnchwattSettings.petCryCooldownMinSeconds,
       max: AnchwattSettings.petCryCooldownMaxSeconds,
     );
+
+    _statsService.recordPetInteraction();
 
     unawaited(_playPetCryAndGrantXp());
   }
@@ -263,6 +269,11 @@ class AnchwattViewModel extends ChangeNotifier {
     }
     _lastSystemEventAt = now;
 
+    // Count the coalesced action exactly once, here on the existing debounced
+    // path, regardless of whether it ends up muted or granting zero XP — so the
+    // "réveils" total reflects every physical reaction.
+    _statsService.recordSystemEvent(type);
+
     // Snapshot level and mode at event time so a level-up or mode change
     // during playback does not retroactively shift the XP for this event.
     final int level = _level;
@@ -298,6 +309,14 @@ class AnchwattViewModel extends ChangeNotifier {
     _level = initial.level;
     _xp = initial.xp;
     notifyListeners();
+
+    // Load stats before the event services start so no reaction can be missed,
+    // and so the first launch after this update seeds the "member since" date.
+    try {
+      await _statsService.init();
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: StatsService init failed: $error');
+    }
 
     try {
       await _silentModeService.init();
@@ -411,6 +430,11 @@ class AnchwattViewModel extends ChangeNotifier {
   }
 
   Future<void> _process(int amount) async {
+    // Accumulate granted XP from the single grant funnel (system events, pet,
+    // debug), before the max-level guard so the lifetime total keeps climbing
+    // even at cap. Self-contained: tracks the granted [amount], not _xp.
+    _statsService.addLifetimeXp(amount);
+
     if (_level >= AnchwattSettings.levelMax) {
       return;
     }

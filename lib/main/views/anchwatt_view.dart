@@ -6,6 +6,7 @@ import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/views/options_view.dart';
+import 'package:anchwatt/main/views/stats_view.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/pet_gesture_surface.dart';
 import 'package:anchwatt/main/widgets/sound_mode_pill.dart';
@@ -54,6 +55,7 @@ class _AnchwattViewBody extends StatelessWidget {
                   SystemVolumePill(),
                   SoundModePill(),
                   _SilentModeButton(),
+                  _StatsButton(),
                   _OptionsButton(),
                 ],
               ),
@@ -388,6 +390,45 @@ class _SilentModeButton extends StatelessWidget {
                 Icons.bedtime,
                 size: _iconSize,
                 color: enabled ? Colors.white : colorMutedDark,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatsButton extends StatelessWidget {
+  static const double _iconSize = 14;
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    horizontal: 6,
+    vertical: 6,
+  );
+
+  const _StatsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Tooltip(
+        message: l10n.statsButtonTooltip,
+        child: GestureDetector(
+          onTap: () => StatsView.show(context),
+          child: const DecoratedBox(
+            decoration: BoxDecoration(
+              color: colorNeutralLight,
+              borderRadius: borderRadiusOptionsButton,
+            ),
+            child: Padding(
+              padding: _padding,
+              child: Icon(
+                Icons.emoji_events,
+                size: _iconSize,
+                color: colorMutedDark,
               ),
             ),
           ),

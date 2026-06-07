@@ -47,7 +47,10 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m10(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m11(percent) => "Volume : ${percent} %";
+  static String m11(corporate, friday) =>
+      "dont ${corporate} en corporate, ${friday} en friday";
+
+  static String m12(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -71,6 +74,26 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "autoMutePermissionDenied": MessageLookupByLibrary.simpleMessage(
       "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
+    ),
+    "eventTypeChargerToggle": MessageLookupByLibrary.simpleMessage(
+      "Coup de jus",
+    ),
+    "eventTypeExternalDisplayToggle": MessageLookupByLibrary.simpleMessage(
+      "Écran en renfort",
+    ),
+    "eventTypeHeadphonesToggle": MessageLookupByLibrary.simpleMessage(
+      "Casque vissé",
+    ),
+    "eventTypePet": MessageLookupByLibrary.simpleMessage("Papouille"),
+    "eventTypeUsbToggle": MessageLookupByLibrary.simpleMessage("Branchage USB"),
+    "evolutionFlavorAnchwatt": MessageLookupByLibrary.simpleMessage(
+      "Petit mais déjà sous tension.",
+    ),
+    "evolutionFlavorLamperoie": MessageLookupByLibrary.simpleMessage(
+      "Ça commence à sentir le grillé.",
+    ),
+    "evolutionFlavorOhmassacre": MessageLookupByLibrary.simpleMessage(
+      "Niveau boss final, planque-toi.",
     ),
     "lamperoie": MessageLookupByLibrary.simpleMessage("Lampéroie"),
     "launchAtLoginDescription": MessageLookupByLibrary.simpleMessage(
@@ -155,7 +178,26 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
       "Hop, Friday",
     ),
-    "systemVolumeTooltip": m11,
+    "statsButtonTooltip": MessageLookupByLibrary.simpleMessage(
+      "Ton tableau de chasse",
+    ),
+    "statsFavoriteEventEmpty": MessageLookupByLibrary.simpleMessage(
+      "Rien encore, tout roupille",
+    ),
+    "statsFavoriteEventLabel": MessageLookupByLibrary.simpleMessage(
+      "Péché mignon",
+    ),
+    "statsLevelLabel": MessageLookupByLibrary.simpleMessage("Niveau"),
+    "statsLifetimeXpLabel": MessageLookupByLibrary.simpleMessage("XP amassé"),
+    "statsMemberSinceLabel": MessageLookupByLibrary.simpleMessage("Adopté le"),
+    "statsPetsLabel": MessageLookupByLibrary.simpleMessage("Papouilles"),
+    "statsSoundsPlayedLabel": MessageLookupByLibrary.simpleMessage(
+      "Sons lâchés",
+    ),
+    "statsSoundsSplit": m11,
+    "statsTitle": MessageLookupByLibrary.simpleMessage("Tableau de chasse"),
+    "statsWakeupsLabel": MessageLookupByLibrary.simpleMessage("Sursauts"),
+    "systemVolumeTooltip": m12,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

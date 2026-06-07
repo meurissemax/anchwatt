@@ -159,6 +159,81 @@ class L10n {
     );
   }
 
+  /// `Coup de jus`
+  String get eventTypeChargerToggle {
+    return Intl.message(
+      'Coup de jus',
+      name: 'eventTypeChargerToggle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Écran en renfort`
+  String get eventTypeExternalDisplayToggle {
+    return Intl.message(
+      'Écran en renfort',
+      name: 'eventTypeExternalDisplayToggle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Casque vissé`
+  String get eventTypeHeadphonesToggle {
+    return Intl.message(
+      'Casque vissé',
+      name: 'eventTypeHeadphonesToggle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Papouille`
+  String get eventTypePet {
+    return Intl.message('Papouille', name: 'eventTypePet', desc: '', args: []);
+  }
+
+  /// `Branchage USB`
+  String get eventTypeUsbToggle {
+    return Intl.message(
+      'Branchage USB',
+      name: 'eventTypeUsbToggle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Petit mais déjà sous tension.`
+  String get evolutionFlavorAnchwatt {
+    return Intl.message(
+      'Petit mais déjà sous tension.',
+      name: 'evolutionFlavorAnchwatt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ça commence à sentir le grillé.`
+  String get evolutionFlavorLamperoie {
+    return Intl.message(
+      'Ça commence à sentir le grillé.',
+      name: 'evolutionFlavorLamperoie',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Niveau boss final, planque-toi.`
+  String get evolutionFlavorOhmassacre {
+    return Intl.message(
+      'Niveau boss final, planque-toi.',
+      name: 'evolutionFlavorOhmassacre',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Lampéroie`
   String get lamperoie {
     return Intl.message('Lampéroie', name: 'lamperoie', desc: '', args: []);
@@ -553,6 +628,111 @@ class L10n {
     return Intl.message(
       'Hop, Friday',
       name: 'soundModeSwitchToFriday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ton tableau de chasse`
+  String get statsButtonTooltip {
+    return Intl.message(
+      'Ton tableau de chasse',
+      name: 'statsButtonTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rien encore, tout roupille`
+  String get statsFavoriteEventEmpty {
+    return Intl.message(
+      'Rien encore, tout roupille',
+      name: 'statsFavoriteEventEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Péché mignon`
+  String get statsFavoriteEventLabel {
+    return Intl.message(
+      'Péché mignon',
+      name: 'statsFavoriteEventLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Niveau`
+  String get statsLevelLabel {
+    return Intl.message('Niveau', name: 'statsLevelLabel', desc: '', args: []);
+  }
+
+  /// `XP amassé`
+  String get statsLifetimeXpLabel {
+    return Intl.message(
+      'XP amassé',
+      name: 'statsLifetimeXpLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Adopté le`
+  String get statsMemberSinceLabel {
+    return Intl.message(
+      'Adopté le',
+      name: 'statsMemberSinceLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Papouilles`
+  String get statsPetsLabel {
+    return Intl.message(
+      'Papouilles',
+      name: 'statsPetsLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sons lâchés`
+  String get statsSoundsPlayedLabel {
+    return Intl.message(
+      'Sons lâchés',
+      name: 'statsSoundsPlayedLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `dont {corporate} en corporate, {friday} en friday`
+  String statsSoundsSplit(int corporate, int friday) {
+    return Intl.message(
+      'dont $corporate en corporate, $friday en friday',
+      name: 'statsSoundsSplit',
+      desc: '',
+      args: [corporate, friday],
+    );
+  }
+
+  /// `Tableau de chasse`
+  String get statsTitle {
+    return Intl.message(
+      'Tableau de chasse',
+      name: 'statsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sursauts`
+  String get statsWakeupsLabel {
+    return Intl.message(
+      'Sursauts',
+      name: 'statsWakeupsLabel',
       desc: '',
       args: [],
     );

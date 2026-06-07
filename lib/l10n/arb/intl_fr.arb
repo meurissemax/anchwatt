@@ -95,6 +95,16 @@
             }
         }
     },
+    "@statsSoundsSplit": {
+        "placeholders": {
+            "corporate": {
+                "type": "int"
+            },
+            "friday": {
+                "type": "int"
+            }
+        }
+    },
     "@systemVolumeTooltip": {
         "placeholders": {
             "percent": {
@@ -113,6 +123,14 @@
     "autoMuteLabel": "Silence pendant les réunions",
     "autoMuteOpenSystemSettings": "Ouvrir les Réglages Système",
     "autoMutePermissionDenied": "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
+    "eventTypeChargerToggle": "Coup de jus",
+    "eventTypeExternalDisplayToggle": "Écran en renfort",
+    "eventTypeHeadphonesToggle": "Casque vissé",
+    "eventTypePet": "Papouille",
+    "eventTypeUsbToggle": "Branchage USB",
+    "evolutionFlavorAnchwatt": "Petit mais déjà sous tension.",
+    "evolutionFlavorLamperoie": "Ça commence à sentir le grillé.",
+    "evolutionFlavorOhmassacre": "Niveau boss final, planque-toi.",
     "lamperoie": "Lampéroie",
     "launchAtLoginDescription": "Anchwatt apparaît dans la barre des menus dès l'ouverture de session, fenêtre masquée. Clique sur l'icône pour la rouvrir.",
     "launchAtLoginError": "Raté, macOS a dit non",
@@ -154,6 +172,17 @@
     "soundModeFriday": "Friday",
     "soundModeSwitchToCorporate": "Hop, Corporate",
     "soundModeSwitchToFriday": "Hop, Friday",
+    "statsButtonTooltip": "Ton tableau de chasse",
+    "statsFavoriteEventEmpty": "Rien encore, tout roupille",
+    "statsFavoriteEventLabel": "Péché mignon",
+    "statsLevelLabel": "Niveau",
+    "statsLifetimeXpLabel": "XP amassé",
+    "statsMemberSinceLabel": "Adopté le",
+    "statsPetsLabel": "Papouilles",
+    "statsSoundsPlayedLabel": "Sons lâchés",
+    "statsSoundsSplit": "dont {corporate} en corporate, {friday} en friday",
+    "statsTitle": "Tableau de chasse",
+    "statsWakeupsLabel": "Sursauts",
     "systemVolumeTooltip": "Volume : {percent} %",
     "systemVolumeTooltipMuted": "Silence radio"
 }

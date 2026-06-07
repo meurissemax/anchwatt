@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add a stats panel behind a new header button (left of the settings button) recapping the Anchwatt run: evolution stage and level, total XP earned, event wake-ups, favourite event, sounds played with the Corporate/Friday split, pet pokes and the member-since date
 - Slightly desaturate the Anchwatt sprite while "Ne pas déranger" is active, as an extra visual cue for the silent mode
 - Add a debug button to reset all stats (level and XP back to their initial values), hidden outside the dev environment
 - Add a debug button to simulate a system event through the full pipeline (random sound, volume sampling, silent-mode gate, coalesce window), hidden outside the dev environment

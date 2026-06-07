@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/stats_service.dart';
 import 'package:anchwatt/main/storages/sound_storage.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +23,7 @@ class SoundService {
   final Map<AudioPlayer, Future<void> Function()> _activePlayers = {};
   final Random _random = Random();
   final SoundStorage _storage = SoundStorage();
+  final StatsService _statsService = locator<StatsService>();
   final ValueNotifier<SoundMode> modeNotifier = ValueNotifier<SoundMode>(SoundMode.corporate);
 
   final Map<SoundMode, List<String>> _assetsByMode = {
@@ -147,6 +150,11 @@ class SoundService {
     _activePlayers[player] = finish;
 
     sub = player.onPlayerComplete.listen((_) => finish());
+
+    // Single real-playback funnel for both random sounds and pet cries. Empty
+    // folders return before reaching here and DND is gated upstream, so muted /
+    // silent paths never count — only sounds actually dispatched to a player do.
+    _statsService.recordSoundPlayed(modeNotifier.value);
 
     player.play(AssetSource(asset)).catchError((Object error) {
       debugPrint('$errorLabel: $error');
