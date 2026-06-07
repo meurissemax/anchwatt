@@ -54,11 +54,10 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
-    "anchwattDebugAddXp": MessageLookupByLibrary.simpleMessage(
-      "Ajouter de l\'XP",
-    ),
+    "anchwattDebugAddXp": MessageLookupByLibrary.simpleMessage("Ajouter XP"),
+    "anchwattDebugResetStats": MessageLookupByLibrary.simpleMessage("Reset"),
     "anchwattDebugSimulateEvent": MessageLookupByLibrary.simpleMessage(
-      "Simuler un événement",
+      "Simuler",
     ),
     "anchwattEvolutionLevel": m0,
     "anchwattXpCounter": m1,

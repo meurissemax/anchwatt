@@ -113,8 +113,9 @@
         }
     },
     "anchwatt": "Anchwatt",
-    "anchwattDebugAddXp": "Ajouter de l'XP",
-    "anchwattDebugSimulateEvent": "Simuler un événement",
+    "anchwattDebugAddXp": "Ajouter XP",
+    "anchwattDebugResetStats": "Reset",
+    "anchwattDebugSimulateEvent": "Simuler",
     "anchwattEvolutionLevel": "{name} — Lvl {level}",
     "anchwattXpCounter": "{current} / {total}",
     "anchwattXpGain": "+{xp}xp",

@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add a debug button to reset all stats (level and XP back to their initial values), hidden outside the dev environment
 - Add a debug button to simulate a system event through the full pipeline (random sound, volume sampling, silent-mode gate, coalesce window), hidden outside the dev environment
 - Notify on every level-up, not only on stage evolutions
 - Notify on every stage evolution as a dedicated notification, distinct from the level-up one
@@ -13,6 +14,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Lay out the debug buttons on a single row and shorten their labels to fit
 - Change the Flutter SDK version to 3.44.1
 - Increased base XP gain for system events and steepened per-level XP scaling for faster progression
 - Raised early-level XP requirements so the first levels feel earned

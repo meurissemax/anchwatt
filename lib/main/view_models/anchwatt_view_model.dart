@@ -141,6 +141,15 @@ class AnchwattViewModel extends ChangeNotifier {
 
   Future<void> debugSimulateEvent() => _handleSystemEvent(AnchwattEventType.usbToggle);
 
+  Future<void> debugResetStats() async {
+    _level = AnchwattSettings.levelMin;
+    _xp = 0;
+
+    notifyListeners();
+
+    await _storage.clear();
+  }
+
   void onPetTick() {
     // Gate before touching the cooldown so a flurry of pets under DND does
     // not silently push the next cry's cooldown forward.

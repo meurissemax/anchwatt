@@ -91,11 +91,20 @@ class _AnchwattViewBody extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                const _DebugAddXpButton(),
-                const SizedBox(
-                  height: 8,
+                const Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      child: _DebugAddXpButton(),
+                    ),
+                    Expanded(
+                      child: _DebugSimulateEventButton(),
+                    ),
+                    Expanded(
+                      child: _DebugResetStatsButton(),
+                    ),
+                  ],
                 ),
-                const _DebugSimulateEventButton(),
               ],
             ],
           ),
@@ -271,6 +280,7 @@ class _DebugAddXpButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: () => context.read<AnchwattViewModel>().debugAddXp(),
       style: OutlinedButton.styleFrom(
+        enabledMouseCursor: SystemMouseCursors.click,
         foregroundColor: colorNeutralDark,
         side: const BorderSide(
           color: colorNeutralLight,
@@ -298,6 +308,7 @@ class _DebugSimulateEventButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: () => context.read<AnchwattViewModel>().debugSimulateEvent(),
       style: OutlinedButton.styleFrom(
+        enabledMouseCursor: SystemMouseCursors.click,
         foregroundColor: colorNeutralDark,
         side: const BorderSide(
           color: colorNeutralLight,
@@ -311,6 +322,34 @@ class _DebugSimulateEventButton extends StatelessWidget {
         textStyle: textDebugButton,
       ),
       child: Text(l10n.anchwattDebugSimulateEvent),
+    );
+  }
+}
+
+class _DebugResetStatsButton extends StatelessWidget {
+  const _DebugResetStatsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return OutlinedButton(
+      onPressed: () => context.read<AnchwattViewModel>().debugResetStats(),
+      style: OutlinedButton.styleFrom(
+        enabledMouseCursor: SystemMouseCursors.click,
+        foregroundColor: colorError,
+        side: const BorderSide(
+          color: colorError,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: borderRadiusDebugButton,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        textStyle: textDebugButton,
+      ),
+      child: Text(l10n.anchwattDebugResetStats),
     );
   }
 }

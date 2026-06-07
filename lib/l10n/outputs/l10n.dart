@@ -59,20 +59,30 @@ class L10n {
     return Intl.message('Anchwatt', name: 'anchwatt', desc: '', args: []);
   }
 
-  /// `Ajouter de l'XP`
+  /// `Ajouter XP`
   String get anchwattDebugAddXp {
     return Intl.message(
-      'Ajouter de l\'XP',
+      'Ajouter XP',
       name: 'anchwattDebugAddXp',
       desc: '',
       args: [],
     );
   }
 
-  /// `Simuler un événement`
+  /// `Reset`
+  String get anchwattDebugResetStats {
+    return Intl.message(
+      'Reset',
+      name: 'anchwattDebugResetStats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Simuler`
   String get anchwattDebugSimulateEvent {
     return Intl.message(
-      'Simuler un événement',
+      'Simuler',
       name: 'anchwattDebugSimulateEvent',
       desc: '',
       args: [],
