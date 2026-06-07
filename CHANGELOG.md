@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Slightly desaturate the Anchwatt sprite while "Ne pas déranger" is active, as an extra visual cue for the silent mode
 - Add a debug button to reset all stats (level and XP back to their initial values), hidden outside the dev environment
 - Add a debug button to simulate a system event through the full pipeline (random sound, volume sampling, silent-mode gate, coalesce window), hidden outside the dev environment
 - Notify on every level-up, not only on stage evolutions
@@ -14,6 +15,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Polish the level header — drop the redundant "— Lvl X" suffix (the level already shows in large type), slightly enlarge the Anchwatt name, baseline-align it with the level number, and add a touch more spacing between them
 - Lay out the debug buttons on a single row and shorten their labels to fit
 - Change the Flutter SDK version to 3.44.1
 - Increased base XP gain for system events and steepened per-level XP scaling for faster progression

@@ -89,16 +89,6 @@ class L10n {
     );
   }
 
-  /// `{name} — Lvl {level}`
-  String anchwattEvolutionLevel(int level, String name) {
-    return Intl.message(
-      '$name — Lvl $level',
-      name: 'anchwattEvolutionLevel',
-      desc: '',
-      args: [level, name],
-    );
-  }
-
   /// `{current} / {total}`
   String anchwattXpCounter(int current, int total) {
     return Intl.message(

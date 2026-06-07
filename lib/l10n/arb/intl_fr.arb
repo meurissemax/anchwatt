@@ -1,15 +1,5 @@
 {
     "@@locale": "fr",
-    "@anchwattEvolutionLevel": {
-        "placeholders": {
-            "level": {
-                "type": "int"
-            },
-            "name": {
-                "type": "String"
-            }
-        }
-    },
     "@anchwattXpCounter": {
         "placeholders": {
             "current": {
@@ -116,7 +106,6 @@
     "anchwattDebugAddXp": "Ajouter XP",
     "anchwattDebugResetStats": "Reset",
     "anchwattDebugSimulateEvent": "Simuler",
-    "anchwattEvolutionLevel": "{name} — Lvl {level}",
     "anchwattXpCounter": "{current} / {total}",
     "anchwattXpGain": "+{xp}xp",
     "autoMuteActiveReason": "Activé auto : {eventTitle} jusqu'à {time}",

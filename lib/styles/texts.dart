@@ -82,7 +82,7 @@ const TextStyle textOptionsSectionLabel = TextStyle(
 const TextStyle textStageLabel = TextStyle(
   color: colorMutedDark,
   fontFamily: fontFamily,
-  fontSize: 12,
+  fontSize: 14,
   fontWeight: FontWeight.w500,
 );
 

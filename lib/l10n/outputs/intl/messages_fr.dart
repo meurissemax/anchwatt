@@ -20,36 +20,34 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'fr';
 
-  static String m0(level, name) => "${name} — Lvl ${level}";
+  static String m0(current, total) => "${current} / ${total}";
 
-  static String m1(current, total) => "${current} / ${total}";
+  static String m1(xp) => "+${xp}xp";
 
-  static String m2(xp) => "+${xp}xp";
-
-  static String m3(eventTitle, time) =>
+  static String m2(eventTitle, time) =>
       "Activé auto : ${eventTitle} jusqu\'à ${time}";
 
-  static String m4(eventTitle, time) =>
+  static String m3(eventTitle, time) =>
       "Anchwatt se tait pendant ${eventTitle} (jusqu\'à ${time}).";
 
-  static String m5(eventTitle) =>
+  static String m4(eventTitle) =>
       "${eventTitle} est terminé. Anchwatt reprend du service.";
 
-  static String m6(from, to) => "${from} évolue en ${to}.";
+  static String m5(from, to) => "${from} évolue en ${to}.";
 
-  static String m7(from, level, to) =>
+  static String m6(from, level, to) =>
       "Niveau ${level} atteint. ${from} évolue en ${to}.";
 
-  static String m8(name) => "${name} a gagné un niveau.";
+  static String m7(name) => "${name} a gagné un niveau.";
 
-  static String m9(level) => "Niveau ${level} atteint";
+  static String m8(level) => "Niveau ${level} atteint";
 
-  static String m10(version) => "v${version}";
+  static String m9(version) => "v${version}";
 
-  static String m11(version) =>
+  static String m10(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m12(percent) => "Volume : ${percent} %";
+  static String m11(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -59,10 +57,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "anchwattDebugSimulateEvent": MessageLookupByLibrary.simpleMessage(
       "Simuler",
     ),
-    "anchwattEvolutionLevel": m0,
-    "anchwattXpCounter": m1,
-    "anchwattXpGain": m2,
-    "autoMuteActiveReason": m3,
+    "anchwattXpCounter": m0,
+    "anchwattXpGain": m1,
+    "autoMuteActiveReason": m2,
     "autoMuteDescription": MessageLookupByLibrary.simpleMessage(
       "Branche ton calendrier pour couper Anchwatt pile pendant les réunions.",
     ),
@@ -87,23 +84,23 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "notificationCalendarEventFallbackName":
         MessageLookupByLibrary.simpleMessage("un événement"),
-    "notificationDndActivatedBody": m4,
+    "notificationDndActivatedBody": m3,
     "notificationDndActivatedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Ne pas déranger activé",
     ),
-    "notificationDndDeactivatedBody": m5,
+    "notificationDndDeactivatedBody": m4,
     "notificationDndDeactivatedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Ne pas déranger désactivé",
     ),
-    "notificationEvolutionBody": m6,
+    "notificationEvolutionBody": m5,
     "notificationEvolutionTitle": MessageLookupByLibrary.simpleMessage(
       "Évolution !",
     ),
-    "notificationLevelUpAndEvolutionBody": m7,
+    "notificationLevelUpAndEvolutionBody": m6,
     "notificationLevelUpAndEvolutionTitle":
         MessageLookupByLibrary.simpleMessage("Évolution !"),
-    "notificationLevelUpBody": m8,
-    "notificationLevelUpTitle": m9,
+    "notificationLevelUpBody": m7,
+    "notificationLevelUpTitle": m8,
     "notificationsDescription": MessageLookupByLibrary.simpleMessage(
       "macOS t\'envoie une notif quand Anchwatt monte de niveau ou évolue, et quand le mode silencieux s\'allume/s\'éteint tout seul.",
     ),
@@ -112,7 +109,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.",
     ),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
-    "optionsAppVersion": m10,
+    "optionsAppVersion": m9,
     "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Bidouiller Anchwatt",
     ),
@@ -128,7 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "À fond la caisse, c\'est presque le week-end.",
     ),
     "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
-    "optionsUpdatesAvailable": m11,
+    "optionsUpdatesAvailable": m10,
     "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
       "Chercher du neuf",
     ),
@@ -158,7 +155,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
       "Hop, Friday",
     ),
-    "systemVolumeTooltip": m12,
+    "systemVolumeTooltip": m11,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

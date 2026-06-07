@@ -127,21 +127,17 @@ class _LevelHeader extends StatelessWidget {
         evolution: vm.evolution,
       ),
       builder: (_, data, _) => Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        spacing: 10,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        spacing: 14,
         children: [
           Text(
             '${data.level}',
             style: textLevel,
           ),
-          Padding(
-            padding: const EdgeInsets.only(
-              bottom: 8,
-            ),
-            child: Text(
-              l10n.anchwattEvolutionLevel(data.level, data.evolution.label(l10n)),
-              style: textStageLabel,
-            ),
+          Text(
+            data.evolution.label(l10n),
+            style: textStageLabel,
           ),
         ],
       ),
@@ -155,10 +151,14 @@ class _SpriteSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PetGestureSurface(
-      child: Selector<AnchwattViewModel, Evolution>(
-        selector: (_, vm) => vm.evolution,
-        builder: (_, evolution, _) => AnchwattSprite(
-          evolution: evolution,
+      child: ValueListenableBuilder<bool>(
+        valueListenable: context.read<AnchwattViewModel>().silentModeNotifier,
+        builder: (_, silentMode, _) => Selector<AnchwattViewModel, Evolution>(
+          selector: (_, vm) => vm.evolution,
+          builder: (_, evolution, _) => AnchwattSprite(
+            evolution: evolution,
+            muted: silentMode,
+          ),
         ),
       ),
     );
