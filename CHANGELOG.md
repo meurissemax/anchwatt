@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Stop counting pet caress sounds in the "Sons lâchés" stat — they are an independent caress sound, not a Corporate/Friday sound
 - Change the Flutter SDK version to 3.44.2
 
 ## 1.5.0 - 2026-06-07

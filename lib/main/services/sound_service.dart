@@ -112,6 +112,12 @@ class SoundService {
       }
     }
 
+    // Only Corporate/Friday sounds feed the "Sons lâchés" stat. Empty folders
+    // return before reaching here and DND is gated upstream, so muted / silent
+    // paths never count — only sounds actually dispatched to a player do. Pet
+    // cries (playCry) are an independent caress sound and intentionally skip this.
+    _statsService.recordSoundPlayed(modeNotifier.value);
+
     return _playAsset(asset, errorLabel: 'SoundService play error');
   }
 
@@ -150,11 +156,6 @@ class SoundService {
     _activePlayers[player] = finish;
 
     sub = player.onPlayerComplete.listen((_) => finish());
-
-    // Single real-playback funnel for both random sounds and pet cries. Empty
-    // folders return before reaching here and DND is gated upstream, so muted /
-    // silent paths never count — only sounds actually dispatched to a player do.
-    _statsService.recordSoundPlayed(modeNotifier.value);
 
     player.play(AssetSource(asset)).catchError((Object error) {
       debugPrint('$errorLabel: $error');
