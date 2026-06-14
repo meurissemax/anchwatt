@@ -2,6 +2,12 @@
 
 This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
+## Unreleased
+
+### Changed
+
+- Change the Flutter SDK version to 3.44.2
+
 ## 1.5.0 - 2026-06-07
 
 ### Changed
