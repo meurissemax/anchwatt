@@ -181,6 +181,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Ton tableau de chasse",
     ),
+    "statsFavoriteEventDescription": MessageLookupByLibrary.simpleMessage(
+      "L\'événement qui le titille le plus souvent",
+    ),
     "statsFavoriteEventEmpty": MessageLookupByLibrary.simpleMessage(
       "Rien encore, tout roupille",
     ),
@@ -190,12 +193,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsLevelLabel": MessageLookupByLibrary.simpleMessage("Niveau"),
     "statsLifetimeXpLabel": MessageLookupByLibrary.simpleMessage("XP amassé"),
     "statsMemberSinceLabel": MessageLookupByLibrary.simpleMessage("Adopté le"),
+    "statsPetsDescription": MessageLookupByLibrary.simpleMessage(
+      "Toutes les papouilles que tu lui as offertes",
+    ),
     "statsPetsLabel": MessageLookupByLibrary.simpleMessage("Papouilles"),
     "statsSoundsPlayedLabel": MessageLookupByLibrary.simpleMessage(
       "Sons lâchés",
     ),
     "statsSoundsSplit": m11,
     "statsTitle": MessageLookupByLibrary.simpleMessage("Tableau de chasse"),
+    "statsWakeupsDescription": MessageLookupByLibrary.simpleMessage(
+      "Un bond au plafond par événement",
+    ),
     "statsWakeupsLabel": MessageLookupByLibrary.simpleMessage("Sursauts"),
     "systemVolumeTooltip": m12,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(

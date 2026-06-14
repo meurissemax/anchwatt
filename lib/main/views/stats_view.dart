@@ -89,6 +89,7 @@ class StatsView extends StatelessWidget {
                       _StatRow(
                         label: l10n.statsWakeupsLabel,
                         value: '${viewModel.totalWakeups}',
+                        sub: l10n.statsWakeupsDescription,
                       ),
                       const SizedBox(
                         height: _sectionSpacing,
@@ -96,6 +97,7 @@ class StatsView extends StatelessWidget {
                       _StatRow(
                         label: l10n.statsFavoriteEventLabel,
                         value: viewModel.favoriteEventLabel,
+                        sub: l10n.statsFavoriteEventDescription,
                       ),
                       const SizedBox(
                         height: _sectionSpacing,
@@ -111,6 +113,7 @@ class StatsView extends StatelessWidget {
                       _StatRow(
                         label: l10n.statsPetsLabel,
                         value: '${viewModel.petPokes}',
+                        sub: l10n.statsPetsDescription,
                       ),
                       const SizedBox(
                         height: _sectionSpacing,

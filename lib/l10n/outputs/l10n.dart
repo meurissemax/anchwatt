@@ -643,6 +643,16 @@ class L10n {
     );
   }
 
+  /// `L'événement qui le titille le plus souvent`
+  String get statsFavoriteEventDescription {
+    return Intl.message(
+      'L\'événement qui le titille le plus souvent',
+      name: 'statsFavoriteEventDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Rien encore, tout roupille`
   String get statsFavoriteEventEmpty {
     return Intl.message(
@@ -688,6 +698,16 @@ class L10n {
     );
   }
 
+  /// `Toutes les papouilles que tu lui as offertes`
+  String get statsPetsDescription {
+    return Intl.message(
+      'Toutes les papouilles que tu lui as offertes',
+      name: 'statsPetsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Papouilles`
   String get statsPetsLabel {
     return Intl.message(
@@ -723,6 +743,16 @@ class L10n {
     return Intl.message(
       'Tableau de chasse',
       name: 'statsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Un bond au plafond par événement`
+  String get statsWakeupsDescription {
+    return Intl.message(
+      'Un bond au plafond par événement',
+      name: 'statsWakeupsDescription',
       desc: '',
       args: [],
     );

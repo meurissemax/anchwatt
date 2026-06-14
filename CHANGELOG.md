@@ -9,6 +9,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Stop counting pet caress sounds in the "Sons lâchés" stat — they are an independent caress sound, not a Corporate/Friday sound
 - Change the Flutter SDK version to 3.44.2
 
+### Added
+
+- Add playful descriptions under the "Sursauts", "Péché mignon" and "Papouilles" stats in the stats modal
+
 ## 1.5.0 - 2026-06-07
 
 ### Changed
