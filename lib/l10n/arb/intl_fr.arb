@@ -3,17 +3,17 @@
     "@anchwattXpCounter": {
         "placeholders": {
             "current": {
-                "type": "int"
+                "type": "String"
             },
             "total": {
-                "type": "int"
+                "type": "String"
             }
         }
     },
     "@anchwattXpGain": {
         "placeholders": {
             "xp": {
-                "type": "int"
+                "type": "String"
             }
         }
     },
@@ -60,7 +60,7 @@
                 "type": "String"
             },
             "level": {
-                "type": "int"
+                "type": "String"
             },
             "to": {
                 "type": "String"
@@ -77,7 +77,7 @@
     "@notificationLevelUpTitle": {
         "placeholders": {
             "level": {
-                "type": "int"
+                "type": "String"
             }
         }
     },
@@ -98,10 +98,10 @@
     "@statsSoundsSplit": {
         "placeholders": {
             "corporate": {
-                "type": "int"
+                "type": "String"
             },
             "friday": {
-                "type": "int"
+                "type": "String"
             }
         }
     },

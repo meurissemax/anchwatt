@@ -90,7 +90,7 @@ class L10n {
   }
 
   /// `{current} / {total}`
-  String anchwattXpCounter(int current, int total) {
+  String anchwattXpCounter(String current, String total) {
     return Intl.message(
       '$current / $total',
       name: 'anchwattXpCounter',
@@ -100,7 +100,7 @@ class L10n {
   }
 
   /// `+{xp}xp`
-  String anchwattXpGain(int xp) {
+  String anchwattXpGain(String xp) {
     return Intl.message(
       '+${xp}xp',
       name: 'anchwattXpGain',
@@ -342,7 +342,7 @@ class L10n {
   /// `Niveau {level} atteint. {from} évolue en {to}.`
   String notificationLevelUpAndEvolutionBody(
     String from,
-    int level,
+    String level,
     String to,
   ) {
     return Intl.message(
@@ -374,7 +374,7 @@ class L10n {
   }
 
   /// `Niveau {level} atteint`
-  String notificationLevelUpTitle(int level) {
+  String notificationLevelUpTitle(String level) {
     return Intl.message(
       'Niveau $level atteint',
       name: 'notificationLevelUpTitle',
@@ -729,7 +729,7 @@ class L10n {
   }
 
   /// `dont {corporate} en corporate, {friday} en friday`
-  String statsSoundsSplit(int corporate, int friday) {
+  String statsSoundsSplit(String corporate, String friday) {
     return Intl.message(
       'dont $corporate en corporate, $friday en friday',
       name: 'statsSoundsSplit',

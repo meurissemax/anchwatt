@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
@@ -134,7 +135,7 @@ class _LevelHeader extends StatelessWidget {
         spacing: 14,
         children: [
           Text(
-            '${data.level}',
+            formatNumber(data.level),
             style: textLevel,
           ),
           Text(
@@ -266,7 +267,7 @@ class _XpCounterText extends StatelessWidget {
     return Selector<AnchwattViewModel, ({int xp, int xpToNextLevel})>(
       selector: (_, vm) => (xp: vm.xp, xpToNextLevel: vm.xpToNextLevel),
       builder: (_, data, _) => Text(
-        l10n.anchwattXpCounter(data.xp, data.xpToNextLevel),
+        l10n.anchwattXpCounter(formatNumber(data.xp), formatNumber(data.xpToNextLevel)),
         style: textXpCounter,
       ),
     );

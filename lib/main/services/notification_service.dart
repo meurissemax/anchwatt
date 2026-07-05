@@ -1,3 +1,4 @@
+import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
@@ -188,7 +189,7 @@ class NotificationService {
     final L10n l10n = locator<L10n>();
     await _safeShow(
       id: _idLevelUp,
-      title: l10n.notificationLevelUpTitle(level),
+      title: l10n.notificationLevelUpTitle(formatNumber(level)),
       body: l10n.notificationLevelUpBody(stage.label(l10n)),
     );
   }
@@ -215,7 +216,7 @@ class NotificationService {
     await _safeShow(
       id: _idLevelUpAndEvolution,
       title: l10n.notificationLevelUpAndEvolutionTitle,
-      body: l10n.notificationLevelUpAndEvolutionBody(oldStage.label(l10n), level, newStage.label(l10n)),
+      body: l10n.notificationLevelUpAndEvolutionBody(oldStage.label(l10n), formatNumber(level), newStage.label(l10n)),
     );
   }
 

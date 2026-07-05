@@ -1,3 +1,4 @@
+import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/styles/texts.dart';
@@ -95,7 +96,7 @@ class _XpGainFloaterState extends State<XpGainFloater> with SingleTickerProvider
           ),
         ),
         child: Text(
-          l10n.anchwattXpGain(widget.amount),
+          l10n.anchwattXpGain(formatNumber(widget.amount)),
           style: textXpGainFloater.copyWith(color: widget.color),
         ),
       ),

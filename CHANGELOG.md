@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Format every displayed number with locale-aware thousands separators, so large counts read as `12 564` instead of `12564` (French uses a narrow no-break space)
 - Change the Flutter SDK version to 3.44.4
 
 ### Fixed

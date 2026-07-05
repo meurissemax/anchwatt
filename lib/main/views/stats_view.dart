@@ -1,3 +1,4 @@
+import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
@@ -74,21 +75,21 @@ class StatsView extends StatelessWidget {
                       ),
                       _StatRow(
                         label: l10n.statsLevelLabel,
-                        value: '${viewModel.level}',
+                        value: formatNumber(viewModel.level),
                       ),
                       const SizedBox(
                         height: _sectionSpacing,
                       ),
                       _StatRow(
                         label: l10n.statsLifetimeXpLabel,
-                        value: '${viewModel.lifetimeXp}',
+                        value: formatNumber(viewModel.lifetimeXp),
                       ),
                       const SizedBox(
                         height: _sectionSpacing,
                       ),
                       _StatRow(
                         label: l10n.statsWakeupsLabel,
-                        value: '${viewModel.totalWakeups}',
+                        value: formatNumber(viewModel.totalWakeups),
                         sub: l10n.statsWakeupsDescription,
                       ),
                       const SizedBox(
@@ -104,7 +105,7 @@ class StatsView extends StatelessWidget {
                       ),
                       _StatRow(
                         label: l10n.statsSoundsPlayedLabel,
-                        value: '${viewModel.soundsPlayed}',
+                        value: formatNumber(viewModel.soundsPlayed),
                         sub: viewModel.soundsSplit,
                       ),
                       const SizedBox(
@@ -112,7 +113,7 @@ class StatsView extends StatelessWidget {
                       ),
                       _StatRow(
                         label: l10n.statsPetsLabel,
-                        value: '${viewModel.petPokes}',
+                        value: formatNumber(viewModel.petPokes),
                         sub: l10n.statsPetsDescription,
                       ),
                       const SizedBox(

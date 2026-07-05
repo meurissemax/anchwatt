@@ -1,3 +1,4 @@
+import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
@@ -37,8 +38,8 @@ class StatsViewModel extends ChangeNotifier {
   int get petPokes => _statsService.petInteractions;
 
   String get soundsSplit => _l10n.statsSoundsSplit(
-    _statsService.soundsPlayedFor(SoundMode.corporate),
-    _statsService.soundsPlayedFor(SoundMode.friday),
+    formatNumber(_statsService.soundsPlayedFor(SoundMode.corporate)),
+    formatNumber(_statsService.soundsPlayedFor(SoundMode.friday)),
   );
 
   String get memberSince => _memberSinceFormat.format(
