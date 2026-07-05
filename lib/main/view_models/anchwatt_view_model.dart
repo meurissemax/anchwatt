@@ -24,12 +24,10 @@ import 'package:url_launcher/url_launcher.dart';
 class AnchwattViewModel extends ChangeNotifier {
   /* Static variables */
 
-  static const Duration defaultLevelUpDwell = Duration(milliseconds: 500);
   static final Random _petRandom = Random();
 
   /* Variables */
 
-  final Duration _levelUpDwell;
   final AnchwattStorage _storage = AnchwattStorage();
   final UsbEventService _usbEventService = UsbEventService();
   final ChargerEventService _chargerEventService = ChargerEventService();
@@ -71,7 +69,7 @@ class AnchwattViewModel extends ChangeNotifier {
 
   /* Constructor */
 
-  AnchwattViewModel({this._levelUpDwell = defaultLevelUpDwell}) {
+  AnchwattViewModel() {
     _bootServices();
   }
 
@@ -474,17 +472,14 @@ class AnchwattViewModel extends ChangeNotifier {
     _xp += amount;
     _xpGainController.add(amount);
 
+    // Resolve every crossed palier synchronously so _level/_xp are always the
+    // authoritative, up-to-date state. The "fill up and roll over" pacing is a
+    // presentation concern handled frame-by-frame in XpProgressBar — it must
+    // never gate this model or the addXp pipeline (a stalled timer here once
+    // froze leveling with the bar pinned full until the app was restarted).
     while (_xp >= AnchwattSettings.xpForLevel(_level) && _level < AnchwattSettings.levelMax) {
-      final int cost = AnchwattSettings.xpForLevel(_level);
-      final int carry = _xp - cost;
-
-      _xp = cost;
-      notifyListeners();
-
-      await Future<void>.delayed(_levelUpDwell);
-
+      _xp -= AnchwattSettings.xpForLevel(_level);
       _level += 1;
-      _xp = carry;
     }
 
     if (_level >= AnchwattSettings.levelMax) {

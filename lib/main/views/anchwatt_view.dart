@@ -220,9 +220,10 @@ class _XpGaugeState extends State<_XpGauge> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Selector<AnchwattViewModel, ({double progress, Evolution evolution})>(
-          selector: (_, vm) => (progress: vm.progress, evolution: vm.evolution),
+        Selector<AnchwattViewModel, ({int level, double progress, Evolution evolution})>(
+          selector: (_, vm) => (level: vm.level, progress: vm.progress, evolution: vm.evolution),
           builder: (_, data, _) => XpProgressBar(
+            level: data.level,
             progress: data.progress,
             color: data.evolution.accentColor,
           ),

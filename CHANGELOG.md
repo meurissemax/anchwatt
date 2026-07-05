@@ -10,6 +10,8 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Fixed
 
+- Fix the XP bar freezing at a level's maximum — the level would stop advancing until the app was restarted. Level and XP are now updated instantly and the "fill and roll over" animation runs purely on the UI side, so it can no longer stall progression
+- Fix a maxed-out character (level 100) being reset to level 1 on the next launch
 - Refresh the notifications and calendar auto-mute options when the app regains focus, so a permission granted or revoked in the macOS System Settings applies without restarting the app
 
 ## 1.6.0 - 2026-06-14

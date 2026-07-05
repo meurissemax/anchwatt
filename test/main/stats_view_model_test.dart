@@ -19,7 +19,7 @@ void main() {
   // recorded here are exactly what the ViewModel reads back.
   test('favorite event and réveils total exclude pet and fall back when empty', () {
     final L10n l10n = locator<L10n>();
-    final AnchwattViewModel parent = AnchwattViewModel(levelUpDwell: Duration.zero);
+    final AnchwattViewModel parent = AnchwattViewModel();
     final StatsService stats = locator<StatsService>();
 
     // No system event yet → empty-state fallback, zero réveils.

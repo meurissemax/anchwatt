@@ -37,7 +37,15 @@ class AnchwattStorage {
       return _defaults();
     }
 
-    if (xp < 0 || xp >= AnchwattSettings.xpForLevel(level)) {
+    // Below the cap, reaching xpForLevel(level) immediately triggers a level-up,
+    // so a persisted xp must be strictly under it. At the cap there is no next
+    // palier: xp sits exactly at xpForLevel(level) (a full bar), which is valid
+    // and must round-trip instead of resetting the character to level 1.
+    final int xpCeiling = level >= AnchwattSettings.levelMax
+        ? AnchwattSettings.xpForLevel(level)
+        : AnchwattSettings.xpForLevel(level) - 1;
+
+    if (xp < 0 || xp > xpCeiling) {
       return _defaults();
     }
 
