@@ -40,6 +40,7 @@ class StatsViewModel extends ChangeNotifier {
   String get soundsSplit => _l10n.statsSoundsSplit(
     formatNumber(_statsService.soundsPlayedFor(SoundMode.corporate)),
     formatNumber(_statsService.soundsPlayedFor(SoundMode.friday)),
+    formatNumber(_statsService.soundsPlayedFor(SoundMode.hardcore)),
   );
 
   String get memberSince => _memberSinceFormat.format(

@@ -88,9 +88,23 @@
             }
         }
     },
+    "@optionsModeHardcoreLockedTooltip": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
     "@optionsUpdatesAvailable": {
         "placeholders": {
             "version": {
+                "type": "String"
+            }
+        }
+    },
+    "@soundModeTooltip": {
+        "placeholders": {
+            "mode": {
                 "type": "String"
             }
         }
@@ -101,6 +115,9 @@
                 "type": "String"
             },
             "friday": {
+                "type": "String"
+            },
+            "hardcore": {
                 "type": "String"
             }
         }
@@ -142,6 +159,8 @@
     "notificationDndDeactivatedTitle": "Mode Ne pas déranger désactivé",
     "notificationEvolutionBody": "{from} évolue en {to}.",
     "notificationEvolutionTitle": "Évolution !",
+    "notificationHardcoreUnlockedBody": "Anchwatt a débloqué le mode Hardcore. Il aurait préféré éviter.",
+    "notificationHardcoreUnlockedTitle": "Mode Hardcore débloqué",
     "notificationLevelUpAndEvolutionBody": "Niveau {level} atteint. {from} évolue en {to}.",
     "notificationLevelUpAndEvolutionTitle": "Évolution !",
     "notificationLevelUpBody": "{name} a gagné un niveau.",
@@ -157,6 +176,8 @@
     "optionsGithubLabel": "Coulisses",
     "optionsModeDescriptionCorporate": "Sons sages pour quand le boss traîne par là.",
     "optionsModeDescriptionFriday": "À fond la caisse, c'est presque le week-end.",
+    "optionsModeDescriptionHardcore": "Sans filtre, sans pitié. Anchwatt décline toute responsabilité.",
+    "optionsModeHardcoreLockedTooltip": "Débloqué au niveau {level}.",
     "optionsModeLabel": "Ambiance",
     "optionsUpdatesAvailable": "Une nouvelle version a pointé son nez : {version}",
     "optionsUpdatesCheckButton": "Chercher du neuf",
@@ -170,8 +191,8 @@
     "silentModeTooltipEnabled": "La récré reprend",
     "soundModeCorporate": "Corporate",
     "soundModeFriday": "Friday",
-    "soundModeSwitchToCorporate": "Hop, Corporate",
-    "soundModeSwitchToFriday": "Hop, Friday",
+    "soundModeHardcore": "Hardcore",
+    "soundModeTooltip": "Ambiance : {mode}",
     "statsButtonTooltip": "Ton tableau de chasse",
     "statsFavoriteEventDescription": "L'événement qui le titille le plus souvent",
     "statsFavoriteEventEmpty": "Rien encore, tout roupille",
@@ -182,7 +203,7 @@
     "statsPetsDescription": "Toutes les papouilles que tu lui as offertes",
     "statsPetsLabel": "Papouilles",
     "statsSoundsPlayedLabel": "Sons lâchés",
-    "statsSoundsSplit": "dont {corporate} en corporate, {friday} en friday",
+    "statsSoundsSplit": "dont {corporate} en corporate, {friday} en friday, {hardcore} en hardcore",
     "statsTitle": "Tableau de chasse",
     "statsWakeupsDescription": "Un bond au plafond par événement",
     "statsWakeupsLabel": "Sursauts",

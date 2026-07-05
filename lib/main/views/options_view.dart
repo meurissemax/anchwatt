@@ -1,3 +1,4 @@
+import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
@@ -200,34 +201,28 @@ class _ModeOption extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<OptionsViewModel, SoundMode>(
-      selector: (_, vm) => vm.soundMode,
-      builder: (_, mode, _) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Selector<OptionsViewModel, ({SoundMode mode, bool hardcoreUnlocked})>(
+      selector: (_, vm) => (mode: vm.soundMode, hardcoreUnlocked: vm.hardcoreUnlocked),
+      builder: (_, data, _) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.optionsModeLabel,
-                  style: textOptionsSectionLabel,
-                ),
-                const SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  _descriptionFor(mode, l10n),
-                  style: textOptionsSectionDescription,
-                ),
-              ],
-            ),
+          Text(
+            l10n.optionsModeLabel,
+            style: textOptionsSectionLabel,
           ),
           const SizedBox(
-            width: OptionsView._itemSpacing,
+            height: 4,
+          ),
+          Text(
+            _descriptionFor(data.mode, l10n),
+            style: textOptionsSectionDescription,
+          ),
+          const SizedBox(
+            height: OptionsView._itemSpacing,
           ),
           _ModeToggle(
-            mode: mode,
+            mode: data.mode,
+            hardcoreUnlocked: data.hardcoreUnlocked,
           ),
         ],
       ),
@@ -241,15 +236,20 @@ class _ModeOption extends StatelessWidget {
 
       case SoundMode.friday:
         return l10n.optionsModeDescriptionFriday;
+
+      case SoundMode.hardcore:
+        return l10n.optionsModeDescriptionHardcore;
     }
   }
 }
 
 class _ModeToggle extends StatelessWidget {
   final SoundMode mode;
+  final bool hardcoreUnlocked;
 
   const _ModeToggle({
     required this.mode,
+    required this.hardcoreUnlocked,
   });
 
   @override
@@ -262,6 +262,7 @@ class _ModeToggle extends StatelessWidget {
             (m) => _ModeTogglePill(
               mode: m,
               selected: m == mode,
+              locked: m == SoundMode.hardcore && !hardcoreUnlocked,
             ),
           )
           .toList(),
@@ -279,28 +280,31 @@ class _ModeTogglePill extends StatelessWidget {
 
   final SoundMode mode;
   final bool selected;
+  final bool locked;
 
   const _ModeTogglePill({
     required this.mode,
     required this.selected,
+    required this.locked,
   });
 
   @override
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
-    final Color foreground = selected ? Colors.white : colorMutedDark;
+    final bool active = selected && !locked;
+    final Color foreground = locked ? colorMutedLight : (active ? Colors.white : colorMutedDark);
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
+    final Widget pill = MouseRegion(
+      cursor: locked ? SystemMouseCursors.basic : SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () => context.read<OptionsViewModel>().setSoundMode(mode),
+        onTap: locked ? null : () => context.read<OptionsViewModel>().setSoundMode(mode),
         child: AnimatedContainer(
           duration: _animationDuration,
           padding: _padding,
           decoration: BoxDecoration(
-            color: selected ? mode.accentColor : Colors.transparent,
+            color: active ? mode.accentColor : Colors.transparent,
             border: Border.all(
-              color: selected ? mode.accentColor : colorNeutralLight,
+              color: active ? mode.accentColor : colorNeutralLight,
             ),
             borderRadius: borderRadiusOptionsModePill,
           ),
@@ -315,12 +319,23 @@ class _ModeTogglePill extends StatelessWidget {
               ),
               Text(
                 mode.label(l10n),
-                style: selected ? textOptionsModePillActive : textOptionsModePillInactive,
+                style: locked
+                    ? textOptionsModePillInactive.copyWith(color: foreground)
+                    : (active ? textOptionsModePillActive : textOptionsModePillInactive),
               ),
             ],
           ),
         ),
       ),
+    );
+
+    if (!locked) {
+      return pill;
+    }
+
+    return Tooltip(
+      message: l10n.optionsModeHardcoreLockedTooltip(formatNumber(AnchwattSettings.hardcoreUnlockLevel)),
+      child: pill,
     );
   }
 }

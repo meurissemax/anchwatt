@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 class AnchwattSettings {
   static const int evolutionLamperoieLevel = 15;
   static const int evolutionOhmassacreLevel = 40;
+  static const int hardcoreUnlockLevel = 50;
+  static const double hardcoreXpMultiplier = 2;
   static const int levelMax = 100;
   static const int levelMin = 1;
   static const double levelXpCoef = 0.40;
@@ -178,7 +180,8 @@ enum Evolution {
 
 enum SoundMode {
   corporate,
-  friday;
+  friday,
+  hardcore;
 
   static SoundMode fromName(String? name) {
     for (final SoundMode mode in SoundMode.values) {
@@ -197,6 +200,9 @@ enum SoundMode {
 
       case SoundMode.friday:
         return colorSoundModeFriday;
+
+      case SoundMode.hardcore:
+        return colorSoundModeHardcore;
     }
   }
 
@@ -207,6 +213,9 @@ enum SoundMode {
 
       case SoundMode.friday:
         return 'friday/';
+
+      case SoundMode.hardcore:
+        return 'hardcore/';
     }
   }
 
@@ -217,15 +226,23 @@ enum SoundMode {
 
       case SoundMode.friday:
         return Icons.local_bar;
+
+      case SoundMode.hardcore:
+        return Icons.local_fire_department;
     }
   }
 
+  // Cycles Corporate → Friday → Hardcore → Corporate. Locking (Hardcore below
+  // its unlock level) is a business rule applied by the ViewModel, not here.
   SoundMode get next {
     switch (this) {
       case SoundMode.corporate:
         return SoundMode.friday;
 
       case SoundMode.friday:
+        return SoundMode.hardcore;
+
+      case SoundMode.hardcore:
         return SoundMode.corporate;
     }
   }
@@ -239,6 +256,9 @@ enum SoundMode {
 
       case SoundMode.friday:
         return 1.5;
+
+      case SoundMode.hardcore:
+        return AnchwattSettings.hardcoreXpMultiplier;
     }
   }
 
@@ -249,18 +269,13 @@ enum SoundMode {
 
       case SoundMode.friday:
         return l10n.soundModeFriday;
+
+      case SoundMode.hardcore:
+        return l10n.soundModeHardcore;
     }
   }
 
-  String switchTooltip(L10n l10n) {
-    switch (this) {
-      case SoundMode.corporate:
-        return l10n.soundModeSwitchToFriday;
-
-      case SoundMode.friday:
-        return l10n.soundModeSwitchToCorporate;
-    }
-  }
+  String tooltip(L10n l10n) => l10n.soundModeTooltip(label(l10n));
 }
 
 class SystemVolumeSettings {

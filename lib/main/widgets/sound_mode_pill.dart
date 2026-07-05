@@ -26,7 +26,7 @@ class SoundModePill extends StatelessWidget {
       builder: (_, mode, _) => MouseRegion(
         cursor: SystemMouseCursors.click,
         child: Tooltip(
-          message: mode.switchTooltip(l10n),
+          message: mode.tooltip(l10n),
           child: GestureDetector(
             onTap: () => context.read<AnchwattViewModel>().toggleSoundMode(),
             child: AnimatedContainer(

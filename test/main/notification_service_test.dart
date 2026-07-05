@@ -181,6 +181,7 @@ void main() {
     await service.showLevelUp(7, Evolution.anchwatt);
     await service.showEvolution(Evolution.anchwatt, Evolution.lamperoie);
     await service.showLevelUpAndEvolution(15, Evolution.anchwatt, Evolution.lamperoie);
+    await service.showHardcoreUnlocked();
     await service.showCalendarDndActivated('Daily standup', DateTime(2026, 5, 17, 14, 30));
     await service.showCalendarDndDeactivated('Daily standup');
 
@@ -242,6 +243,21 @@ void main() {
       platform.shown.single.body.indexOf('Anchwatt'),
       lessThan(platform.shown.single.body.indexOf('Lampéroie')),
     );
+
+    service.dispose();
+  });
+
+  test('showHardcoreUnlocked fires once with a distinct stable id and non-empty copy', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showHardcoreUnlocked();
+
+    expect(platform.shown.length, 1);
+    expect(platform.shown.single.id, 6);
+    expect(platform.shown.single.title, isNotEmpty);
+    expect(platform.shown.single.body, isNotEmpty);
 
     service.dispose();
   });

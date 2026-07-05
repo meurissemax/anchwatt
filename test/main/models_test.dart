@@ -168,5 +168,67 @@ void main() {
 
       expect(fridayXp, corporateXp);
     });
+
+    test('usbToggle in hardcore mode awards the highest XP of all modes', () {
+      final int corporateXp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.corporate,
+        systemVolume: 1,
+      );
+      final int fridayXp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.friday,
+        systemVolume: 1,
+      );
+      final int hardcoreXp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.hardcore,
+        systemVolume: 1,
+      );
+
+      expect(hardcoreXp, 75);
+      expect(hardcoreXp, greaterThan(fridayXp));
+      expect(fridayXp, greaterThan(corporateXp));
+    });
+
+    test('pet in hardcore mode awards the same XP as in corporate mode', () {
+      final int corporateXp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.pet,
+        level: 1,
+        mode: SoundMode.corporate,
+        systemVolume: 1,
+      );
+      final int hardcoreXp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.pet,
+        level: 1,
+        mode: SoundMode.hardcore,
+        systemVolume: 1,
+      );
+
+      expect(hardcoreXp, corporateXp);
+    });
+  });
+
+  group('SoundMode', () {
+    test('xpMultiplier ranks Hardcore highest', () {
+      expect(SoundMode.hardcore.xpMultiplier, AnchwattSettings.hardcoreXpMultiplier);
+      expect(SoundMode.hardcore.xpMultiplier, greaterThan(SoundMode.friday.xpMultiplier));
+      expect(SoundMode.friday.xpMultiplier, greaterThan(SoundMode.corporate.xpMultiplier));
+    });
+
+    test('next cycles Corporate then Friday then Hardcore then back to Corporate', () {
+      expect(SoundMode.corporate.next, SoundMode.friday);
+      expect(SoundMode.friday.next, SoundMode.hardcore);
+      expect(SoundMode.hardcore.next, SoundMode.corporate);
+    });
+
+    test('fromName resolves known names and falls back to Corporate otherwise', () {
+      expect(SoundMode.fromName('hardcore'), SoundMode.hardcore);
+      expect(SoundMode.fromName('nope'), SoundMode.corporate);
+      expect(SoundMode.fromName(null), SoundMode.corporate);
+    });
   });
 }

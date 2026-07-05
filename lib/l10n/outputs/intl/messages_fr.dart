@@ -44,13 +44,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m9(version) => "v${version}";
 
-  static String m10(version) =>
+  static String m10(level) => "Débloqué au niveau ${level}.";
+
+  static String m11(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m11(corporate, friday) =>
-      "dont ${corporate} en corporate, ${friday} en friday";
+  static String m12(mode) => "Ambiance : ${mode}";
 
-  static String m12(percent) => "Volume : ${percent} %";
+  static String m13(corporate, friday, hardcore) =>
+      "dont ${corporate} en corporate, ${friday} en friday, ${hardcore} en hardcore";
+
+  static String m14(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -119,6 +123,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationEvolutionTitle": MessageLookupByLibrary.simpleMessage(
       "Évolution !",
     ),
+    "notificationHardcoreUnlockedBody": MessageLookupByLibrary.simpleMessage(
+      "Anchwatt a débloqué le mode Hardcore. Il aurait préféré éviter.",
+    ),
+    "notificationHardcoreUnlockedTitle": MessageLookupByLibrary.simpleMessage(
+      "Mode Hardcore débloqué",
+    ),
     "notificationLevelUpAndEvolutionBody": m6,
     "notificationLevelUpAndEvolutionTitle":
         MessageLookupByLibrary.simpleMessage("Évolution !"),
@@ -147,8 +157,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "optionsModeDescriptionFriday": MessageLookupByLibrary.simpleMessage(
       "À fond la caisse, c\'est presque le week-end.",
     ),
+    "optionsModeDescriptionHardcore": MessageLookupByLibrary.simpleMessage(
+      "Sans filtre, sans pitié. Anchwatt décline toute responsabilité.",
+    ),
+    "optionsModeHardcoreLockedTooltip": m10,
     "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
-    "optionsUpdatesAvailable": m10,
+    "optionsUpdatesAvailable": m11,
     "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
       "Chercher du neuf",
     ),
@@ -172,12 +186,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "soundModeCorporate": MessageLookupByLibrary.simpleMessage("Corporate"),
     "soundModeFriday": MessageLookupByLibrary.simpleMessage("Friday"),
-    "soundModeSwitchToCorporate": MessageLookupByLibrary.simpleMessage(
-      "Hop, Corporate",
-    ),
-    "soundModeSwitchToFriday": MessageLookupByLibrary.simpleMessage(
-      "Hop, Friday",
-    ),
+    "soundModeHardcore": MessageLookupByLibrary.simpleMessage("Hardcore"),
+    "soundModeTooltip": m12,
     "statsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Ton tableau de chasse",
     ),
@@ -200,13 +210,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsSoundsPlayedLabel": MessageLookupByLibrary.simpleMessage(
       "Sons lâchés",
     ),
-    "statsSoundsSplit": m11,
+    "statsSoundsSplit": m13,
     "statsTitle": MessageLookupByLibrary.simpleMessage("Tableau de chasse"),
     "statsWakeupsDescription": MessageLookupByLibrary.simpleMessage(
       "Un bond au plafond par événement",
     ),
     "statsWakeupsLabel": MessageLookupByLibrary.simpleMessage("Sursauts"),
-    "systemVolumeTooltip": m12,
+    "systemVolumeTooltip": m14,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

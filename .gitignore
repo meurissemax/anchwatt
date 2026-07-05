@@ -63,5 +63,7 @@ CLAUDE.md
 # Sounds
 assets/sounds/corporate/*
 assets/sounds/friday/*
+assets/sounds/hardcore/*
 !assets/sounds/corporate/.gitkeep
 !assets/sounds/friday/.gitkeep
+!assets/sounds/hardcore/.gitkeep

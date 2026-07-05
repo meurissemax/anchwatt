@@ -35,6 +35,7 @@ const Color colorLevelMaxGoldHighlight = Color(0xfffff3b0);
 const Color colorOptionsAboutCard = Color(0xfff3f4f6);
 const Color colorSoundModeCorporate = Color(0xff1e88e5);
 const Color colorSoundModeFriday = Color(0xffab47bc);
+const Color colorSoundModeHardcore = Color(0xff8b0000);
 const Color colorSparkleCore = Color(0xfffff7c2);
 const Color colorSparkleGlow = Color(0xfffacc15);
 const Color colorSystemVolumeForeground = Color(0xff6b7280);

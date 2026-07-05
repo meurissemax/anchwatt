@@ -95,13 +95,9 @@ class SoundService {
     // picks for this mode. Clamped so a pool of 1 or 2 always has at least
     // 2 eligible candidates (i.e. exclusion is skipped entirely below 3).
     final Queue<String> recent = _recentByMode[mode]!;
-    final int effectiveK = pool.length <= 2
-        ? 0
-        : min(AnchwattSettings.randomSoundExclusionWindow, pool.length - 2);
+    final int effectiveK = pool.length <= 2 ? 0 : min(AnchwattSettings.randomSoundExclusionWindow, pool.length - 2);
 
-    final List<String> eligible = effectiveK > 0
-        ? pool.where((asset) => !recent.contains(asset)).toList()
-        : pool;
+    final List<String> eligible = effectiveK > 0 ? pool.where((asset) => !recent.contains(asset)).toList() : pool;
 
     final String asset = eligible[_random.nextInt(eligible.length)];
 
@@ -165,10 +161,13 @@ class SoundService {
     return completer.future;
   }
 
-  Future<void> toggleMode() async {
-    final SoundMode next = modeNotifier.value.next;
-    modeNotifier.value = next;
-    await _storage.writeMode(next);
+  Future<void> setMode(SoundMode mode) async {
+    if (modeNotifier.value == mode) {
+      return;
+    }
+
+    modeNotifier.value = mode;
+    await _storage.writeMode(mode);
   }
 
   // Stops every in-flight playback and resolves the futures returned by

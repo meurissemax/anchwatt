@@ -28,6 +28,7 @@ class OptionsViewModel extends ChangeNotifier {
 
   OptionsViewModel(this._parent) {
     _parent.soundModeNotifier.addListener(_onSoundModeChanged);
+    _parent.hardcoreUnlockedNotifier.addListener(_onHardcoreUnlockedChanged);
     _parent.silentModeNotifier.addListener(_onSilentModeChanged);
     _parent.launchAtLoginNotifier.addListener(_onLaunchAtLoginChanged);
     _parent.autoMuteEnabledNotifier.addListener(_onAutoMuteChanged);
@@ -42,6 +43,7 @@ class OptionsViewModel extends ChangeNotifier {
 
   String? get version => _version;
   SoundMode get soundMode => _parent.soundModeNotifier.value;
+  bool get hardcoreUnlocked => _parent.hardcoreUnlockedNotifier.value;
   bool get silentModeEnabled => _parent.silentModeNotifier.value;
   bool get launchAtLoginEnabled => _parent.launchAtLoginNotifier.value;
   bool get autoMuteEnabled => _parent.autoMuteEnabledNotifier.value;
@@ -95,6 +97,14 @@ class OptionsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _onHardcoreUnlockedChanged() {
+    if (_disposed) {
+      return;
+    }
+
+    notifyListeners();
+  }
+
   void _onSilentModeChanged() {
     if (_disposed) {
       return;
@@ -132,7 +142,7 @@ class OptionsViewModel extends ChangeNotifier {
       return;
     }
 
-    await _parent.toggleSoundMode();
+    await _parent.setSoundMode(mode);
   }
 
   Future<void> setSilentMode(bool value) async {
@@ -262,6 +272,7 @@ class OptionsViewModel extends ChangeNotifier {
     _disposed = true;
     _upToDateDismissTimer?.cancel();
     _parent.soundModeNotifier.removeListener(_onSoundModeChanged);
+    _parent.hardcoreUnlockedNotifier.removeListener(_onHardcoreUnlockedChanged);
     _parent.silentModeNotifier.removeListener(_onSilentModeChanged);
     _parent.launchAtLoginNotifier.removeListener(_onLaunchAtLoginChanged);
     _parent.autoMuteEnabledNotifier.removeListener(_onAutoMuteChanged);

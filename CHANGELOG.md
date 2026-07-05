@@ -6,12 +6,15 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Change the sound-mode pill tooltip to name the current ambiance, now that the pill cycles through three modes instead of toggling between two
 - Retire the XP bar at level 100, where there is nothing left to track
 - Format every displayed number with locale-aware thousands separators, so large counts read as `12 564` instead of `12564` (French uses a narrow no-break space)
 - Change the Flutter SDK version to 3.44.4
 
 ### Added
 
+- Add the Hardcore sound mode, unlocked at level 50, with the highest XP multiplier of all modes
+- Add a one-time notification when the Hardcore mode unlocks at level 50
 - Add a golden gradient to the level number once Anchwatt reaches its final form at level 100
 
 ### Fixed

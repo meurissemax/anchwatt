@@ -339,6 +339,26 @@ class L10n {
     );
   }
 
+  /// `Anchwatt a débloqué le mode Hardcore. Il aurait préféré éviter.`
+  String get notificationHardcoreUnlockedBody {
+    return Intl.message(
+      'Anchwatt a débloqué le mode Hardcore. Il aurait préféré éviter.',
+      name: 'notificationHardcoreUnlockedBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mode Hardcore débloqué`
+  String get notificationHardcoreUnlockedTitle {
+    return Intl.message(
+      'Mode Hardcore débloqué',
+      name: 'notificationHardcoreUnlockedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Niveau {level} atteint. {from} évolue en {to}.`
   String notificationLevelUpAndEvolutionBody(
     String from,
@@ -488,6 +508,26 @@ class L10n {
     );
   }
 
+  /// `Sans filtre, sans pitié. Anchwatt décline toute responsabilité.`
+  String get optionsModeDescriptionHardcore {
+    return Intl.message(
+      'Sans filtre, sans pitié. Anchwatt décline toute responsabilité.',
+      name: 'optionsModeDescriptionHardcore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Débloqué au niveau {level}.`
+  String optionsModeHardcoreLockedTooltip(String level) {
+    return Intl.message(
+      'Débloqué au niveau $level.',
+      name: 'optionsModeHardcoreLockedTooltip',
+      desc: '',
+      args: [level],
+    );
+  }
+
   /// `Ambiance`
   String get optionsModeLabel {
     return Intl.message(
@@ -613,23 +653,23 @@ class L10n {
     return Intl.message('Friday', name: 'soundModeFriday', desc: '', args: []);
   }
 
-  /// `Hop, Corporate`
-  String get soundModeSwitchToCorporate {
+  /// `Hardcore`
+  String get soundModeHardcore {
     return Intl.message(
-      'Hop, Corporate',
-      name: 'soundModeSwitchToCorporate',
+      'Hardcore',
+      name: 'soundModeHardcore',
       desc: '',
       args: [],
     );
   }
 
-  /// `Hop, Friday`
-  String get soundModeSwitchToFriday {
+  /// `Ambiance : {mode}`
+  String soundModeTooltip(String mode) {
     return Intl.message(
-      'Hop, Friday',
-      name: 'soundModeSwitchToFriday',
+      'Ambiance : $mode',
+      name: 'soundModeTooltip',
       desc: '',
-      args: [],
+      args: [mode],
     );
   }
 
@@ -728,13 +768,13 @@ class L10n {
     );
   }
 
-  /// `dont {corporate} en corporate, {friday} en friday`
-  String statsSoundsSplit(String corporate, String friday) {
+  /// `dont {corporate} en corporate, {friday} en friday, {hardcore} en hardcore`
+  String statsSoundsSplit(String corporate, String friday, String hardcore) {
     return Intl.message(
-      'dont $corporate en corporate, $friday en friday',
+      'dont $corporate en corporate, $friday en friday, $hardcore en hardcore',
       name: 'statsSoundsSplit',
       desc: '',
-      args: [corporate, friday],
+      args: [corporate, friday, hardcore],
     );
   }
 

@@ -109,6 +109,7 @@ flutter:
     - assets/sounds/corporate/
     - assets/sounds/cries/
     - assets/sounds/friday/
+    - assets/sounds/hardcore/
 
   # Fonts
   fonts:

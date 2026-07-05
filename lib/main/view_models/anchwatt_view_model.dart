@@ -58,6 +58,7 @@ class AnchwattViewModel extends ChangeNotifier {
   // init()) to avoid racing the boot-time reads.
   late final AppLifecycleListener _lifecycleListener;
   final StreamController<int> _xpGainController = StreamController<int>.broadcast();
+  final ValueNotifier<bool> _hardcoreUnlockedNotifier = ValueNotifier<bool>(false);
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
   Future<void>? _pending;
@@ -81,9 +82,11 @@ class AnchwattViewModel extends ChangeNotifier {
   Evolution get evolution => Evolution.fromLevel(_level);
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
   bool get isMaxLevel => _level >= AnchwattSettings.levelMax;
+  bool get isHardcoreUnlocked => _level >= AnchwattSettings.hardcoreUnlockLevel;
   UpdateStatus get updateStatus => _updateStatus;
   SystemVolumeState get systemVolumeState => _systemVolumeState;
   ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
+  ValueNotifier<bool> get hardcoreUnlockedNotifier => _hardcoreUnlockedNotifier;
   ValueNotifier<bool> get silentModeNotifier => _silentModeService.enabledNotifier;
   ValueNotifier<bool> get launchAtLoginNotifier => _launchAtLoginService.enabledNotifier;
   ValueNotifier<bool> get autoMuteEnabledNotifier => _calendarAutoMuteService.enabledNotifier;
@@ -95,7 +98,26 @@ class AnchwattViewModel extends ChangeNotifier {
 
   /* Methods */
 
-  Future<void> toggleSoundMode() => _soundService.toggleMode();
+  // Cycles to the next mode, skipping Hardcore while it is locked so the pill
+  // is a 2-state toggle below the unlock level and a 3-state cycle at or above
+  // it. Reads [isHardcoreUnlocked] at tap time, so it flips live on level-up.
+  Future<void> toggleSoundMode() {
+    SoundMode next = _soundService.mode.next;
+    if (next == SoundMode.hardcore && !isHardcoreUnlocked) {
+      next = next.next;
+    }
+
+    return _soundService.setMode(next);
+  }
+
+  // Selects a mode directly (settings picker). Hardcore below its unlock level
+  // is an inconsistent selection (stale prefs, or a locked pill somehow tapped)
+  // — fall back to Corporate silently.
+  Future<void> setSoundMode(SoundMode mode) {
+    final SoundMode target = mode == SoundMode.hardcore && !isHardcoreUnlocked ? SoundMode.corporate : mode;
+
+    return _soundService.setMode(target);
+  }
 
   // The toggle reflects the combined DND state (manual OR calendar). When the
   // user turns it off while a calendar event is driving DND, opt out of that
@@ -166,6 +188,7 @@ class AnchwattViewModel extends ChangeNotifier {
   Future<void> debugResetStats() async {
     _level = AnchwattSettings.levelMin;
     _xp = 0;
+    _hardcoreUnlockedNotifier.value = isHardcoreUnlocked;
 
     notifyListeners();
 
@@ -256,6 +279,18 @@ class AnchwattViewModel extends ChangeNotifier {
       return;
     }
 
+    // Reaching the Hardcore unlock level is a one-time milestone: fire its own
+    // notification and skip the generic level-up for this crossing so a single
+    // notification surfaces. The < / >= test catches a multi-level jump, and
+    // levels only increase (bar the debug reset), so it fires exactly once.
+    final bool unlockedHardcore =
+        oldLevel < AnchwattSettings.hardcoreUnlockLevel && newLevel >= AnchwattSettings.hardcoreUnlockLevel;
+    if (unlockedHardcore) {
+      await _notificationService.showHardcoreUnlocked();
+
+      return;
+    }
+
     final bool leveledUp = newLevel > oldLevel;
     final bool evolved = newEvolution != oldEvolution;
 
@@ -327,6 +362,7 @@ class AnchwattViewModel extends ChangeNotifier {
     final ({int level, int xp}) initial = _storage.readProgression();
     _level = initial.level;
     _xp = initial.xp;
+    _hardcoreUnlockedNotifier.value = isHardcoreUnlocked;
     notifyListeners();
 
     // Load stats before the event services start so no reaction can be missed,
@@ -367,6 +403,12 @@ class AnchwattViewModel extends ChangeNotifier {
       await _soundService.init();
     } on Object catch (error) {
       debugPrint('AnchwattViewModel: SoundService init failed: $error');
+    }
+
+    // Defensive: a persisted Hardcore selection is invalid below the unlock
+    // level (stale prefs from a bug or a rebalance) — fall back silently.
+    if (_soundService.mode == SoundMode.hardcore && !isHardcoreUnlocked) {
+      await _soundService.setMode(SoundMode.corporate);
     }
 
     try {
@@ -488,6 +530,8 @@ class AnchwattViewModel extends ChangeNotifier {
       _xp = AnchwattSettings.xpForLevel(AnchwattSettings.levelMax);
     }
 
+    _hardcoreUnlockedNotifier.value = isHardcoreUnlocked;
+
     notifyListeners();
 
     await _storage.writeProgression(level: _level, xp: _xp);
@@ -522,6 +566,7 @@ class AnchwattViewModel extends ChangeNotifier {
     _silentModeService.dispose();
     _launchAtLoginService.dispose();
     _soundService.dispose();
+    _hardcoreUnlockedNotifier.dispose();
     _xpGainController.close();
     super.dispose();
   }
