@@ -17,6 +17,7 @@ import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
 import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/borders.dart';
 import 'package:anchwatt/styles/colors.dart';
+import 'package:anchwatt/styles/gradients.dart';
 import 'package:anchwatt/styles/texts.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -79,17 +80,7 @@ class _AnchwattViewBody extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const _XpGauge(),
-              const SizedBox(
-                height: 10,
-              ),
-              const Align(
-                alignment: Alignment.centerRight,
-                child: _XpCounterText(),
-              ),
+              const _XpSection(),
               if (Settings.isDev) ...[
                 const SizedBox(
                   height: 20,
@@ -124,26 +115,38 @@ class _LevelHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
-    return Selector<AnchwattViewModel, ({int level, Evolution evolution})>(
+    return Selector<AnchwattViewModel, ({int level, Evolution evolution, bool isMaxLevel})>(
       selector: (_, vm) => (
         level: vm.level,
         evolution: vm.evolution,
+        isMaxLevel: vm.isMaxLevel,
       ),
-      builder: (_, data, _) => Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        spacing: 14,
-        children: [
-          Text(
-            formatNumber(data.level),
-            style: textLevel,
-          ),
-          Text(
-            data.evolution.label(l10n),
-            style: textStageLabel,
-          ),
-        ],
-      ),
+      builder: (_, data, _) {
+        final Text level = Text(
+          formatNumber(data.level),
+          style: textLevel,
+        );
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          spacing: 14,
+          children: [
+            if (data.isMaxLevel)
+              ShaderMask(
+                blendMode: BlendMode.srcIn,
+                shaderCallback: (bounds) => gradientLevelMax.createShader(bounds),
+                child: level,
+              )
+            else
+              level,
+            Text(
+              data.evolution.label(l10n),
+              style: textStageLabel,
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -164,6 +167,40 @@ class _SpriteSelector extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _XpSection extends StatelessWidget {
+  const _XpSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<AnchwattViewModel, bool>(
+      selector: (_, vm) => vm.isMaxLevel,
+      builder: (_, isMaxLevel, _) {
+        if (isMaxLevel) {
+          return const SizedBox.shrink();
+        }
+
+        return const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            _XpGauge(),
+            SizedBox(
+              height: 10,
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: _XpCounterText(),
+            ),
+          ],
+        );
+      },
     );
   }
 }

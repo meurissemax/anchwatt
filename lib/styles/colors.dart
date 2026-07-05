@@ -26,6 +26,11 @@ const Color colorEvolutionAnchwatt = Color(0xff5eead4);
 const Color colorEvolutionLamperoie = Color(0xffeab308);
 const Color colorEvolutionOhmassacre = Color(0xfff43f5e);
 
+// Level max
+const Color colorLevelMaxGold = Color(0xffffd700);
+const Color colorLevelMaxGoldDeep = Color(0xffc9a227);
+const Color colorLevelMaxGoldHighlight = Color(0xfffff3b0);
+
 // Widgets
 const Color colorOptionsAboutCard = Color(0xfff3f4f6);
 const Color colorSoundModeCorporate = Color(0xff1e88e5);

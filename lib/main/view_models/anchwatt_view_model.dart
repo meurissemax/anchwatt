@@ -80,6 +80,7 @@ class AnchwattViewModel extends ChangeNotifier {
   int get xpToNextLevel => AnchwattSettings.xpForLevel(_level);
   Evolution get evolution => Evolution.fromLevel(_level);
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
+  bool get isMaxLevel => _level >= AnchwattSettings.levelMax;
   UpdateStatus get updateStatus => _updateStatus;
   SystemVolumeState get systemVolumeState => _systemVolumeState;
   ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
@@ -459,7 +460,7 @@ class AnchwattViewModel extends ChangeNotifier {
     // even at cap. Self-contained: tracks the granted [amount], not _xp.
     _statsService.addLifetimeXp(amount);
 
-    if (_level >= AnchwattSettings.levelMax) {
+    if (isMaxLevel) {
       return;
     }
 

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/stats_service.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,5 +76,38 @@ void main() {
 
     expect(vm.level, greaterThan(AnchwattSettings.levelMin));
     expect(_totalXp(vm.level, vm.xp), grantAmount * grantCount);
+  });
+
+  // At the cap, a further grant is a no-op for progression (level and xp stay
+  // frozen) and must not fire the XP-gain floater — its stream stays silent.
+  // The lifetime-XP stat keeps accumulating though: events still happen at 100,
+  // so their tallies must not desync from the sounds that play.
+  test('AnchwattViewModel discards XP at max level but keeps the lifetime stat counting', () async {
+    final StatsService stats = locator<StatsService>();
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    // Let _bootServices() finish its progression read and stats init before the
+    // grants, so neither races and clobbers the state asserted below.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    while (vm.level < AnchwattSettings.levelMax) {
+      await vm.addXp(vm.xpToNextLevel);
+    }
+
+    expect(vm.isMaxLevel, isTrue);
+
+    final int cappedXp = vm.xp;
+    final int lifetimeBefore = stats.lifetimeXp;
+    final List<int> gains = <int>[];
+    final StreamSubscription<int> subscription = vm.xpGainStream.listen(gains.add);
+
+    await vm.addXp(500);
+    await Future<void>.delayed(Duration.zero);
+    await subscription.cancel();
+
+    expect(vm.level, AnchwattSettings.levelMax);
+    expect(vm.xp, cappedXp);
+    expect(gains, isEmpty);
+    expect(stats.lifetimeXp, lifetimeBefore + 500);
   });
 }
