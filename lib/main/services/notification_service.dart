@@ -57,6 +57,9 @@ class NotificationService {
   final ValueNotifier<NotificationServiceError?> errorNotifier = ValueNotifier<NotificationServiceError?>(null);
 
   bool _disposed = false;
+  // Set while setEnabled() is mid-request so a resume-driven refreshPermission()
+  // can't interleave with the in-flight permission prompt.
+  bool _mutating = false;
 
   /* Constructor */
 
@@ -114,20 +117,57 @@ class NotificationService {
       return;
     }
 
-    if (value) {
-      final bool granted = await _platform.requestPermission();
-      if (!granted) {
-        errorNotifier.value = NotificationServiceError.permissionDenied;
+    _mutating = true;
 
-        return;
+    try {
+      if (value) {
+        final bool granted = await _platform.requestPermission();
+        if (!granted) {
+          errorNotifier.value = NotificationServiceError.permissionDenied;
+
+          return;
+        }
+
+        errorNotifier.value = null;
+        enabledNotifier.value = true;
+        await _storage.writeEnabled(true);
+      } else {
+        enabledNotifier.value = false;
+        errorNotifier.value = null;
+        await _storage.writeEnabled(false);
+      }
+    } finally {
+      _mutating = false;
+    }
+  }
+
+  // Re-reads the OS permission and reconciles the toggle/error state so a change
+  // made in System Settings (grant or revoke) is reflected without a restart,
+  // mirroring what a cold-start init() would compute for the persisted flag.
+  Future<void> refreshPermission() async {
+    if (_disposed || _mutating) {
+      return;
+    }
+
+    final bool authorized = await _platform.hasPermission();
+    if (_disposed) {
+      return;
+    }
+
+    if (authorized) {
+      if (errorNotifier.value == NotificationServiceError.permissionDenied) {
+        errorNotifier.value = null;
       }
 
-      errorNotifier.value = null;
-      enabledNotifier.value = true;
-      await _storage.writeEnabled(true);
-    } else {
+      // Restore a toggle the user had opted into but init() had to leave off
+      // because the permission was missing at the time.
+      if (_storage.readEnabled() && !enabledNotifier.value) {
+        enabledNotifier.value = true;
+      }
+    } else if (enabledNotifier.value) {
+      // Permission revoked while we still claimed on — mirror _ensureCanFire().
       enabledNotifier.value = false;
-      errorNotifier.value = null;
+      errorNotifier.value = NotificationServiceError.permissionDenied;
       await _storage.writeEnabled(false);
     }
   }

@@ -269,6 +269,85 @@ void main() {
     service.dispose();
   });
 
+  test('refreshPermission clears a stale permissionDenied error once access is granted, without enabling', () async {
+    grantAccess = false;
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+
+    await service.init();
+    await service.setEnabled(true);
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, CalendarAutoMuteError.permissionDenied);
+
+    // User grants access in System Settings, then refocuses the app.
+    authStatus = 'authorized';
+    await service.refreshPermission();
+
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, isNull);
+    expect(calls.where((c) => c.method == 'currentBusyEvent'), isEmpty);
+
+    service.dispose();
+  });
+
+  test('refreshPermission tears down and surfaces an error when access was revoked while enabled', () async {
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+
+    currentEvent = <Object?, Object?>{
+      'id': 'event-1',
+      'title': 'Daily standup',
+      'endTime': DateTime.now().add(const Duration(minutes: 30)).millisecondsSinceEpoch,
+    };
+    await service.setEnabled(true);
+    expect(service.isEnabled, true);
+    expect(silent.calendarEnabled, true);
+
+    // Access revoked from System Settings while the app ran.
+    authStatus = 'denied';
+    await service.refreshPermission();
+
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, CalendarAutoMuteError.permissionDenied);
+    expect(silent.calendarEnabled, false);
+    expect(service.activeEventNotifier.value, isNull);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('calendar_auto_mute.enabled'), false);
+
+    service.dispose();
+  });
+
+  test('refreshPermission restores a persisted toggle and recreates the native store on re-grant', () async {
+    // Access was granted in a previous session (flag persisted) then revoked in
+    // System Settings before this launch: init leaves the toggle off with an error.
+    SharedPreferences.setMockInitialValues(<String, Object>{'calendar_auto_mute.enabled': true});
+    authStatus = 'denied';
+
+    final SilentModeService silent = await buildSilentMode();
+    final CalendarAutoMuteService service = CalendarAutoMuteService(silent);
+    await service.init();
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, CalendarAutoMuteError.permissionDenied);
+
+    // User re-grants access in System Settings, then refocuses the app.
+    authStatus = 'authorized';
+    calls.clear();
+    await service.refreshPermission();
+
+    expect(service.isEnabled, true);
+    expect(service.errorNotifier.value, isNull);
+    // The native store is recreated before polling resumes so the fresh grant
+    // is honored, then the first tick fetches the current event.
+    expect(
+      calls.map((c) => c.method).toList(),
+      containsAllInOrder(<String>['resetStore', 'currentBusyEvent']),
+    );
+
+    service.dispose();
+  });
+
   test('a natural activation emits CalendarMuteActivated with the event', () async {
     final SilentModeService silent = await buildSilentMode();
     final CalendarAutoMuteService service = CalendarAutoMuteService(silent);

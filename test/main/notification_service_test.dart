@@ -343,6 +343,65 @@ void main() {
     service.dispose();
   });
 
+  test('refreshPermission clears a stale permissionDenied error once granted, without enabling', () async {
+    platform.grantPermission = false;
+    platform.hasPermissionResult = false;
+
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, NotificationServiceError.permissionDenied);
+
+    // User grants the permission in System Settings, then refocuses the app.
+    platform.hasPermissionResult = true;
+    await service.refreshPermission();
+
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, isNull);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('notifications.enabled'), isNot(true));
+
+    service.dispose();
+  });
+
+  test('refreshPermission keeps a refused-but-off toggle untouched while the permission stays denied', () async {
+    platform.grantPermission = false;
+    platform.hasPermissionResult = false;
+
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+    expect(service.errorNotifier.value, NotificationServiceError.permissionDenied);
+
+    await service.refreshPermission();
+
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, NotificationServiceError.permissionDenied);
+
+    service.dispose();
+  });
+
+  test('refreshPermission forces the toggle off and surfaces an error when the permission was revoked', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+    expect(service.isEnabled, true);
+
+    // Permission revoked from System Settings while the app ran.
+    platform.hasPermissionResult = false;
+    await service.refreshPermission();
+
+    expect(service.isEnabled, false);
+    expect(service.errorNotifier.value, NotificationServiceError.permissionDenied);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('notifications.enabled'), false);
+
+    service.dispose();
+  });
+
   test('the tap callback is forwarded when the platform invokes it', () async {
     int taps = 0;
     final NotificationService service = NotificationService(

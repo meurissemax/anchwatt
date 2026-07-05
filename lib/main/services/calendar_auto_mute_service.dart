@@ -28,12 +28,16 @@ class CalendarAutoMuteService {
   // event (event start / event end). Transitions caused by the user — toggle
   // off mid-event, or that override expiring — are intentionally never
   // emitted, so listeners can dispatch notifications only for "natural" flips.
-  final StreamController<CalendarMuteTransition> _transitionsController = StreamController<CalendarMuteTransition>.broadcast();
+  final StreamController<CalendarMuteTransition> _transitionsController =
+      StreamController<CalendarMuteTransition>.broadcast();
 
   String? _overrideEventId;
   Timer? _pollTimer;
   StreamSubscription<void>? _changesSubscription;
   bool _disposed = false;
+  // Set while setEnabled() is mid-request so a resume-driven refreshPermission()
+  // can't interleave with the in-flight permission prompt.
+  bool _mutating = false;
 
   /* Constructor */
 
@@ -83,25 +87,68 @@ class CalendarAutoMuteService {
       return;
     }
 
-    if (value) {
-      final bool granted = await _requestAccess();
-      if (!granted) {
-        errorNotifier.value = CalendarAutoMuteError.permissionDenied;
+    _mutating = true;
 
-        return;
+    try {
+      if (value) {
+        final bool granted = await _requestAccess();
+        if (!granted) {
+          errorNotifier.value = CalendarAutoMuteError.permissionDenied;
+
+          return;
+        }
+
+        errorNotifier.value = null;
+        enabledNotifier.value = true;
+        await _storage.writeEnabled(true);
+        await _startPolling();
+      } else {
+        enabledNotifier.value = false;
+        await _storage.writeEnabled(false);
+        _stopPolling();
+        _overrideEventId = null;
+        activeEventNotifier.value = null;
+        _silentModeService.setCalendarEnabled(false);
+      }
+    } finally {
+      _mutating = false;
+    }
+  }
+
+  // Re-reads the OS permission and reconciles the toggle/error state so a change
+  // made in System Settings (grant or revoke) is reflected without a restart,
+  // mirroring what a cold-start init() would compute for the persisted flag.
+  Future<void> refreshPermission() async {
+    if (_disposed || _mutating) {
+      return;
+    }
+
+    final bool authorized = await _isAuthorized();
+    if (_disposed) {
+      return;
+    }
+
+    if (authorized) {
+      if (errorNotifier.value == CalendarAutoMuteError.permissionDenied) {
+        errorNotifier.value = null;
       }
 
-      errorNotifier.value = null;
-      enabledNotifier.value = true;
-      await _storage.writeEnabled(true);
-      await _startPolling();
-    } else {
+      // Restore a toggle the user had opted into but init() had to leave off
+      // because the permission was missing at the time. _startPolling recreates
+      // the native store so the freshly granted access is honored.
+      if (_storage.readEnabled() && !enabledNotifier.value) {
+        enabledNotifier.value = true;
+        await _startPolling();
+      }
+    } else if (enabledNotifier.value) {
+      // Permission revoked while enabled — mirror setEnabled(false)'s teardown.
       enabledNotifier.value = false;
       await _storage.writeEnabled(false);
       _stopPolling();
       _overrideEventId = null;
       activeEventNotifier.value = null;
       _silentModeService.setCalendarEnabled(false);
+      errorNotifier.value = CalendarAutoMuteError.permissionDenied;
     }
   }
 
@@ -128,6 +175,11 @@ class CalendarAutoMuteService {
   }
 
   Future<void> _startPolling() async {
+    // Recreate the native EKEventStore first: a long-lived instance can keep
+    // returning stale (empty) results after a live permission re-grant even
+    // though authorizationStatus already reports authorized.
+    await _resetNativeStore();
+
     _pollTimer?.cancel();
     _pollTimer = Timer.periodic(_pollInterval, (_) => unawaited(_tick()));
 
@@ -233,6 +285,14 @@ class CalendarAutoMuteService {
       debugPrint('CalendarAutoMuteService: authorizationStatus failed: $error');
 
       return false;
+    }
+  }
+
+  Future<void> _resetNativeStore() async {
+    try {
+      await _channel.invokeMethod<void>('resetStore');
+    } on Object catch (error) {
+      debugPrint('CalendarAutoMuteService: resetStore failed: $error');
     }
   }
 

@@ -8,6 +8,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 - Change the Flutter SDK version to 3.44.4
 
+### Fixed
+
+- Refresh the notifications and calendar auto-mute options when the app regains focus, so a permission granted or revoked in the macOS System Settings applies without restarting the app
+
 ## 1.6.0 - 2026-06-14
 
 ### Changed

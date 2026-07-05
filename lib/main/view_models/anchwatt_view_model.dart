@@ -18,7 +18,7 @@ import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/services/usb_event_service.dart';
 import 'package:anchwatt/main/services/window_state_service.dart';
 import 'package:anchwatt/main/storages/anchwatt_storage.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AnchwattViewModel extends ChangeNotifier {
@@ -54,6 +54,11 @@ class AnchwattViewModel extends ChangeNotifier {
   StreamSubscription<void>? _headphonesSubscription;
   StreamSubscription<SystemVolumeState>? _systemVolumeSubscription;
   StreamSubscription<CalendarMuteTransition>? _calendarTransitionSubscription;
+  // Fires refreshSystemPermissions() whenever the app returns to the foreground,
+  // so a permission changed in System Settings applies without a restart.
+  // Assigned at the end of _bootServices() (after the permission services'
+  // init()) to avoid racing the boot-time reads.
+  late final AppLifecycleListener _lifecycleListener;
   final StreamController<int> _xpGainController = StreamController<int>.broadcast();
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
@@ -117,6 +122,21 @@ class AnchwattViewModel extends ChangeNotifier {
   Future<void> openNotificationsSystemSettings() => _notificationService.openSystemSettings();
 
   Future<void> refreshLaunchAtLogin() => _launchAtLoginService.refresh();
+
+  // Re-reads every option backed by macOS system state (notification + calendar
+  // permissions, login item) so a change made in System Settings while the app
+  // was in the background is reflected on the next foreground. Wired to the
+  // AppLifecycleListener; safe to call repeatedly.
+  Future<void> refreshSystemPermissions() async {
+    await _notificationService.refreshPermission();
+    await _calendarAutoMuteService.refreshPermission();
+
+    try {
+      await refreshLaunchAtLogin();
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: LaunchAtLoginService refresh failed: $error');
+    }
+  }
 
   Future<void> setLaunchAtLogin(bool value) => _launchAtLoginService.setEnabled(value);
 
@@ -406,6 +426,12 @@ class AnchwattViewModel extends ChangeNotifier {
         notifyListeners();
       }),
     );
+
+    // All permission-bearing services have completed init() above, so the first
+    // resume-driven refresh can't race their boot-time reads.
+    _lifecycleListener = AppLifecycleListener(
+      onResume: () => unawaited(refreshSystemPermissions()),
+    );
   }
 
   Future<void> openLatestRelease() async {
@@ -470,16 +496,19 @@ class AnchwattViewModel extends ChangeNotifier {
 
     await _storage.writeProgression(level: _level, xp: _xp);
 
-    unawaited(_maybeFireProgressionNotification(
-      oldLevel: oldLevel,
-      newLevel: _level,
-      oldEvolution: oldEvolution,
-      newEvolution: Evolution.fromLevel(_level),
-    ));
+    unawaited(
+      _maybeFireProgressionNotification(
+        oldLevel: oldLevel,
+        newLevel: _level,
+        oldEvolution: oldEvolution,
+        newEvolution: Evolution.fromLevel(_level),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _lifecycleListener.dispose();
     _usbSubscription?.cancel();
     _usbEventService.stop();
     _chargerSubscription?.cancel();

@@ -800,7 +800,10 @@ final class HeadphonesMonitor: NSObject, FlutterStreamHandler {
 // main queue. This handler is request/response only — see CalendarChangesMonitor
 // for the EKEventStoreChanged stream that lets Dart trigger a fast re-fetch.
 final class CalendarChannel: NSObject {
-  private let eventStore = EKEventStore()
+  // Recreatable: an EKEventStore instance can keep serving a stale authorization
+  // view after the user grants access in System Settings while the app runs, so
+  // Dart calls `resetStore` to force a fresh instance on (re-)authorization.
+  private var eventStore = EKEventStore()
 
   // Activate DND this far ahead of a busy event's start so the mode is already
   // on when the event begins. Mirrors the look-back side of the predicate window.
@@ -815,6 +818,9 @@ final class CalendarChannel: NSObject {
         self.requestAccess(result: result)
       case "currentBusyEvent":
         self.fetchCurrentBusyEvent(result: result)
+      case "resetStore":
+        self.eventStore = EKEventStore()
+        result(nil)
       case "openSystemSettings":
         self.openSystemSettings(result: result)
       default:
