@@ -89,6 +89,16 @@ class L10n {
     );
   }
 
+  /// `Shiny`
+  String get anchwattDebugToggleShiny {
+    return Intl.message(
+      'Shiny',
+      name: 'anchwattDebugToggleShiny',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `{current} / {total}`
   String anchwattXpCounter(String current, String total) {
     return Intl.message(
@@ -408,6 +418,26 @@ class L10n {
     return Intl.message(
       'macOS t\'envoie une notif quand Anchwatt monte de niveau ou évolue, et quand le mode silencieux s\'allume/s\'éteint tout seul.',
       name: 'notificationsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `La chance. Il t'est apparu dans une teinte qu'on ne voit presque jamais.`
+  String get notificationShinyBody {
+    return Intl.message(
+      'La chance. Il t\'est apparu dans une teinte qu\'on ne voit presque jamais.',
+      name: 'notificationShinyBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Un Anchwatt chromatique !`
+  String get notificationShinyTitle {
+    return Intl.message(
+      'Un Anchwatt chromatique !',
+      name: 'notificationShinyTitle',
       desc: '',
       args: [],
     );
@@ -753,6 +783,26 @@ class L10n {
     return Intl.message(
       'Papouilles',
       name: 'statsPetsLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Les fois où il t'est apparu tout scintillant`
+  String get statsShinyDescription {
+    return Intl.message(
+      'Les fois où il t\'est apparu tout scintillant',
+      name: 'statsShinyDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chromatiques`
+  String get statsShinyLabel {
+    return Intl.message(
+      'Chromatiques',
+      name: 'statsShinyLabel',
       desc: '',
       args: [],
     );

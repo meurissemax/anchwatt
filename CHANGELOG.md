@@ -8,6 +8,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 - Change the Flutter SDK version to 3.44.6
 
+### Added
+
+- Add a rare shiny Anchwatt that occasionally shows up recolored.
+
 ## 1.7.0 - 2026-07-05
 
 ### Changed

@@ -67,6 +67,11 @@ class AnchwattViewModel extends ChangeNotifier {
   DateTime? _lastPetCryAt;
   Duration _nextPetCryCooldown = Duration.zero;
   DateTime? _lastSystemEventAt;
+  // RNG for the shiny roll. In-place like SoundService's random sound picker;
+  // the odds themselves are unit-tested via AnchwattSettings.rollShiny.
+  final Random _random = Random();
+  // Runtime-only: the sprite is never shiny on launch and this is not persisted.
+  bool _isShiny = false;
 
   /* Constructor */
 
@@ -82,6 +87,7 @@ class AnchwattViewModel extends ChangeNotifier {
   Evolution get evolution => Evolution.fromLevel(_level);
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
   bool get isMaxLevel => _level >= AnchwattSettings.levelMax;
+  bool get isShiny => _isShiny;
   bool get isHardcoreUnlocked => _level >= AnchwattSettings.hardcoreUnlockLevel;
   UpdateStatus get updateStatus => _updateStatus;
   SystemVolumeState get systemVolumeState => _systemVolumeState;
@@ -184,6 +190,14 @@ class AnchwattViewModel extends ChangeNotifier {
   );
 
   Future<void> debugSimulateEvent() => _handleSystemEvent(AnchwattEventType.usbToggle);
+
+  // Forces the shiny display state only (no stat, no notification) so the
+  // recoloured sprite can be inspected without waiting on the roll.
+  void debugToggleShiny() {
+    _isShiny = !_isShiny;
+
+    notifyListeners();
+  }
 
   Future<void> debugResetStats() async {
     _level = AnchwattSettings.levelMin;
@@ -327,6 +341,21 @@ class AnchwattViewModel extends ChangeNotifier {
     // path, regardless of whether it ends up muted or granting zero XP — so the
     // "réveils" total reflects every physical reaction.
     _statsService.recordSystemEvent(type);
+
+    // Roll for a shiny on every confirmed (post-DND, post-coalesce) random-sound
+    // event. The result both sets and clears the shiny state, so a non-shiny
+    // event clears a previous shiny — the sprite stays shiny only until the next
+    // such event. Runs before the zero-XP early return so a muted (but not DND)
+    // event still re-rolls. The pet path never reaches this method.
+    final bool shiny = AnchwattSettings.rollShiny(_random);
+    if (shiny != _isShiny) {
+      _isShiny = shiny;
+      notifyListeners();
+    }
+    if (shiny) {
+      _statsService.recordShinyEncounter();
+      unawaited(_notificationService.showShiny());
+    }
 
     // Snapshot level and mode at event time so a level-up or mode change
     // during playback does not retroactively shift the XP for this event.

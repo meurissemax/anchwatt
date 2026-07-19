@@ -1,5 +1,29 @@
+import 'dart:math';
+
 import 'package:anchwatt/main/models.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+// A deterministic [Random] whose nextInt always returns [_next] and records the
+// bound it was called with, so the shiny odds can be asserted precisely.
+class _StubRandom implements Random {
+  _StubRandom(this._next);
+
+  final int _next;
+  int? lastMax;
+
+  @override
+  int nextInt(int max) {
+    lastMax = max;
+
+    return _next;
+  }
+
+  @override
+  bool nextBool() => throw UnimplementedError();
+
+  @override
+  double nextDouble() => throw UnimplementedError();
+}
 
 void main() {
   group('AnchwattSettings.xpForEvent', () {
@@ -209,6 +233,24 @@ void main() {
       );
 
       expect(hardcoreXp, corporateXp);
+    });
+  });
+
+  group('AnchwattSettings.rollShiny', () {
+    test('returns true when the RNG hits 0', () {
+      expect(AnchwattSettings.rollShiny(_StubRandom(0)), isTrue);
+    });
+
+    test('returns false for any non-zero roll', () {
+      expect(AnchwattSettings.rollShiny(_StubRandom(1)), isFalse);
+      expect(AnchwattSettings.rollShiny(_StubRandom(AnchwattSettings.shinyOdds - 1)), isFalse);
+    });
+
+    test('draws from the [0, shinyOdds) range', () {
+      final _StubRandom random = _StubRandom(0);
+      AnchwattSettings.rollShiny(random);
+
+      expect(random.lastMax, AnchwattSettings.shinyOdds);
     });
   });
 

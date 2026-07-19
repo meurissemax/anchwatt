@@ -64,6 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "anchwattDebugSimulateEvent": MessageLookupByLibrary.simpleMessage(
       "Simuler",
     ),
+    "anchwattDebugToggleShiny": MessageLookupByLibrary.simpleMessage("Shiny"),
     "anchwattXpCounter": m0,
     "anchwattXpGain": m1,
     "autoMuteActiveReason": m2,
@@ -134,6 +135,12 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage("Évolution !"),
     "notificationLevelUpBody": m7,
     "notificationLevelUpTitle": m8,
+    "notificationShinyBody": MessageLookupByLibrary.simpleMessage(
+      "La chance. Il t\'est apparu dans une teinte qu\'on ne voit presque jamais.",
+    ),
+    "notificationShinyTitle": MessageLookupByLibrary.simpleMessage(
+      "Un Anchwatt chromatique !",
+    ),
     "notificationsDescription": MessageLookupByLibrary.simpleMessage(
       "macOS t\'envoie une notif quand Anchwatt monte de niveau ou évolue, et quand le mode silencieux s\'allume/s\'éteint tout seul.",
     ),
@@ -207,6 +214,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Toutes les papouilles que tu lui as offertes",
     ),
     "statsPetsLabel": MessageLookupByLibrary.simpleMessage("Papouilles"),
+    "statsShinyDescription": MessageLookupByLibrary.simpleMessage(
+      "Les fois où il t\'est apparu tout scintillant",
+    ),
+    "statsShinyLabel": MessageLookupByLibrary.simpleMessage("Chromatiques"),
     "statsSoundsPlayedLabel": MessageLookupByLibrary.simpleMessage(
       "Sons lâchés",
     ),

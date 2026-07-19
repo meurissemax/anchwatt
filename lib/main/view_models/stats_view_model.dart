@@ -36,6 +36,7 @@ class StatsViewModel extends ChangeNotifier {
   int get totalWakeups => _statsService.totalSystemEvents;
   int get soundsPlayed => _statsService.soundsPlayed;
   int get petPokes => _statsService.petInteractions;
+  int get shinyEncounters => _statsService.shinyEncounters;
 
   String get soundsSplit => _l10n.statsSoundsSplit(
     formatNumber(_statsService.soundsPlayedFor(SoundMode.corporate)),

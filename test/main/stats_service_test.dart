@@ -66,6 +66,16 @@ void main() {
     expect(service.lifetimeXp, 15);
   });
 
+  test('recordShinyEncounter increments the counter', () async {
+    final StatsService service = StatsService();
+    await service.init();
+
+    service.recordShinyEncounter();
+    service.recordShinyEncounter();
+
+    expect(service.shinyEncounters, 2);
+  });
+
   test('persists counters across instances, keyed by enum name', () async {
     final StatsService service = StatsService();
     await service.init();
@@ -74,6 +84,7 @@ void main() {
     service.recordPetInteraction();
     service.recordSoundPlayed(SoundMode.friday);
     service.addLifetimeXp(42);
+    service.recordShinyEncounter();
 
     // Let the fire-and-forget writes settle before reopening.
     await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -85,6 +96,7 @@ void main() {
     expect(reopened.petInteractions, 1);
     expect(reopened.soundsPlayedFor(SoundMode.friday), 1);
     expect(reopened.lifetimeXp, 42);
+    expect(reopened.shinyEncounters, 1);
   });
 
   test('reset zeroes every counter and reseeds the first-launch date', () async {
@@ -95,6 +107,7 @@ void main() {
     service.recordPetInteraction();
     service.recordSoundPlayed(SoundMode.corporate);
     service.addLifetimeXp(100);
+    service.recordShinyEncounter();
 
     await service.reset();
 
@@ -102,6 +115,7 @@ void main() {
     expect(service.petInteractions, 0);
     expect(service.soundsPlayed, 0);
     expect(service.lifetimeXp, 0);
+    expect(service.shinyEncounters, 0);
     expect(service.firstLaunchDate, isNotNull);
   });
 }

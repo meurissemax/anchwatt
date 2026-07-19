@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,8 @@ class AnchwattSettings {
   static const int petCryCooldownMinSeconds = 2;
   static const double petVolumeFloor = 0.2;
   static const int randomSoundExclusionWindow = 3;
+  static const double shinyHueRotationDegrees = 150;
+  static const int shinyOdds = 128;
   static const int xpBase = 50;
   static const int xpGrowthFactor = 2;
   // Cross-event coalescing window. A single physical action (e.g. plugging in
@@ -51,6 +55,10 @@ class AnchwattSettings {
   };
 
   static int xpForLevel(int level) => xpBase + xpGrowthFactor * (level - 1) * (level - 1);
+
+  // Rolls a shiny encounter: a 1-in-[shinyOdds] chance. Kept pure (takes the
+  // RNG) so the odds are unit-testable with a deterministic [Random].
+  static bool rollShiny(Random random) => random.nextInt(shinyOdds) == 0;
 
   // Volume = 0 yields 0 XP for non-pet events (anti-farming when muted).
   // The pet uses [petVolumeFloor] so it still grants a small gain when muted.

@@ -95,6 +95,9 @@ class _AnchwattViewBody extends StatelessWidget {
                       child: _DebugSimulateEventButton(),
                     ),
                     Expanded(
+                      child: _DebugToggleShinyButton(),
+                    ),
+                    Expanded(
                       child: _DebugResetStatsButton(),
                     ),
                   ],
@@ -159,11 +162,12 @@ class _SpriteSelector extends StatelessWidget {
     return PetGestureSurface(
       child: ValueListenableBuilder<bool>(
         valueListenable: context.read<AnchwattViewModel>().silentModeNotifier,
-        builder: (_, silentMode, _) => Selector<AnchwattViewModel, Evolution>(
-          selector: (_, vm) => vm.evolution,
-          builder: (_, evolution, _) => AnchwattSprite(
-            evolution: evolution,
+        builder: (_, silentMode, _) => Selector<AnchwattViewModel, ({Evolution evolution, bool isShiny})>(
+          selector: (_, vm) => (evolution: vm.evolution, isShiny: vm.isShiny),
+          builder: (_, data, _) => AnchwattSprite(
+            evolution: data.evolution,
             muted: silentMode,
+            isShiny: data.isShiny,
           ),
         ),
       ),
@@ -363,6 +367,34 @@ class _DebugSimulateEventButton extends StatelessWidget {
         textStyle: textDebugButton,
       ),
       child: Text(l10n.anchwattDebugSimulateEvent),
+    );
+  }
+}
+
+class _DebugToggleShinyButton extends StatelessWidget {
+  const _DebugToggleShinyButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return OutlinedButton(
+      onPressed: () => context.read<AnchwattViewModel>().debugToggleShiny(),
+      style: OutlinedButton.styleFrom(
+        enabledMouseCursor: SystemMouseCursors.click,
+        foregroundColor: colorNeutralDark,
+        side: const BorderSide(
+          color: colorNeutralLight,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: borderRadiusDebugButton,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        textStyle: textDebugButton,
+      ),
+      child: Text(l10n.anchwattDebugToggleShiny),
     );
   }
 }

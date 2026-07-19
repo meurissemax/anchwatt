@@ -20,6 +20,7 @@ class StatsService {
   int _soundsPlayed = 0;
   final Map<SoundMode, int> _soundsByMode = <SoundMode, int>{};
   int _lifetimeXp = 0;
+  int _shinyEncounters = 0;
 
   /* Getters */
 
@@ -27,6 +28,7 @@ class StatsService {
   int get petInteractions => _petInteractions;
   int get soundsPlayed => _soundsPlayed;
   int get lifetimeXp => _lifetimeXp;
+  int get shinyEncounters => _shinyEncounters;
 
   int get totalSystemEvents {
     int total = 0;
@@ -61,6 +63,7 @@ class StatsService {
       ..clear()
       ..addAll(_storage.readSoundsByMode());
     _lifetimeXp = _storage.readLifetimeXp();
+    _shinyEncounters = _storage.readShinyCount();
 
     // Seed the "member since" date once, on the first run where it is absent.
     if (_firstLaunch == null) {
@@ -96,6 +99,11 @@ class StatsService {
     unawaited(_storage.writeLifetimeXp(_lifetimeXp));
   }
 
+  void recordShinyEncounter() {
+    _shinyEncounters += 1;
+    unawaited(_storage.writeShinyCount(_shinyEncounters));
+  }
+
   Future<void> reset() async {
     final DateTime now = DateTime.now();
 
@@ -104,6 +112,7 @@ class StatsService {
     _soundsPlayed = 0;
     _soundsByMode.clear();
     _lifetimeXp = 0;
+    _shinyEncounters = 0;
     _firstLaunch = now;
 
     await _storage.clear();
