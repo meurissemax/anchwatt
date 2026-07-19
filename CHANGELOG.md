@@ -11,6 +11,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 ### Added
 
 - Add a rare shiny Anchwatt that occasionally shows up recolored.
+- Add badges that reward your least productive milestones, shown in the stats panel and quietly announced when earned.
 
 ## 1.7.0 - 2026-07-05
 

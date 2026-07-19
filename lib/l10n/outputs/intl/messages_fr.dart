@@ -27,37 +27,76 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m2(eventTitle, time) =>
       "Activé auto : ${eventTitle} jusqu\'à ${time}";
 
-  static String m3(eventTitle, time) =>
+  static String m3(count) => "${count} nouveaux badges débloqués";
+
+  static String m4(eventTitle, time) =>
       "${eventTitle} commence bientôt. Anchwatt se tait jusqu\'à ${time}.";
 
-  static String m4(eventTitle) =>
+  static String m5(eventTitle) =>
       "${eventTitle} est terminé. Anchwatt reprend du service.";
 
-  static String m5(from, to) => "${from} évolue en ${to}.";
+  static String m6(from, to) => "${from} évolue en ${to}.";
 
-  static String m6(from, level, to) =>
+  static String m7(from, level, to) =>
       "Niveau ${level} atteint. ${from} évolue en ${to}.";
 
-  static String m7(name) => "${name} a gagné un niveau.";
+  static String m8(name) => "${name} a gagné un niveau.";
 
-  static String m8(level) => "Niveau ${level} atteint";
+  static String m9(level) => "Niveau ${level} atteint";
 
-  static String m9(version) => "v${version}";
+  static String m10(version) => "v${version}";
 
-  static String m10(level) => "Débloqué au niveau ${level}.";
+  static String m11(level) => "Débloqué au niveau ${level}.";
 
-  static String m11(version) =>
+  static String m12(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m12(mode) => "Ambiance : ${mode}";
+  static String m13(mode) => "Ambiance : ${mode}";
 
-  static String m13(corporate, friday, hardcore) =>
+  static String m14(corporate, friday, hardcore) =>
       "dont ${corporate} en corporate, ${friday} en friday, ${hardcore} en hardcore";
 
-  static String m14(percent) => "Volume : ${percent} %";
+  static String m15(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "achievementChromaticDescription": MessageLookupByLibrary.simpleMessage(
+      "Un premier Anchwatt chromatique croisé. Statistiquement, tu as eu de la chance.",
+    ),
+    "achievementChromaticLabel": MessageLookupByLibrary.simpleMessage(
+      "Chromatique",
+    ),
+    "achievementCompulsivePetterDescription":
+        MessageLookupByLibrary.simpleMessage(
+          "500 papouilles distribuées. Il n\'a rien demandé.",
+        ),
+    "achievementCompulsivePetterLabel": MessageLookupByLibrary.simpleMessage(
+      "Papouilleur compulsif",
+    ),
+    "achievementEndOfLineDescription": MessageLookupByLibrary.simpleMessage(
+      "Niveau 100 atteint. Il n\'y a plus rien après, désolé.",
+    ),
+    "achievementEndOfLineLabel": MessageLookupByLibrary.simpleMessage(
+      "Fin de ligne",
+    ),
+    "achievementFirstSparkDescription": MessageLookupByLibrary.simpleMessage(
+      "Le tout premier événement système encaissé. Il fallait bien commencer.",
+    ),
+    "achievementFirstSparkLabel": MessageLookupByLibrary.simpleMessage(
+      "Première étincelle",
+    ),
+    "achievementWelcomeToHellDescription": MessageLookupByLibrary.simpleMessage(
+      "Niveau 50 atteint, mode Hardcore débloqué. Courage.",
+    ),
+    "achievementWelcomeToHellLabel": MessageLookupByLibrary.simpleMessage(
+      "Bienvenue en enfer",
+    ),
+    "achievementWorkhorseDescription": MessageLookupByLibrary.simpleMessage(
+      "1 000 événements système encaissés. Le repos attendra.",
+    ),
+    "achievementWorkhorseLabel": MessageLookupByLibrary.simpleMessage(
+      "Bourreau de travail",
+    ),
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
     "anchwattDebugAddXp": MessageLookupByLibrary.simpleMessage("Ajouter XP"),
     "anchwattDebugResetStats": MessageLookupByLibrary.simpleMessage("Reset"),
@@ -110,17 +149,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "launchAtLoginLabel": MessageLookupByLibrary.simpleMessage(
       "Démarrer à l\'ouverture de session",
     ),
+    "notificationAchievementUnlockedTitle":
+        MessageLookupByLibrary.simpleMessage("Nouveau badge débloqué"),
+    "notificationAchievementsUnlockedTitle": m3,
     "notificationCalendarEventFallbackName":
         MessageLookupByLibrary.simpleMessage("un événement"),
-    "notificationDndActivatedBody": m3,
+    "notificationDndActivatedBody": m4,
     "notificationDndActivatedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Ne pas déranger activé",
     ),
-    "notificationDndDeactivatedBody": m4,
+    "notificationDndDeactivatedBody": m5,
     "notificationDndDeactivatedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Ne pas déranger désactivé",
     ),
-    "notificationEvolutionBody": m5,
+    "notificationEvolutionBody": m6,
     "notificationEvolutionTitle": MessageLookupByLibrary.simpleMessage(
       "Évolution !",
     ),
@@ -130,11 +172,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationHardcoreUnlockedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Hardcore débloqué",
     ),
-    "notificationLevelUpAndEvolutionBody": m6,
+    "notificationLevelUpAndEvolutionBody": m7,
     "notificationLevelUpAndEvolutionTitle":
         MessageLookupByLibrary.simpleMessage("Évolution !"),
-    "notificationLevelUpBody": m7,
-    "notificationLevelUpTitle": m8,
+    "notificationLevelUpBody": m8,
+    "notificationLevelUpTitle": m9,
     "notificationShinyBody": MessageLookupByLibrary.simpleMessage(
       "La chance. Il t\'est apparu dans une teinte qu\'on ne voit presque jamais.",
     ),
@@ -149,7 +191,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.",
     ),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
-    "optionsAppVersion": m9,
+    "optionsAppVersion": m10,
     "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Bidouiller Anchwatt",
     ),
@@ -167,9 +209,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "optionsModeDescriptionHardcore": MessageLookupByLibrary.simpleMessage(
       "Sans filtre, sans pitié. Anchwatt décline toute responsabilité.",
     ),
-    "optionsModeHardcoreLockedTooltip": m10,
+    "optionsModeHardcoreLockedTooltip": m11,
     "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
-    "optionsUpdatesAvailable": m11,
+    "optionsUpdatesAvailable": m12,
     "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
       "Chercher du neuf",
     ),
@@ -194,7 +236,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeCorporate": MessageLookupByLibrary.simpleMessage("Corporate"),
     "soundModeFriday": MessageLookupByLibrary.simpleMessage("Friday"),
     "soundModeHardcore": MessageLookupByLibrary.simpleMessage("Hardcore"),
-    "soundModeTooltip": m12,
+    "soundModeTooltip": m13,
+    "statsAchievementsTitle": MessageLookupByLibrary.simpleMessage(
+      "Hauts faits",
+    ),
     "statsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Ton tableau de chasse",
     ),
@@ -221,13 +266,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsSoundsPlayedLabel": MessageLookupByLibrary.simpleMessage(
       "Sons lâchés",
     ),
-    "statsSoundsSplit": m13,
+    "statsSoundsSplit": m14,
     "statsTitle": MessageLookupByLibrary.simpleMessage("Tableau de chasse"),
     "statsWakeupsDescription": MessageLookupByLibrary.simpleMessage(
       "Un bond au plafond par événement",
     ),
     "statsWakeupsLabel": MessageLookupByLibrary.simpleMessage("Sursauts"),
-    "systemVolumeTooltip": m14,
+    "systemVolumeTooltip": m15,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

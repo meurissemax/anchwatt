@@ -262,6 +262,66 @@ void main() {
     service.dispose();
   });
 
+  test('showAchievementsUnlocked coalesces several badges into one notification', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showAchievementsUnlocked(<Achievement>[Achievement.firstSpark, Achievement.chromatic]);
+
+    final L10n l10n = locator<L10n>();
+    expect(platform.shown.length, 1);
+    expect(platform.shown.single.id, 8);
+    expect(platform.shown.single.title, l10n.notificationAchievementsUnlockedTitle(2));
+    expect(platform.shown.single.body, contains(Achievement.firstSpark.label(l10n)));
+    expect(platform.shown.single.body, contains(Achievement.chromatic.label(l10n)));
+
+    service.dispose();
+  });
+
+  test('showAchievementsUnlocked uses the singular title and the badge label as body for one badge', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showAchievementsUnlocked(<Achievement>[Achievement.endOfLine]);
+
+    final L10n l10n = locator<L10n>();
+    expect(platform.shown.length, 1);
+    expect(platform.shown.single.id, 8);
+    expect(platform.shown.single.title, l10n.notificationAchievementUnlockedTitle);
+    expect(platform.shown.single.body, l10n.achievementEndOfLineLabel);
+
+    service.dispose();
+  });
+
+  test('showAchievementsUnlocked fires nothing for an empty list', () async {
+    final NotificationService service = NotificationService(platform: platform);
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showAchievementsUnlocked(const <Achievement>[]);
+
+    expect(platform.shown, isEmpty);
+
+    service.dispose();
+  });
+
+  test('showAchievementsUnlocked is suppressed while the window is visible', () async {
+    final NotificationService service = NotificationService(
+      platform: platform,
+      isWindowHidden: () async => false,
+    );
+    await service.init();
+    await service.setEnabled(true);
+
+    await service.showAchievementsUnlocked(<Achievement>[Achievement.firstSpark]);
+
+    expect(platform.shown, isEmpty);
+
+    service.dispose();
+  });
+
   test('showCalendarDndActivated puts the event title before the end time', () async {
     final NotificationService service = NotificationService(platform: platform);
     await service.init();

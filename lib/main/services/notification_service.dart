@@ -42,6 +42,7 @@ class NotificationService {
   static const int _idLevelUpAndEvolution = 5;
   static const int _idHardcoreUnlocked = 6;
   static const int _idShiny = 7;
+  static const int _idAchievement = 8;
 
   static const String _systemSettingsUrl =
       'x-apple.systempreferences:com.apple.preference.security?Privacy_Notifications';
@@ -248,6 +249,31 @@ class NotificationService {
       id: _idHardcoreUnlocked,
       title: l10n.notificationHardcoreUnlockedTitle,
       body: l10n.notificationHardcoreUnlockedBody,
+    );
+  }
+
+  // Fired when one or more badges unlock, background-only via [_ensureCanFire].
+  // Kept independent from the progression and shiny notifications (its own id),
+  // so a single action can surface several distinct notifications. Multiple
+  // badges unlocking on the same tick are coalesced into one notification.
+  Future<void> showAchievementsUnlocked(List<Achievement> achievements) async {
+    if (achievements.isEmpty) {
+      return;
+    }
+
+    if (!await _ensureCanFire()) {
+      return;
+    }
+
+    final L10n l10n = locator<L10n>();
+    final String title = achievements.length == 1
+        ? l10n.notificationAchievementUnlockedTitle
+        : l10n.notificationAchievementsUnlockedTitle(achievements.length);
+    final String body = achievements.map((Achievement achievement) => achievement.label(l10n)).join(', ');
+    await _safeShow(
+      id: _idAchievement,
+      title: title,
+      body: body,
     );
   }
 

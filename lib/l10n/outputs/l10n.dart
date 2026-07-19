@@ -54,6 +54,126 @@ class L10n {
     return Localizations.of<L10n>(context, L10n);
   }
 
+  /// `Un premier Anchwatt chromatique croisé. Statistiquement, tu as eu de la chance.`
+  String get achievementChromaticDescription {
+    return Intl.message(
+      'Un premier Anchwatt chromatique croisé. Statistiquement, tu as eu de la chance.',
+      name: 'achievementChromaticDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chromatique`
+  String get achievementChromaticLabel {
+    return Intl.message(
+      'Chromatique',
+      name: 'achievementChromaticLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `500 papouilles distribuées. Il n'a rien demandé.`
+  String get achievementCompulsivePetterDescription {
+    return Intl.message(
+      '500 papouilles distribuées. Il n\'a rien demandé.',
+      name: 'achievementCompulsivePetterDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Papouilleur compulsif`
+  String get achievementCompulsivePetterLabel {
+    return Intl.message(
+      'Papouilleur compulsif',
+      name: 'achievementCompulsivePetterLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Niveau 100 atteint. Il n'y a plus rien après, désolé.`
+  String get achievementEndOfLineDescription {
+    return Intl.message(
+      'Niveau 100 atteint. Il n\'y a plus rien après, désolé.',
+      name: 'achievementEndOfLineDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fin de ligne`
+  String get achievementEndOfLineLabel {
+    return Intl.message(
+      'Fin de ligne',
+      name: 'achievementEndOfLineLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Le tout premier événement système encaissé. Il fallait bien commencer.`
+  String get achievementFirstSparkDescription {
+    return Intl.message(
+      'Le tout premier événement système encaissé. Il fallait bien commencer.',
+      name: 'achievementFirstSparkDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Première étincelle`
+  String get achievementFirstSparkLabel {
+    return Intl.message(
+      'Première étincelle',
+      name: 'achievementFirstSparkLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Niveau 50 atteint, mode Hardcore débloqué. Courage.`
+  String get achievementWelcomeToHellDescription {
+    return Intl.message(
+      'Niveau 50 atteint, mode Hardcore débloqué. Courage.',
+      name: 'achievementWelcomeToHellDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bienvenue en enfer`
+  String get achievementWelcomeToHellLabel {
+    return Intl.message(
+      'Bienvenue en enfer',
+      name: 'achievementWelcomeToHellLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1 000 événements système encaissés. Le repos attendra.`
+  String get achievementWorkhorseDescription {
+    return Intl.message(
+      '1 000 événements système encaissés. Le repos attendra.',
+      name: 'achievementWorkhorseDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bourreau de travail`
+  String get achievementWorkhorseLabel {
+    return Intl.message(
+      'Bourreau de travail',
+      name: 'achievementWorkhorseLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Anchwatt`
   String get anchwatt {
     return Intl.message('Anchwatt', name: 'anchwatt', desc: '', args: []);
@@ -276,6 +396,26 @@ class L10n {
       name: 'launchAtLoginLabel',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Nouveau badge débloqué`
+  String get notificationAchievementUnlockedTitle {
+    return Intl.message(
+      'Nouveau badge débloqué',
+      name: 'notificationAchievementUnlockedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} nouveaux badges débloqués`
+  String notificationAchievementsUnlockedTitle(int count) {
+    return Intl.message(
+      '$count nouveaux badges débloqués',
+      name: 'notificationAchievementsUnlockedTitle',
+      desc: '',
+      args: [count],
     );
   }
 
@@ -700,6 +840,16 @@ class L10n {
       name: 'soundModeTooltip',
       desc: '',
       args: [mode],
+    );
+  }
+
+  /// `Hauts faits`
+  String get statsAchievementsTitle {
+    return Intl.message(
+      'Hauts faits',
+      name: 'statsAchievementsTitle',
+      desc: '',
+      args: [],
     );
   }
 

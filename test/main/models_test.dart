@@ -25,6 +25,18 @@ class _StubRandom implements Random {
   double nextDouble() => throw UnimplementedError();
 }
 
+AchievementStats _statsWith({
+  int totalSystemEvents = 0,
+  int petInteractions = 0,
+  int shinyEncounters = 0,
+  int level = AnchwattSettings.levelMin,
+}) => AchievementStats(
+  totalSystemEvents: totalSystemEvents,
+  petInteractions: petInteractions,
+  shinyEncounters: shinyEncounters,
+  level: level,
+);
+
 void main() {
   group('AnchwattSettings.xpForEvent', () {
     test('usbToggle at level 1 with full volume awards base * maxVolumeMultiplier', () {
@@ -271,6 +283,77 @@ void main() {
       expect(SoundMode.fromName('hardcore'), SoundMode.hardcore);
       expect(SoundMode.fromName('nope'), SoundMode.corporate);
       expect(SoundMode.fromName(null), SoundMode.corporate);
+    });
+  });
+
+  group('Achievement.isUnlockedBy', () {
+    test('firstSpark unlocks on the first system event', () {
+      expect(Achievement.firstSpark.isUnlockedBy(_statsWith()), isFalse);
+      expect(Achievement.firstSpark.isUnlockedBy(_statsWith(totalSystemEvents: 1)), isTrue);
+    });
+
+    test('workhorse unlocks at the total-events threshold', () {
+      expect(
+        Achievement.workhorse.isUnlockedBy(
+          _statsWith(totalSystemEvents: AnchwattSettings.achievementTotalEventsThreshold - 1),
+        ),
+        isFalse,
+      );
+      expect(
+        Achievement.workhorse.isUnlockedBy(
+          _statsWith(totalSystemEvents: AnchwattSettings.achievementTotalEventsThreshold),
+        ),
+        isTrue,
+      );
+    });
+
+    test('compulsivePetter unlocks at the pets threshold', () {
+      expect(
+        Achievement.compulsivePetter.isUnlockedBy(
+          _statsWith(petInteractions: AnchwattSettings.achievementPetsThreshold - 1),
+        ),
+        isFalse,
+      );
+      expect(
+        Achievement.compulsivePetter.isUnlockedBy(
+          _statsWith(petInteractions: AnchwattSettings.achievementPetsThreshold),
+        ),
+        isTrue,
+      );
+    });
+
+    test('chromatic unlocks on the first shiny encounter', () {
+      expect(Achievement.chromatic.isUnlockedBy(_statsWith()), isFalse);
+      expect(Achievement.chromatic.isUnlockedBy(_statsWith(shinyEncounters: 1)), isTrue);
+    });
+
+    test('welcomeToHell unlocks at the Hardcore unlock level', () {
+      expect(
+        Achievement.welcomeToHell.isUnlockedBy(_statsWith(level: AnchwattSettings.hardcoreUnlockLevel - 1)),
+        isFalse,
+      );
+      expect(
+        Achievement.welcomeToHell.isUnlockedBy(_statsWith(level: AnchwattSettings.hardcoreUnlockLevel)),
+        isTrue,
+      );
+    });
+
+    test('endOfLine unlocks at max level', () {
+      expect(
+        Achievement.endOfLine.isUnlockedBy(_statsWith(level: AnchwattSettings.levelMax - 1)),
+        isFalse,
+      );
+      expect(
+        Achievement.endOfLine.isUnlockedBy(_statsWith(level: AnchwattSettings.levelMax)),
+        isTrue,
+      );
+    });
+
+    test('event-count badges ignore pet interactions', () {
+      final AchievementStats petsOnly = _statsWith(petInteractions: 5000);
+
+      expect(Achievement.firstSpark.isUnlockedBy(petsOnly), isFalse);
+      expect(Achievement.workhorse.isUnlockedBy(petsOnly), isFalse);
     });
   });
 }

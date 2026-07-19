@@ -2,6 +2,7 @@ import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/achievement_service.dart';
 import 'package:anchwatt/main/services/stats_service.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,7 @@ class StatsViewModel extends ChangeNotifier {
 
   final AnchwattViewModel _parent;
   final StatsService _statsService = locator<StatsService>();
+  final AchievementService _achievementService = locator<AchievementService>();
 
   /* Constructor */
 
@@ -37,6 +39,18 @@ class StatsViewModel extends ChangeNotifier {
   int get soundsPlayed => _statsService.soundsPlayed;
   int get petPokes => _statsService.petInteractions;
   int get shinyEncounters => _statsService.shinyEncounters;
+
+  // The full catalogue with each badge's current unlock state, read once when
+  // the modal opens (like every other value here). Locked badges are rendered
+  // greyed with their condition, so the whole list is always exposed.
+  List<({Achievement achievement, bool unlocked})> get achievements => Achievement.values
+      .map(
+        (Achievement achievement) => (
+          achievement: achievement,
+          unlocked: _achievementService.isUnlocked(achievement),
+        ),
+      )
+      .toList();
 
   String get soundsSplit => _l10n.statsSoundsSplit(
     formatNumber(_statsService.soundsPlayedFor(SoundMode.corporate)),

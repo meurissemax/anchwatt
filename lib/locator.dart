@@ -1,4 +1,5 @@
 import 'package:anchwatt/l10n/outputs/l10n.dart';
+import 'package:anchwatt/main/services/achievement_service.dart';
 import 'package:anchwatt/main/services/stats_service.dart';
 import 'package:anchwatt/router.dart';
 import 'package:get_it/get_it.dart';
@@ -11,4 +12,5 @@ void setupLocator() {
   locator.registerSingleton<L10n>(L10n());
   locator.registerLazySingleton<AppRouter>(AppRouter.new);
   locator.registerLazySingleton<StatsService>(StatsService.new);
+  locator.registerLazySingleton<AchievementService>(AchievementService.new);
 }

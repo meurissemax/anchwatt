@@ -32,6 +32,8 @@ const Color colorLevelMaxGoldDeep = Color(0xffc9a227);
 const Color colorLevelMaxGoldHighlight = Color(0xfffff3b0);
 
 // Widgets
+const Color colorAchievementTileLocked = Color(0xfff9fafb);
+const Color colorAchievementTileUnlocked = Color(0xfff3f4f6);
 const Color colorOptionsAboutCard = Color(0xfff3f4f6);
 const Color colorSoundModeCorporate = Color(0xff1e88e5);
 const Color colorSoundModeFriday = Color(0xffab47bc);

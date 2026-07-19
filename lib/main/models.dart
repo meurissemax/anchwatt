@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 
 // Clément, don't read this, you curious boy
 class AnchwattSettings {
+  static const int achievementPetsThreshold = 500;
+  static const int achievementTotalEventsThreshold = 1000;
   static const int evolutionLamperoieLevel = 15;
   static const int evolutionOhmassacreLevel = 40;
   static const int hardcoreUnlockLevel = 50;
@@ -284,6 +286,148 @@ enum SoundMode {
   }
 
   String tooltip(L10n l10n) => l10n.soundModeTooltip(label(l10n));
+}
+
+// Immutable snapshot of the stats an [Achievement] predicate reads. Composed by
+// the orchestrating ViewModel from [StatsService] counters plus the current
+// level (which lives on the ViewModel, not the stats service), so the catalogue
+// predicates stay pure and testable without touching any service.
+@immutable
+class AchievementStats {
+  final int totalSystemEvents;
+  final int petInteractions;
+  final int shinyEncounters;
+  final int level;
+
+  const AchievementStats({
+    required this.totalSystemEvents,
+    required this.petInteractions,
+    required this.shinyEncounters,
+    required this.level,
+  });
+}
+
+// Badge catalogue. Each entry is a pure threshold predicate over an
+// [AchievementStats] snapshot, plus its presentation (icon, accent colour, and
+// localized label/description). The enum name is the stable id persisted by
+// AchievementStorage, so entries must never be renamed once shipped.
+enum Achievement {
+  firstSpark,
+  chromatic,
+  welcomeToHell,
+  workhorse,
+  compulsivePetter,
+  endOfLine;
+
+  IconData get iconData {
+    switch (this) {
+      case Achievement.firstSpark:
+        return Icons.bolt;
+
+      case Achievement.chromatic:
+        return Icons.palette;
+
+      case Achievement.welcomeToHell:
+        return Icons.local_fire_department;
+
+      case Achievement.workhorse:
+        return Icons.engineering;
+
+      case Achievement.compulsivePetter:
+        return Icons.pets;
+
+      case Achievement.endOfLine:
+        return Icons.emoji_events;
+    }
+  }
+
+  Color get accentColor {
+    switch (this) {
+      case Achievement.firstSpark:
+        return colorEvolutionAnchwatt;
+
+      case Achievement.chromatic:
+        return colorEvolutionOhmassacre;
+
+      case Achievement.welcomeToHell:
+        return colorSoundModeHardcore;
+
+      case Achievement.workhorse:
+        return colorEvolutionLamperoie;
+
+      case Achievement.compulsivePetter:
+        return colorSoundModeFriday;
+
+      case Achievement.endOfLine:
+        return colorLevelMaxGold;
+    }
+  }
+
+  String label(L10n l10n) {
+    switch (this) {
+      case Achievement.firstSpark:
+        return l10n.achievementFirstSparkLabel;
+
+      case Achievement.chromatic:
+        return l10n.achievementChromaticLabel;
+
+      case Achievement.welcomeToHell:
+        return l10n.achievementWelcomeToHellLabel;
+
+      case Achievement.workhorse:
+        return l10n.achievementWorkhorseLabel;
+
+      case Achievement.compulsivePetter:
+        return l10n.achievementCompulsivePetterLabel;
+
+      case Achievement.endOfLine:
+        return l10n.achievementEndOfLineLabel;
+    }
+  }
+
+  String description(L10n l10n) {
+    switch (this) {
+      case Achievement.firstSpark:
+        return l10n.achievementFirstSparkDescription;
+
+      case Achievement.chromatic:
+        return l10n.achievementChromaticDescription;
+
+      case Achievement.welcomeToHell:
+        return l10n.achievementWelcomeToHellDescription;
+
+      case Achievement.workhorse:
+        return l10n.achievementWorkhorseDescription;
+
+      case Achievement.compulsivePetter:
+        return l10n.achievementCompulsivePetterDescription;
+
+      case Achievement.endOfLine:
+        return l10n.achievementEndOfLineDescription;
+    }
+  }
+
+  bool isUnlockedBy(AchievementStats stats) {
+    switch (this) {
+      case Achievement.firstSpark:
+        return stats.totalSystemEvents >= 1;
+
+      case Achievement.chromatic:
+        return stats.shinyEncounters >= 1;
+
+      case Achievement.welcomeToHell:
+        return stats.level >= AnchwattSettings.hardcoreUnlockLevel;
+
+      case Achievement.workhorse:
+        return stats.totalSystemEvents >= AnchwattSettings.achievementTotalEventsThreshold;
+
+      case Achievement.compulsivePetter:
+        return stats.petInteractions >= AnchwattSettings.achievementPetsThreshold;
+
+      case Achievement.endOfLine:
+        return stats.level >= AnchwattSettings.levelMax;
+    }
+  }
 }
 
 class SystemVolumeSettings {

@@ -131,6 +131,12 @@ class StatsView extends StatelessWidget {
                         label: l10n.statsMemberSinceLabel,
                         value: viewModel.memberSince,
                       ),
+                      const SizedBox(
+                        height: _sectionSpacing,
+                      ),
+                      _AchievementsSection(
+                        achievements: viewModel.achievements,
+                      ),
                     ],
                   ),
                 ),
@@ -269,6 +275,120 @@ class _CloseButton extends StatelessWidget {
       padding: _padding,
       constraints: _constraints,
       onPressed: () => Navigator.of(context).pop(),
+    );
+  }
+}
+
+class _AchievementsSection extends StatelessWidget {
+  static const double _titleSpacing = 12;
+  static const double _tileSpacing = 8;
+
+  final List<({Achievement achievement, bool unlocked})> achievements;
+
+  const _AchievementsSection({
+    required this.achievements,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.statsAchievementsTitle,
+          style: textOptionsSectionLabel,
+        ),
+        const SizedBox(
+          height: _titleSpacing,
+        ),
+        for (int i = 0; i < achievements.length; i++) ...[
+          if (i > 0)
+            const SizedBox(
+              height: _tileSpacing,
+            ),
+          _AchievementTile(
+            achievement: achievements[i].achievement,
+            unlocked: achievements[i].unlocked,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _AchievementTile extends StatelessWidget {
+  static const EdgeInsets _padding = EdgeInsets.all(12);
+  static const double _iconChipSize = 36;
+  static const double _iconSize = 20;
+  static const double _chipToTextSpacing = 12;
+  static const double _labelToDescriptionSpacing = 3;
+
+  final Achievement achievement;
+  final bool unlocked;
+
+  const _AchievementTile({
+    required this.achievement,
+    required this.unlocked,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Container(
+      padding: _padding,
+      decoration: BoxDecoration(
+        color: unlocked ? colorAchievementTileUnlocked : colorAchievementTileLocked,
+        borderRadius: borderRadiusOptionsAboutCard,
+      ),
+      child: Row(
+        children: [
+          // Unlocked: a filled accent chip with a white glyph, so an earned
+          // badge reads as a splash of colour. Locked: a hollow, greyed-out
+          // chip, keeping the two states unmistakable at a glance.
+          Container(
+            width: _iconChipSize,
+            height: _iconChipSize,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: unlocked ? achievement.accentColor : Colors.transparent,
+              borderRadius: borderRadiusOptionsButton,
+              border: unlocked ? null : Border.all(color: colorNeutralLight),
+            ),
+            child: Icon(
+              achievement.iconData,
+              size: _iconSize,
+              color: unlocked ? Colors.white : colorMutedLight,
+            ),
+          ),
+          const SizedBox(
+            width: _chipToTextSpacing,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  achievement.label(l10n),
+                  style: textOptionsSectionLabel.copyWith(
+                    color: unlocked ? colorNeutralDark : colorMutedDark,
+                  ),
+                ),
+                const SizedBox(
+                  height: _labelToDescriptionSpacing,
+                ),
+                Text(
+                  achievement.description(l10n),
+                  style: textOptionsSectionDescription,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

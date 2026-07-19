@@ -27,6 +27,13 @@
             }
         }
     },
+    "@notificationAchievementsUnlockedTitle": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
     "@notificationDndActivatedBody": {
         "placeholders": {
             "eventTitle": {
@@ -129,6 +136,18 @@
             }
         }
     },
+    "achievementChromaticDescription": "Un premier Anchwatt chromatique croisé. Statistiquement, tu as eu de la chance.",
+    "achievementChromaticLabel": "Chromatique",
+    "achievementCompulsivePetterDescription": "500 papouilles distribuées. Il n'a rien demandé.",
+    "achievementCompulsivePetterLabel": "Papouilleur compulsif",
+    "achievementEndOfLineDescription": "Niveau 100 atteint. Il n'y a plus rien après, désolé.",
+    "achievementEndOfLineLabel": "Fin de ligne",
+    "achievementFirstSparkDescription": "Le tout premier événement système encaissé. Il fallait bien commencer.",
+    "achievementFirstSparkLabel": "Première étincelle",
+    "achievementWelcomeToHellDescription": "Niveau 50 atteint, mode Hardcore débloqué. Courage.",
+    "achievementWelcomeToHellLabel": "Bienvenue en enfer",
+    "achievementWorkhorseDescription": "1 000 événements système encaissés. Le repos attendra.",
+    "achievementWorkhorseLabel": "Bourreau de travail",
     "anchwatt": "Anchwatt",
     "anchwattDebugAddXp": "Ajouter XP",
     "anchwattDebugResetStats": "Reset",
@@ -153,6 +172,8 @@
     "launchAtLoginDescription": "Anchwatt apparaît dans la barre des menus dès l'ouverture de session, fenêtre masquée. Clique sur l'icône pour la rouvrir.",
     "launchAtLoginError": "Raté, macOS a dit non",
     "launchAtLoginLabel": "Démarrer à l'ouverture de session",
+    "notificationAchievementUnlockedTitle": "Nouveau badge débloqué",
+    "notificationAchievementsUnlockedTitle": "{count} nouveaux badges débloqués",
     "notificationCalendarEventFallbackName": "un événement",
     "notificationDndActivatedBody": "{eventTitle} commence bientôt. Anchwatt se tait jusqu'à {time}.",
     "notificationDndActivatedTitle": "Mode Ne pas déranger activé",
@@ -196,6 +217,7 @@
     "soundModeFriday": "Friday",
     "soundModeHardcore": "Hardcore",
     "soundModeTooltip": "Ambiance : {mode}",
+    "statsAchievementsTitle": "Hauts faits",
     "statsButtonTooltip": "Ton tableau de chasse",
     "statsFavoriteEventDescription": "L'événement qui le titille le plus souvent",
     "statsFavoriteEventEmpty": "Rien encore, tout roupille",

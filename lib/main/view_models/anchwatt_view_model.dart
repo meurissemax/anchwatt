@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/achievement_service.dart';
 import 'package:anchwatt/main/services/calendar_auto_mute_service.dart';
 import 'package:anchwatt/main/services/charger_event_service.dart';
 import 'package:anchwatt/main/services/external_display_event_service.dart';
@@ -45,6 +46,7 @@ class AnchwattViewModel extends ChangeNotifier {
   final UpdateService _updateService = UpdateService();
   final SystemVolumeService _systemVolumeService = SystemVolumeService();
   final StatsService _statsService = locator<StatsService>();
+  final AchievementService _achievementService = locator<AchievementService>();
 
   StreamSubscription<void>? _usbSubscription;
   StreamSubscription<void>? _chargerSubscription;
@@ -208,6 +210,11 @@ class AnchwattViewModel extends ChangeNotifier {
 
     await _storage.clear();
     await _statsService.reset();
+    await _achievementService.reset();
+
+    // Re-seed against the now-empty stats (level reset to 1, all counters 0), so
+    // every badge returns to locked without firing a notification.
+    _evaluateAchievements();
   }
 
   void onPetTick() {
@@ -317,6 +324,29 @@ class AnchwattViewModel extends ChangeNotifier {
     }
   }
 
+  // Re-evaluates the badge catalogue against a freshly-composed snapshot (stats
+  // + current level) and fires a single combined notification for any newly
+  // unlocked badge. Called from the one settled point of each user action, so
+  // several badges crossing at once coalesce into a single notification. The
+  // unlock is persisted by the service regardless; only the notification is
+  // suppressed under DND, mirroring the progression notification.
+  void _evaluateAchievements() {
+    final AchievementStats snapshot = AchievementStats(
+      totalSystemEvents: _statsService.totalSystemEvents,
+      petInteractions: _statsService.petInteractions,
+      shinyEncounters: _statsService.shinyEncounters,
+      level: _level,
+    );
+
+    final List<Achievement> unlocked = _achievementService.evaluate(snapshot);
+
+    if (unlocked.isEmpty || _silentModeService.isEnabled) {
+      return;
+    }
+
+    unawaited(_notificationService.showAchievementsUnlocked(unlocked));
+  }
+
   // Single coalescence point for every native system event (USB, charger,
   // external display, headphones). One physical action — e.g. plugging in a
   // USB-C dock — can fan out into several events in quick succession; we let
@@ -380,6 +410,11 @@ class AnchwattViewModel extends ChangeNotifier {
     );
 
     if (xp <= 0) {
+      // A muted (but not DND) event still incremented the event count and may
+      // have rolled a shiny, yet grants no XP and so never reaches _process —
+      // evaluate here so those thresholds still unlock.
+      _evaluateAchievements();
+
       return;
     }
 
@@ -400,6 +435,16 @@ class AnchwattViewModel extends ChangeNotifier {
       await _statsService.init();
     } on Object catch (error) {
       debugPrint('AnchwattViewModel: StatsService init failed: $error');
+    }
+
+    // Load the persisted unlocked set, then evaluate once. On the very first run
+    // of this feature it silently seeds every already-satisfied badge (no
+    // notification); on later runs it is a harmless no-op against the stored set.
+    try {
+      await _achievementService.init();
+      _evaluateAchievements();
+    } on Object catch (error) {
+      debugPrint('AnchwattViewModel: AchievementService init failed: $error');
     }
 
     try {
@@ -532,6 +577,10 @@ class AnchwattViewModel extends ChangeNotifier {
     _statsService.addLifetimeXp(amount);
 
     if (isMaxLevel) {
+      // Still evaluate: an event/pet/shiny threshold can be crossed while parked
+      // at max level, where this early return otherwise skips the tail eval.
+      _evaluateAchievements();
+
       return;
     }
 
@@ -573,6 +622,8 @@ class AnchwattViewModel extends ChangeNotifier {
         newEvolution: Evolution.fromLevel(_level),
       ),
     );
+
+    _evaluateAchievements();
   }
 
   @override
