@@ -6,7 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
-- Change the Flutter SDK version to 3.44.6
+- Change the Flutter SDK version to 3.44.7
 
 ### Added
 
