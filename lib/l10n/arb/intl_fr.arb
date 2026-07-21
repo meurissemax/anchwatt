@@ -116,6 +116,27 @@
             }
         }
     },
+    "@statsCardTaglineFirst": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "@statsCardTaglineSecond": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "@statsCardTaglineThird": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
     "@statsSoundsSplit": {
         "placeholders": {
             "corporate": {
@@ -172,8 +193,8 @@
     "launchAtLoginDescription": "Anchwatt apparaît dans la barre des menus dès l'ouverture de session, fenêtre masquée. Clique sur l'icône pour la rouvrir.",
     "launchAtLoginError": "Raté, macOS a dit non",
     "launchAtLoginLabel": "Démarrer à l'ouverture de session",
-    "notificationAchievementUnlockedTitle": "Nouveau badge débloqué",
     "notificationAchievementsUnlockedTitle": "{count} nouveaux badges débloqués",
+    "notificationAchievementUnlockedTitle": "Nouveau badge débloqué",
     "notificationCalendarEventFallbackName": "un événement",
     "notificationDndActivatedBody": "{eventTitle} commence bientôt. Anchwatt se tait jusqu'à {time}.",
     "notificationDndActivatedTitle": "Mode Ne pas déranger activé",
@@ -219,6 +240,13 @@
     "soundModeTooltip": "Ambiance : {mode}",
     "statsAchievementsTitle": "Hauts faits",
     "statsButtonTooltip": "Ton tableau de chasse",
+    "statsCardCtaLabel": "Télécharger Anchwatt",
+    "statsCardShareButton": "Partager la carte",
+    "statsCardShareCopied": "Carte copiée !",
+    "statsCardShareError": "Raté, la carte n'est pas passée",
+    "statsCardTaglineFirst": "Niveau {level}. Tout ça pour ça.",
+    "statsCardTaglineSecond": "Niveau {level} et toujours pas de promotion.",
+    "statsCardTaglineThird": "Niveau {level}, et pourtant personne n'a rien demandé.",
     "statsFavoriteEventDescription": "L'événement qui le titille le plus souvent",
     "statsFavoriteEventEmpty": "Rien encore, tout roupille",
     "statsFavoriteEventLabel": "Péché mignon",

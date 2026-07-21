@@ -53,10 +53,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(mode) => "Ambiance : ${mode}";
 
-  static String m14(corporate, friday, hardcore) =>
+  static String m14(level) => "Niveau ${level}. Tout ça pour ça.";
+
+  static String m15(level) => "Niveau ${level} et toujours pas de promotion.";
+
+  static String m16(level) =>
+      "Niveau ${level}, et pourtant personne n\'a rien demandé.";
+
+  static String m17(corporate, friday, hardcore) =>
       "dont ${corporate} en corporate, ${friday} en friday, ${hardcore} en hardcore";
 
-  static String m15(percent) => "Volume : ${percent} %";
+  static String m18(percent) => "Volume : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -243,6 +250,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Ton tableau de chasse",
     ),
+    "statsCardCtaLabel": MessageLookupByLibrary.simpleMessage(
+      "Télécharger Anchwatt",
+    ),
+    "statsCardShareButton": MessageLookupByLibrary.simpleMessage(
+      "Partager la carte",
+    ),
+    "statsCardShareCopied": MessageLookupByLibrary.simpleMessage(
+      "Carte copiée !",
+    ),
+    "statsCardShareError": MessageLookupByLibrary.simpleMessage(
+      "Raté, la carte n\'est pas passée",
+    ),
+    "statsCardTaglineFirst": m14,
+    "statsCardTaglineSecond": m15,
+    "statsCardTaglineThird": m16,
     "statsFavoriteEventDescription": MessageLookupByLibrary.simpleMessage(
       "L\'événement qui le titille le plus souvent",
     ),
@@ -266,13 +288,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsSoundsPlayedLabel": MessageLookupByLibrary.simpleMessage(
       "Sons lâchés",
     ),
-    "statsSoundsSplit": m14,
+    "statsSoundsSplit": m17,
     "statsTitle": MessageLookupByLibrary.simpleMessage("Tableau de chasse"),
     "statsWakeupsDescription": MessageLookupByLibrary.simpleMessage(
       "Un bond au plafond par événement",
     ),
     "statsWakeupsLabel": MessageLookupByLibrary.simpleMessage("Sursauts"),
-    "systemVolumeTooltip": m15,
+    "systemVolumeTooltip": m18,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio",
     ),

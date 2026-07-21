@@ -4,6 +4,8 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/view_models/stats_view_model.dart';
+import 'package:anchwatt/main/widgets/stats_card.dart';
+import 'package:anchwatt/main/widgets/stats_card_capture.dart';
 import 'package:anchwatt/styles/borders.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/texts.dart';
@@ -137,6 +139,10 @@ class StatsView extends StatelessWidget {
                       _AchievementsSection(
                         achievements: viewModel.achievements,
                       ),
+                      const SizedBox(
+                        height: _sectionSpacing,
+                      ),
+                      const _ShareButton(),
                     ],
                   ),
                 ),
@@ -275,6 +281,108 @@ class _CloseButton extends StatelessWidget {
       padding: _padding,
       constraints: _constraints,
       onPressed: () => Navigator.of(context).pop(),
+    );
+  }
+}
+
+class _ShareButton extends StatelessWidget {
+  static const double _iconSize = 15;
+  static const double _spacing = 8;
+  static const Duration _animationDuration = Duration(milliseconds: 150);
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 11,
+  );
+
+  const _ShareButton();
+
+  // Renders the card off-screen and hands it to the ViewModel. The Overlay and
+  // the image precache both need this live context, so the capture closure is
+  // built here (in the view) and the VM only orchestrates the copy + status.
+  Future<void> _share(BuildContext context) async {
+    final StatsViewModel viewModel = context.read<StatsViewModel>();
+    final OverlayState overlay = Overlay.of(context);
+    final StatsCardData data = viewModel.buildCardData();
+
+    await precacheImage(AssetImage(data.evolution.assetPath), context);
+
+    if (!context.mounted) {
+      return;
+    }
+
+    await precacheImage(const AssetImage(StatsCard.logoAsset), context);
+
+    if (!context.mounted) {
+      return;
+    }
+
+    await viewModel.shareCard(
+      () => captureStatsCard(
+        overlay: overlay,
+        card: StatsCard(
+          data: data,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return Selector<StatsViewModel, ShareStatus>(
+      selector: (_, StatsViewModel viewModel) => viewModel.shareStatus,
+      builder: (context, ShareStatus status, _) {
+        final bool working = status == ShareStatus.working;
+
+        final (IconData icon, String label) = switch (status) {
+          ShareStatus.idle || ShareStatus.working => (Icons.ios_share, l10n.statsCardShareButton),
+          ShareStatus.copied => (Icons.check, l10n.statsCardShareCopied),
+          ShareStatus.error => (Icons.error_outline, l10n.statsCardShareError),
+        };
+
+        return MouseRegion(
+          cursor: working ? SystemMouseCursors.basic : SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: working ? null : () => _share(context),
+            child: AnimatedContainer(
+              duration: _animationDuration,
+              padding: _padding,
+              decoration: const BoxDecoration(
+                color: colorPrimary,
+                borderRadius: borderRadiusOptionsButton,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: _spacing,
+                children: [
+                  if (working)
+                    const SizedBox(
+                      width: _iconSize,
+                      height: _iconSize,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  else
+                    Icon(
+                      icon,
+                      size: _iconSize,
+                      color: Colors.white,
+                    ),
+                  Text(
+                    label,
+                    style: textOptionsCompactButton.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

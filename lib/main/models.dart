@@ -22,6 +22,7 @@ class AnchwattSettings {
   static const int randomSoundExclusionWindow = 3;
   static const double shinyHueRotationDegrees = 150;
   static const int shinyOdds = 128;
+  static const int statsCardTaglineCount = 3;
   static const int xpBase = 50;
   static const int xpGrowthFactor = 2;
   // Cross-event coalescing window. A single physical action (e.g. plugging in
@@ -61,6 +62,10 @@ class AnchwattSettings {
   // Rolls a shiny encounter: a 1-in-[shinyOdds] chance. Kept pure (takes the
   // RNG) so the odds are unit-testable with a deterministic [Random].
   static bool rollShiny(Random random) => random.nextInt(shinyOdds) == 0;
+
+  // Picks which footer tagline the share card shows. Kept pure (takes the RNG)
+  // so the selection is unit-testable with a deterministic [Random].
+  static int pickTaglineIndex(Random random) => random.nextInt(statsCardTaglineCount);
 
   // Volume = 0 yields 0 XP for non-pet events (anti-farming when muted).
   // The pet uses [petVolumeFloor] so it still grants a small gain when muted.
@@ -428,6 +433,38 @@ enum Achievement {
         return stats.level >= AnchwattSettings.levelMax;
     }
   }
+}
+
+// Immutable snapshot the shareable stats card renders from. Built once at
+// capture time from the live services so the captured frame is deterministic
+// and never listens to anything. The sprite is always the evolution's NORMAL
+// variant (the shiny recolour is intentionally excluded), and [tagline] is the
+// already-localized footer line with its {level} placeholder filled in.
+@immutable
+class StatsCardData {
+  final int level;
+  final int xpInLevel;
+  final int xpForLevel;
+  final Evolution evolution;
+  final int totalSystemEvents;
+  final int petInteractions;
+  final int shinyEncounters;
+  final DateTime memberSince;
+  final List<Achievement> unlockedBadges;
+  final String tagline;
+
+  const StatsCardData({
+    required this.level,
+    required this.xpInLevel,
+    required this.xpForLevel,
+    required this.evolution,
+    required this.totalSystemEvents,
+    required this.petInteractions,
+    required this.shinyEncounters,
+    required this.memberSince,
+    required this.unlockedBadges,
+    required this.tagline,
+  });
 }
 
 class SystemVolumeSettings {

@@ -7,4 +7,5 @@ const BorderRadius borderRadiusOptionsButton = BorderRadius.all(Radius.circular(
 const BorderRadius borderRadiusOptionsDialog = BorderRadius.all(Radius.circular(12));
 const BorderRadius borderRadiusOptionsModePill = BorderRadius.all(Radius.circular(6));
 const BorderRadius borderRadiusOptionsUpdateZone = BorderRadius.all(Radius.circular(8));
+const BorderRadius borderRadiusStatsCard = BorderRadius.all(Radius.circular(16));
 const BorderRadius borderRadiusXpBar = BorderRadius.all(Radius.circular(4));

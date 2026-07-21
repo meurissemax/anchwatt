@@ -266,6 +266,20 @@ void main() {
     });
   });
 
+  group('AnchwattSettings.pickTaglineIndex', () {
+    test('returns the RNG draw verbatim', () {
+      expect(AnchwattSettings.pickTaglineIndex(_StubRandom(0)), 0);
+      expect(AnchwattSettings.pickTaglineIndex(_StubRandom(2)), 2);
+    });
+
+    test('draws from the [0, statsCardTaglineCount) range', () {
+      final _StubRandom random = _StubRandom(0);
+      AnchwattSettings.pickTaglineIndex(random);
+
+      expect(random.lastMax, AnchwattSettings.statsCardTaglineCount);
+    });
+  });
+
   group('SoundMode', () {
     test('xpMultiplier ranks Hardcore highest', () {
       expect(SoundMode.hardcore.xpMultiplier, AnchwattSettings.hardcoreXpMultiplier);

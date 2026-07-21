@@ -399,16 +399,6 @@ class L10n {
     );
   }
 
-  /// `Nouveau badge débloqué`
-  String get notificationAchievementUnlockedTitle {
-    return Intl.message(
-      'Nouveau badge débloqué',
-      name: 'notificationAchievementUnlockedTitle',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `{count} nouveaux badges débloqués`
   String notificationAchievementsUnlockedTitle(int count) {
     return Intl.message(
@@ -416,6 +406,16 @@ class L10n {
       name: 'notificationAchievementsUnlockedTitle',
       desc: '',
       args: [count],
+    );
+  }
+
+  /// `Nouveau badge débloqué`
+  String get notificationAchievementUnlockedTitle {
+    return Intl.message(
+      'Nouveau badge débloqué',
+      name: 'notificationAchievementUnlockedTitle',
+      desc: '',
+      args: [],
     );
   }
 
@@ -860,6 +860,76 @@ class L10n {
       name: 'statsButtonTooltip',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Télécharger Anchwatt`
+  String get statsCardCtaLabel {
+    return Intl.message(
+      'Télécharger Anchwatt',
+      name: 'statsCardCtaLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Partager la carte`
+  String get statsCardShareButton {
+    return Intl.message(
+      'Partager la carte',
+      name: 'statsCardShareButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Carte copiée !`
+  String get statsCardShareCopied {
+    return Intl.message(
+      'Carte copiée !',
+      name: 'statsCardShareCopied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Raté, la carte n'est pas passée`
+  String get statsCardShareError {
+    return Intl.message(
+      'Raté, la carte n\'est pas passée',
+      name: 'statsCardShareError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Niveau {level}. Tout ça pour ça.`
+  String statsCardTaglineFirst(String level) {
+    return Intl.message(
+      'Niveau $level. Tout ça pour ça.',
+      name: 'statsCardTaglineFirst',
+      desc: '',
+      args: [level],
+    );
+  }
+
+  /// `Niveau {level} et toujours pas de promotion.`
+  String statsCardTaglineSecond(String level) {
+    return Intl.message(
+      'Niveau $level et toujours pas de promotion.',
+      name: 'statsCardTaglineSecond',
+      desc: '',
+      args: [level],
+    );
+  }
+
+  /// `Niveau {level}, et pourtant personne n'a rien demandé.`
+  String statsCardTaglineThird(String level) {
+    return Intl.message(
+      'Niveau $level, et pourtant personne n\'a rien demandé.',
+      name: 'statsCardTaglineThird',
+      desc: '',
+      args: [level],
     );
   }
 

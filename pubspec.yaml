@@ -105,6 +105,7 @@ flutter:
 
   # Assets
   assets:
+    - assets/images/icons/app/
     - assets/images/misc/
     - assets/sounds/corporate/
     - assets/sounds/cries/

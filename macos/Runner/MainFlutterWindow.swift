@@ -90,6 +90,14 @@ class MainFlutterWindow: NSWindow {
     launchAtLoginChannel.setMethodCallHandler(launchAtLogin.handle)
     (NSApp.delegate as? AppDelegate)?.launchAtLoginController = launchAtLogin
 
+    let clipboardChannelHandler = ClipboardChannel()
+    let clipboardMethodChannel = FlutterMethodChannel(
+      name: "com.anchwatt/clipboard",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    clipboardMethodChannel.setMethodCallHandler(clipboardChannelHandler.handle)
+    (NSApp.delegate as? AppDelegate)?.clipboardChannel = clipboardChannelHandler
+
     let calendarChannelHandler = CalendarChannel()
     let calendarMethodChannel = FlutterMethodChannel(
       name: "com.anchwatt/calendar",

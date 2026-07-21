@@ -116,3 +116,87 @@ const TextStyle textXpGainFloater = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w700,
 );
+
+// Stats card
+const TextStyle textStatsCardBadge = TextStyle(
+  color: colorNeutralDark,
+  fontFamily: fontFamily,
+  fontSize: 13,
+  fontWeight: FontWeight.w500,
+);
+
+const TextStyle textStatsCardCta = TextStyle(
+  color: Colors.white,
+  fontFamily: fontFamily,
+  fontSize: 15,
+  fontWeight: FontWeight.w600,
+);
+
+const TextStyle textStatsCardLevel = TextStyle(
+  color: colorNeutralDark,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 64,
+  fontWeight: FontWeight.w700,
+  height: 1,
+  letterSpacing: -2,
+);
+
+const TextStyle textStatsCardLevelLabel = TextStyle(
+  color: colorMutedDark,
+  fontFamily: fontFamily,
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
+);
+
+const TextStyle textStatsCardPill = TextStyle(
+  color: Colors.white,
+  fontFamily: fontFamily,
+  fontSize: 14,
+  fontWeight: FontWeight.w600,
+);
+
+const TextStyle textStatsCardSectionLabel = TextStyle(
+  color: colorNeutralDark,
+  fontFamily: fontFamily,
+  fontSize: 14,
+  fontWeight: FontWeight.w600,
+);
+
+const TextStyle textStatsCardTagline = TextStyle(
+  color: colorMutedLight,
+  fontFamily: fontFamily,
+  fontSize: 13,
+  fontStyle: FontStyle.italic,
+  fontWeight: FontWeight.w400,
+);
+
+const TextStyle textStatsCardTileLabel = TextStyle(
+  color: colorMutedDark,
+  fontFamily: fontFamily,
+  fontSize: 12,
+  fontWeight: FontWeight.w500,
+);
+
+const TextStyle textStatsCardTileValue = TextStyle(
+  color: colorNeutralDark,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 22,
+  fontWeight: FontWeight.w700,
+);
+
+const TextStyle textStatsCardWordmark = TextStyle(
+  color: colorPrimary,
+  fontFamily: fontFamily,
+  fontSize: 22,
+  fontWeight: FontWeight.w700,
+);
+
+const TextStyle textStatsCardXpCounter = TextStyle(
+  color: colorMutedDark,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 13,
+  fontWeight: FontWeight.w500,
+);

@@ -12,6 +12,7 @@ class AppDelegate: FlutterAppDelegate {
   // silently when the app enters background mode.
   var backgroundModeController: BackgroundModeController?
   var launchAtLoginController: LaunchAtLoginController?
+  var clipboardChannel: ClipboardChannel?
   var calendarChannel: CalendarChannel?
   var calendarChangesMonitor: CalendarChangesMonitor?
   var windowStateController: WindowStateController?
