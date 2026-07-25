@@ -2,6 +2,16 @@
 
 This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
+## Unreleased
+
+### Changed
+
+- Change the sound assets format from MP3 to M4A
+
+### Added
+
+- Add new sounds
+
 ## 1.8.0 - 2026-07-21
 
 ### Changed

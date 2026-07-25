@@ -15,7 +15,7 @@ class SoundService {
 
   static const String _soundsPrefix = 'assets/sounds/';
   static const String _criesPrefix = 'assets/sounds/cries/';
-  static const Set<String> _supportedExtensions = {'.mp3', '.m4a'};
+  static const String _supportedExtension = '.m4a';
 
   /* Variables */
 
@@ -48,7 +48,7 @@ class SoundService {
     final List<String> all = manifest
         .listAssets()
         .where(
-          (key) => key.startsWith(_soundsPrefix) && _supportedExtensions.any(key.endsWith),
+          (key) => key.startsWith(_soundsPrefix) && key.endsWith(_supportedExtension),
         )
         .toList();
 
