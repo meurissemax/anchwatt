@@ -6,6 +6,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Change the Flutter SDK version to 3.44.8
 - Change the sound assets format from MP3 to M4A
 
 ### Added
