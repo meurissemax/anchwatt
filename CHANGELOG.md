@@ -8,6 +8,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 - Change the Flutter SDK version to 3.44.8
 - Change the sound assets format from MP3 to M4A
+- Change the pet sparkles to reflect the current evolution — later stages spawn denser, bigger and warmer particles, with electric bolts mixed in among the stars
 
 ### Added
 

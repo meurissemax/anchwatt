@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,6 @@ class PetGestureSurface extends StatefulWidget {
   /* Static variables */
 
   static const Duration _sparkleLifetime = Duration(milliseconds: 700);
-  static const Duration _sparkleSpawnInterval = Duration(milliseconds: 100);
-  static const int _sparkleMaxConcurrent = 12;
-  static const double _sparkleMinSize = 14;
-  static const double _sparkleMaxSize = 22;
-  static const double _sparkleDriftMin = 18;
-  static const double _sparkleDriftMax = 36;
   static const double _sparkleAngleCenter = -pi / 2;
   static const double _sparkleAngleSpread = pi / 3;
 
@@ -64,12 +59,14 @@ class _PetGestureSurfaceState extends State<PetGestureSurface> {
   }
 
   void _maybeSpawnSparkle(Offset position) {
+    final _SparkleProfile profile = _SparkleProfile.of(context.read<AnchwattViewModel>().evolution);
+
     final DateTime now = DateTime.now();
-    if (now.difference(_lastSparkleAt) < PetGestureSurface._sparkleSpawnInterval) {
+    if (now.difference(_lastSparkleAt) < profile.spawnInterval) {
       return;
     }
 
-    if (_sparkles.length >= PetGestureSurface._sparkleMaxConcurrent) {
+    if (_sparkles.length >= profile.maxConcurrent) {
       return;
     }
 
@@ -77,13 +74,10 @@ class _PetGestureSurfaceState extends State<PetGestureSurface> {
 
     final double angle =
         PetGestureSurface._sparkleAngleCenter + (_random.nextDouble() * 2 - 1) * PetGestureSurface._sparkleAngleSpread;
-    final double distance =
-        PetGestureSurface._sparkleDriftMin +
-        _random.nextDouble() * (PetGestureSurface._sparkleDriftMax - PetGestureSurface._sparkleDriftMin);
-    final double size =
-        PetGestureSurface._sparkleMinSize +
-        _random.nextDouble() * (PetGestureSurface._sparkleMaxSize - PetGestureSurface._sparkleMinSize);
-    final Color color = _random.nextBool() ? colorSparkleCore : colorSparkleGlow;
+    final double distance = profile.driftMin + _random.nextDouble() * (profile.driftMax - profile.driftMin);
+    final double size = profile.minSize + _random.nextDouble() * (profile.maxSize - profile.minSize);
+    final Color color = profile.colors[_random.nextInt(profile.colors.length)];
+    final IconData icon = _random.nextDouble() < profile.boltChance ? Icons.bolt : Icons.auto_awesome;
 
     setState(() {
       _sparkles.add(
@@ -94,6 +88,7 @@ class _PetGestureSurfaceState extends State<PetGestureSurface> {
           distance: distance,
           size: size,
           color: color,
+          icon: icon,
         ),
       );
     });
@@ -130,6 +125,7 @@ class _PetGestureSurfaceState extends State<PetGestureSurface> {
                       distance: entry.distance,
                       size: entry.size,
                       color: entry.color,
+                      icon: entry.icon,
                       onCompleted: () => _onSparkleCompleted(entry.key),
                     ),
                   ),
@@ -142,6 +138,78 @@ class _PetGestureSurfaceState extends State<PetGestureSurface> {
   }
 }
 
+enum _SparkleProfile {
+  anchwatt(
+    spawnInterval: Duration(milliseconds: 100),
+    maxConcurrent: 12,
+    minSize: 14,
+    maxSize: 22,
+    driftMin: 18,
+    driftMax: 36,
+    boltChance: 0,
+    colors: [colorSparkleCore, colorSparkleGlow],
+  ),
+  lamperoie(
+    spawnInterval: Duration(milliseconds: 80),
+    maxConcurrent: 16,
+    minSize: 15,
+    maxSize: 25,
+    driftMin: 22,
+    driftMax: 46,
+    boltChance: 0.25,
+    colors: [colorSparkleCore, colorSparkleEmber, colorSparkleGlow],
+  ),
+  ohmassacre(
+    spawnInterval: Duration(milliseconds: 60),
+    maxConcurrent: 20,
+    minSize: 16,
+    maxSize: 28,
+    driftMin: 26,
+    driftMax: 56,
+    boltChance: 0.5,
+    colors: [colorSparkleCore, colorSparkleEmber, colorSparkleGlow, colorSparkleRose],
+  );
+
+  /* Variables */
+
+  final Duration spawnInterval;
+  final int maxConcurrent;
+  final double minSize;
+  final double maxSize;
+  final double driftMin;
+  final double driftMax;
+  final double boltChance;
+  final List<Color> colors;
+
+  /* Constructor */
+
+  const _SparkleProfile({
+    required this.spawnInterval,
+    required this.maxConcurrent,
+    required this.minSize,
+    required this.maxSize,
+    required this.driftMin,
+    required this.driftMax,
+    required this.boltChance,
+    required this.colors,
+  });
+
+  /* Methods */
+
+  static _SparkleProfile of(Evolution evolution) {
+    switch (evolution) {
+      case Evolution.anchwatt:
+        return _SparkleProfile.anchwatt;
+
+      case Evolution.lamperoie:
+        return _SparkleProfile.lamperoie;
+
+      case Evolution.ohmassacre:
+        return _SparkleProfile.ohmassacre;
+    }
+  }
+}
+
 class _SparkleEntry {
   final Key key;
   final Offset spawn;
@@ -149,6 +217,7 @@ class _SparkleEntry {
   final double distance;
   final double size;
   final Color color;
+  final IconData icon;
 
   const _SparkleEntry({
     required this.key,
@@ -157,6 +226,7 @@ class _SparkleEntry {
     required this.distance,
     required this.size,
     required this.color,
+    required this.icon,
   });
 }
 
@@ -173,6 +243,7 @@ class _SparkleParticle extends StatefulWidget {
   final double distance;
   final double size;
   final Color color;
+  final IconData icon;
   final VoidCallback onCompleted;
 
   /* Constructor */
@@ -182,6 +253,7 @@ class _SparkleParticle extends StatefulWidget {
     required this.distance,
     required this.size,
     required this.color,
+    required this.icon,
     required this.onCompleted,
     super.key,
   });
@@ -258,7 +330,7 @@ class _SparkleParticleState extends State<_SparkleParticle> with SingleTickerPro
         ),
       ),
       child: Icon(
-        Icons.auto_awesome,
+        widget.icon,
         size: widget.size,
         color: widget.color,
       ),
