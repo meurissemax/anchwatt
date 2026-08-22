@@ -14,6 +14,8 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Added
 
+- Add an XP multiplier tied to the played sound's duration — longer sounds now grant up to 1.5x XP
+- Add a cumulated noise-time stat to the stats panel, tracking the total duration of every sound played
 - Add new sounds
 
 ### Fixed

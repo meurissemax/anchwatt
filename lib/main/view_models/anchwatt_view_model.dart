@@ -18,6 +18,7 @@ import 'package:anchwatt/main/services/system_volume_service.dart';
 import 'package:anchwatt/main/services/update_service.dart';
 import 'package:anchwatt/main/services/usb_event_service.dart';
 import 'package:anchwatt/main/services/window_state_service.dart';
+import 'package:anchwatt/main/sound_durations.dart';
 import 'package:anchwatt/main/storages/anchwatt_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -199,6 +200,7 @@ class AnchwattViewModel extends ChangeNotifier {
       type: AnchwattEventType.usbToggle,
       level: _level,
       mode: _soundService.modeNotifier.value,
+      durationMs: 0,
       systemVolume: 1,
     ),
   );
@@ -261,13 +263,14 @@ class AnchwattViewModel extends ChangeNotifier {
       initialVolume: initialVolume,
     );
 
-    await _soundService.playCry(evo);
+    final String? asset = await _soundService.playCry(evo);
     final double meanVolume = sampler.stop();
 
     final int xp = AnchwattSettings.xpForEvent(
       type: AnchwattEventType.pet,
       level: level,
       mode: mode,
+      durationMs: _soundDurationMs(asset),
       systemVolume: meanVolume,
     );
 
@@ -405,13 +408,22 @@ class AnchwattViewModel extends ChangeNotifier {
       initialVolume: initialVolume,
     );
 
-    await _soundService.playRandom();
+    final String? asset = await _soundService.playRandom();
     final double meanVolume = sampler.stop();
+
+    // Nominal duration, read from the generated manifest — never the actual
+    // playback time, so an interrupted sound still counts in full. Cries are
+    // excluded from the cumulated stat, consistent with the "Sons lâchés" one.
+    final int durationMs = _soundDurationMs(asset);
+    if (asset != null) {
+      _statsService.recordSoundDuration(durationMs);
+    }
 
     final int xp = AnchwattSettings.xpForEvent(
       type: type,
       level: level,
       mode: mode,
+      durationMs: durationMs,
       systemVolume: meanVolume,
     );
 
@@ -425,6 +437,26 @@ class AnchwattViewModel extends ChangeNotifier {
     }
 
     await addXp(xp);
+  }
+
+  // Resolves a played asset's nominal duration from the generated manifest.
+  // A null asset (nothing played) or a missing entry (manifest not regenerated
+  // after adding a sound) falls back to 0, which the multiplier reads as x1 —
+  // never a throw.
+  int _soundDurationMs(String? asset) {
+    if (asset == null) {
+      return 0;
+    }
+
+    final int? durationMs = soundDurationsMs[asset];
+
+    if (durationMs == null) {
+      debugPrint('AnchwattViewModel: no duration entry for sound asset $asset');
+
+      return 0;
+    }
+
+    return durationMs;
   }
 
   // (Re)opens the shiny window for a full [AnchwattSettings.shinyDuration] from

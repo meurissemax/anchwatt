@@ -14,6 +14,7 @@ class StatsStorage {
   static const String _keySoundsByMode = 'stats.sounds_by_mode';
   static const String _keyLifetimeXp = 'stats.lifetime_xp';
   static const String _keyShinyCount = 'stats.shiny_count';
+  static const String _keyTotalSoundDurationMs = 'stats.total_sound_duration_ms';
 
   /* Variables */
 
@@ -89,6 +90,13 @@ class StatsStorage {
     value: value,
   );
 
+  int readTotalSoundDurationMs() => _prefsStorage.readInt(key: _keyTotalSoundDurationMs);
+
+  Future<void> writeTotalSoundDurationMs(int value) => _prefsStorage.writeInt(
+    key: _keyTotalSoundDurationMs,
+    value: value,
+  );
+
   Future<void> clear() async {
     await _prefsStorage.delete(key: _keyFirstLaunch);
     await _prefsStorage.delete(key: _keyEventCounts);
@@ -97,6 +105,7 @@ class StatsStorage {
     await _prefsStorage.delete(key: _keySoundsByMode);
     await _prefsStorage.delete(key: _keyLifetimeXp);
     await _prefsStorage.delete(key: _keyShinyCount);
+    await _prefsStorage.delete(key: _keyTotalSoundDurationMs);
   }
 
   // Enum-keyed maps are persisted as a JSON object keyed by [Enum.name] (never

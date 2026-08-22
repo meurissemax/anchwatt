@@ -44,6 +44,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
 
@@ -55,6 +56,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 0,
       );
 
@@ -66,6 +68,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 0.5,
       );
 
@@ -77,6 +80,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 50,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
 
@@ -88,6 +92,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1.5,
       );
 
@@ -99,6 +104,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: -0.2,
       );
 
@@ -111,6 +117,7 @@ void main() {
           type: AnchwattEventType.usbToggle,
           level: 1,
           mode: SoundMode.corporate,
+          durationMs: 0,
         ),
         throwsA(isA<AssertionError>()),
       );
@@ -121,6 +128,7 @@ void main() {
         type: AnchwattEventType.pet,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 0,
       );
 
@@ -132,6 +140,7 @@ void main() {
         type: AnchwattEventType.pet,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
 
@@ -143,12 +152,14 @@ void main() {
         type: AnchwattEventType.pet,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
       final int usbXp = AnchwattSettings.xpForEvent(
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
 
@@ -161,6 +172,7 @@ void main() {
           type: AnchwattEventType.pet,
           level: 1,
           mode: SoundMode.corporate,
+          durationMs: 0,
         ),
         throwsA(isA<AssertionError>()),
       );
@@ -171,6 +183,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.friday,
+        durationMs: 0,
         systemVolume: 1,
       );
 
@@ -182,6 +195,7 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.friday,
+        durationMs: 0,
         systemVolume: 0,
       );
 
@@ -193,12 +207,14 @@ void main() {
         type: AnchwattEventType.pet,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
       final int fridayXp = AnchwattSettings.xpForEvent(
         type: AnchwattEventType.pet,
         level: 1,
         mode: SoundMode.friday,
+        durationMs: 0,
         systemVolume: 1,
       );
 
@@ -210,18 +226,21 @@ void main() {
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
       final int fridayXp = AnchwattSettings.xpForEvent(
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.friday,
+        durationMs: 0,
         systemVolume: 1,
       );
       final int hardcoreXp = AnchwattSettings.xpForEvent(
         type: AnchwattEventType.usbToggle,
         level: 1,
         mode: SoundMode.hardcore,
+        durationMs: 0,
         systemVolume: 1,
       );
 
@@ -235,16 +254,115 @@ void main() {
         type: AnchwattEventType.pet,
         level: 1,
         mode: SoundMode.corporate,
+        durationMs: 0,
         systemVolume: 1,
       );
       final int hardcoreXp = AnchwattSettings.xpForEvent(
         type: AnchwattEventType.pet,
         level: 1,
         mode: SoundMode.hardcore,
+        durationMs: 0,
         systemVolume: 1,
       );
 
       expect(hardcoreXp, corporateXp);
+    });
+  });
+
+  group('AnchwattSettings.durationMultiplier', () {
+    test('returns 1.0 for zero and negative durations', () {
+      expect(AnchwattSettings.durationMultiplier(0), 1.0);
+      expect(AnchwattSettings.durationMultiplier(-100), 1.0);
+    });
+
+    test('returns 1.0 up to and including the short bound', () {
+      expect(AnchwattSettings.durationMultiplier(1), 1.0);
+      expect(AnchwattSettings.durationMultiplier(1499), 1.0);
+      expect(AnchwattSettings.durationMultiplier(1500), 1.0);
+    });
+
+    test('returns 1.25 from just above the short bound up to the medium bound', () {
+      expect(AnchwattSettings.durationMultiplier(1501), 1.25);
+      expect(AnchwattSettings.durationMultiplier(2999), 1.25);
+      expect(AnchwattSettings.durationMultiplier(3000), 1.25);
+    });
+
+    test('returns 1.5 above the medium bound, including huge values', () {
+      expect(AnchwattSettings.durationMultiplier(3001), 1.5);
+      expect(AnchwattSettings.durationMultiplier(999999999), 1.5);
+    });
+  });
+
+  group('AnchwattSettings.xpForEvent duration multiplier', () {
+    test('a medium sound awards 1.25x with a single final rounding', () {
+      final int xp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.corporate,
+        durationMs: 2000,
+        systemVolume: 1,
+      );
+
+      // 25 * 1.5 (volume) * 1.25 (duration) = 46.875 → 47. An intermediate
+      // rounding (38 * 1.25 = 47.5 → 48) would fail this assertion.
+      expect(xp, 47);
+    });
+
+    test('a long sound awards 1.5x the base amount', () {
+      final int xp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.corporate,
+        durationMs: 5000,
+        systemVolume: 1,
+      );
+
+      expect(xp, 56);
+    });
+
+    test('the duration multiplier composes with the mode multiplier', () {
+      final int xp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.friday,
+        durationMs: 5000,
+        systemVolume: 1,
+      );
+
+      // 25 * 1.5 (volume) * 1.5 (mode) * 1.5 (duration) = 84.375 → 84.
+      expect(xp, 84);
+    });
+
+    test('durationMs 0 matches a short sound (x1, non-regression)', () {
+      final int zeroDurationXp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.corporate,
+        durationMs: 0,
+        systemVolume: 1,
+      );
+      final int shortSoundXp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.corporate,
+        durationMs: 1500,
+        systemVolume: 1,
+      );
+
+      expect(zeroDurationXp, 38);
+      expect(shortSoundXp, 38);
+    });
+
+    test('zero volume still awards 0 XP whatever the duration', () {
+      final int xp = AnchwattSettings.xpForEvent(
+        type: AnchwattEventType.usbToggle,
+        level: 1,
+        mode: SoundMode.corporate,
+        durationMs: 5000,
+        systemVolume: 0,
+      );
+
+      expect(xp, 0);
     });
   });
 

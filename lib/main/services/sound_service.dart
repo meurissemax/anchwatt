@@ -81,14 +81,17 @@ class SoundService {
     await _cache.loadAll(toPreload);
   }
 
-  Future<void> playRandom() {
+  // Resolves to the played asset key once playback completes (null when the
+  // mode's pool is empty), so the caller can look up the sound's nominal
+  // duration in the generated manifest.
+  Future<String?> playRandom() async {
     final SoundMode mode = modeNotifier.value;
     final List<String> pool = _assetsByMode[mode] ?? const [];
 
     if (pool.isEmpty) {
       debugPrint('SoundService: no sounds available for mode ${mode.name}');
 
-      return Future<void>.value();
+      return null;
     }
 
     // Rolling-window exclusion: never repeat one of the last [effectiveK]
@@ -114,19 +117,25 @@ class SoundService {
     // cries (playCry) are an independent caress sound and intentionally skip this.
     _statsService.recordSoundPlayed(modeNotifier.value);
 
-    return _playAsset(asset, errorLabel: 'SoundService play error');
+    await _playAsset(asset, errorLabel: 'SoundService play error');
+
+    return asset;
   }
 
-  Future<void> playCry(Evolution evolution) {
+  // Resolves to the played cry's asset key once playback completes (null when
+  // no cry asset exists for the evolution), mirroring [playRandom].
+  Future<String?> playCry(Evolution evolution) async {
     final String? asset = _criesByEvolution[evolution];
 
     if (asset == null) {
       debugPrint('SoundService: no cry asset found for evolution ${evolution.name}');
 
-      return Future<void>.value();
+      return null;
     }
 
-    return _playAsset(asset, errorLabel: 'SoundService cry play error');
+    await _playAsset(asset, errorLabel: 'SoundService cry play error');
+
+    return asset;
   }
 
   Future<void> _playAsset(String asset, {required String errorLabel}) {

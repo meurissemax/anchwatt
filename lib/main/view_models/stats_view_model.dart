@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:anchwatt/commons/utils/duration_format.dart';
 import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
@@ -67,6 +68,8 @@ class StatsViewModel extends ChangeNotifier {
         ),
       )
       .toList();
+
+  String get soundDuration => formatSoundDuration(_l10n, _statsService.totalSoundDurationMs);
 
   String get soundsSplit => _l10n.statsSoundsSplit(
     formatNumber(_statsService.soundsPlayedFor(SoundMode.corporate)),

@@ -290,6 +290,26 @@ class L10n {
     );
   }
 
+  /// `{hours}h {minutes}min`
+  String durationHoursMinutes(int hours, int minutes) {
+    return Intl.message(
+      '${hours}h ${minutes}min',
+      name: 'durationHoursMinutes',
+      desc: '',
+      args: [hours, minutes],
+    );
+  }
+
+  /// `{minutes}min {seconds}s`
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return Intl.message(
+      '${minutes}min ${seconds}s',
+      name: 'durationMinutesSeconds',
+      desc: '',
+      args: [minutes, seconds],
+    );
+  }
+
   /// `Coup de jus`
   String get eventTypeChargerToggle {
     return Intl.message(
@@ -1024,6 +1044,26 @@ class L10n {
     return Intl.message(
       'Chromatiques',
       name: 'statsShinyLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tout ce temps passé à brailler`
+  String get statsSoundDurationDescription {
+    return Intl.message(
+      'Tout ce temps passé à brailler',
+      name: 'statsSoundDurationDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Temps de bruit`
+  String get statsSoundDurationLabel {
+    return Intl.message(
+      'Temps de bruit',
+      name: 'statsSoundDurationLabel',
       desc: '',
       args: [],
     );

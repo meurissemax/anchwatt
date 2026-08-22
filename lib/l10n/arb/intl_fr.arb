@@ -27,6 +27,26 @@
             }
         }
     },
+    "@durationHoursMinutes": {
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "@durationMinutesSeconds": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
     "@notificationAchievementsUnlockedTitle": {
         "placeholders": {
             "count": {
@@ -181,6 +201,8 @@
     "autoMuteLabel": "Silence pendant les réunions",
     "autoMuteOpenSystemSettings": "Ouvrir les Réglages Système",
     "autoMutePermissionDenied": "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
+    "durationHoursMinutes": "{hours}h {minutes}min",
+    "durationMinutesSeconds": "{minutes}min {seconds}s",
     "eventTypeChargerToggle": "Coup de jus",
     "eventTypeExternalDisplayToggle": "Écran en renfort",
     "eventTypeHeadphonesToggle": "Casque vissé",
@@ -257,6 +279,8 @@
     "statsPetsLabel": "Papouilles",
     "statsShinyDescription": "Les fois où il t'est apparu tout scintillant",
     "statsShinyLabel": "Chromatiques",
+    "statsSoundDurationDescription": "Tout ce temps passé à brailler",
+    "statsSoundDurationLabel": "Temps de bruit",
     "statsSoundsPlayedLabel": "Sons lâchés",
     "statsSoundsSplit": "dont {corporate} en corporate, {friday} en friday, {hardcore} en hardcore",
     "statsTitle": "Tableau de chasse",

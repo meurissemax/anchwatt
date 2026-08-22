@@ -114,6 +114,14 @@ class StatsView extends StatelessWidget {
                         height: _sectionSpacing,
                       ),
                       _StatRow(
+                        label: l10n.statsSoundDurationLabel,
+                        value: viewModel.soundDuration,
+                        sub: l10n.statsSoundDurationDescription,
+                      ),
+                      const SizedBox(
+                        height: _sectionSpacing,
+                      ),
+                      _StatRow(
                         label: l10n.statsShinyLabel,
                         value: formatNumber(viewModel.shinyEncounters),
                         sub: l10n.statsShinyDescription,

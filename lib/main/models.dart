@@ -6,6 +6,16 @@ import 'package:material_ui/material_ui.dart';
 
 // Clément, don't read this, you curious boy
 class AnchwattSettings {
+  // Duration-multiplier tiers. Bounds are inclusive on the low side
+  // (`<= _shortMaxDurationMs` → x1) and were picked from the tercile
+  // distribution of the shipped sounds, each landing in a natural gap of that
+  // distribution so the tiers stay stable against small re-encodes.
+  static const int _shortMaxDurationMs = 1500;
+  static const int _mediumMaxDurationMs = 3000;
+  static const double _shortDurationMultiplier = 1;
+  static const double _mediumDurationMultiplier = 1.25;
+  static const double _longDurationMultiplier = 1.5;
+
   static const int achievementPetsThreshold = 500;
   static const int achievementTotalEventsThreshold = 1000;
   static const int evolutionLamperoieLevel = 15;
@@ -75,12 +85,33 @@ class AnchwattSettings {
   // so the selection is unit-testable with a deterministic [Random].
   static int pickTaglineIndex(Random random) => random.nextInt(statsCardTaglineCount);
 
+  /// Returns the XP multiplier for a sound of the given nominal duration.
+  /// Falls back to 1.0 for unknown or non-positive durations.
+  ///
+  /// Bounds are inclusive on the low side: `durationMs <= _shortMaxDurationMs`
+  /// yields x1, then `<= _mediumMaxDurationMs` yields x1.25, and anything
+  /// longer yields x1.5.
+  static double durationMultiplier(int durationMs) {
+    if (durationMs <= _shortMaxDurationMs) {
+      return _shortDurationMultiplier;
+    }
+
+    if (durationMs <= _mediumMaxDurationMs) {
+      return _mediumDurationMultiplier;
+    }
+
+    return _longDurationMultiplier;
+  }
+
   // Volume = 0 yields 0 XP for non-pet events (anti-farming when muted).
   // The pet uses [petVolumeFloor] so it still grants a small gain when muted.
+  // [durationMs] is the played sound's nominal duration; 0 (no sound, or an
+  // asset missing from the generated manifest) resolves to a x1 multiplier.
   static int xpForEvent({
     required AnchwattEventType type,
     required int level,
     required SoundMode mode,
+    required int durationMs,
     double? systemVolume,
   }) {
     final double base = baseXpByEvent[type]!;
@@ -99,8 +130,10 @@ class AnchwattSettings {
         : 1.0;
 
     final double modeMult = randomSoundEvents.contains(type) ? mode.xpMultiplier : 1.0;
+    final double durationMult = durationMultiplier(durationMs);
 
-    return (base * levelMult * volumeMult * modeMult).round();
+    // Single rounding, at the very end of the multiplier chain.
+    return (base * levelMult * volumeMult * modeMult * durationMult).round();
   }
 }
 

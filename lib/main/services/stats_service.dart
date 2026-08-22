@@ -21,6 +21,7 @@ class StatsService {
   final Map<SoundMode, int> _soundsByMode = <SoundMode, int>{};
   int _lifetimeXp = 0;
   int _shinyEncounters = 0;
+  int _totalSoundDurationMs = 0;
 
   /* Getters */
 
@@ -29,6 +30,7 @@ class StatsService {
   int get soundsPlayed => _soundsPlayed;
   int get lifetimeXp => _lifetimeXp;
   int get shinyEncounters => _shinyEncounters;
+  int get totalSoundDurationMs => _totalSoundDurationMs;
 
   int get totalSystemEvents {
     int total = 0;
@@ -64,6 +66,7 @@ class StatsService {
       ..addAll(_storage.readSoundsByMode());
     _lifetimeXp = _storage.readLifetimeXp();
     _shinyEncounters = _storage.readShinyCount();
+    _totalSoundDurationMs = _storage.readTotalSoundDurationMs();
 
     // Seed the "member since" date once, on the first run where it is absent.
     if (_firstLaunch == null) {
@@ -99,6 +102,18 @@ class StatsService {
     unawaited(_storage.writeLifetimeXp(_lifetimeXp));
   }
 
+  // Accumulates the nominal duration of a sound that was actually played
+  // (DND / empty-pool paths never reach this). Cries are excluded upstream,
+  // consistent with [recordSoundPlayed].
+  void recordSoundDuration(int durationMs) {
+    if (durationMs <= 0) {
+      return;
+    }
+
+    _totalSoundDurationMs += durationMs;
+    unawaited(_storage.writeTotalSoundDurationMs(_totalSoundDurationMs));
+  }
+
   void recordShinyEncounter() {
     _shinyEncounters += 1;
     unawaited(_storage.writeShinyCount(_shinyEncounters));
@@ -113,6 +128,7 @@ class StatsService {
     _soundsByMode.clear();
     _lifetimeXp = 0;
     _shinyEncounters = 0;
+    _totalSoundDurationMs = 0;
     _firstLaunch = now;
 
     await _storage.clear();

@@ -76,6 +76,25 @@ void main() {
     expect(service.shinyEncounters, 2);
   });
 
+  test('totalSoundDurationMs defaults to 0 on a fresh install', () async {
+    final StatsService service = StatsService();
+    await service.init();
+
+    expect(service.totalSoundDurationMs, 0);
+  });
+
+  test('recordSoundDuration accumulates and ignores non-positive durations', () async {
+    final StatsService service = StatsService();
+    await service.init();
+
+    service.recordSoundDuration(1500);
+    service.recordSoundDuration(2500);
+    service.recordSoundDuration(0);
+    service.recordSoundDuration(-100);
+
+    expect(service.totalSoundDurationMs, 4000);
+  });
+
   test('persists counters across instances, keyed by enum name', () async {
     final StatsService service = StatsService();
     await service.init();
@@ -85,6 +104,7 @@ void main() {
     service.recordSoundPlayed(SoundMode.friday);
     service.addLifetimeXp(42);
     service.recordShinyEncounter();
+    service.recordSoundDuration(1234);
 
     // Let the fire-and-forget writes settle before reopening.
     await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -97,6 +117,7 @@ void main() {
     expect(reopened.soundsPlayedFor(SoundMode.friday), 1);
     expect(reopened.lifetimeXp, 42);
     expect(reopened.shinyEncounters, 1);
+    expect(reopened.totalSoundDurationMs, 1234);
   });
 
   test('reset zeroes every counter and reseeds the first-launch date', () async {
@@ -108,6 +129,7 @@ void main() {
     service.recordSoundPlayed(SoundMode.corporate);
     service.addLifetimeXp(100);
     service.recordShinyEncounter();
+    service.recordSoundDuration(1234);
 
     await service.reset();
 
@@ -116,6 +138,7 @@ void main() {
     expect(service.soundsPlayed, 0);
     expect(service.lifetimeXp, 0);
     expect(service.shinyEncounters, 0);
+    expect(service.totalSoundDurationMs, 0);
     expect(service.firstLaunchDate, isNotNull);
   });
 }
