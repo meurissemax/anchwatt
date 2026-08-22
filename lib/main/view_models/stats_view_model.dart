@@ -45,6 +45,7 @@ class StatsViewModel extends ChangeNotifier {
   /* Getters */
 
   Evolution get evolution => _parent.evolution;
+  bool get isShiny => _parent.isShiny;
   String get stageLabel => _parent.evolution.label(_l10n);
   String get stageFlavor => _parent.evolution.flavor(_l10n);
 

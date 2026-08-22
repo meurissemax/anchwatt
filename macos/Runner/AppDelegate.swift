@@ -303,6 +303,10 @@ final class SystemVolumeMonitor: NSObject, FlutterStreamHandler {
   }
 
   private func start() {
+    // Flutter can re-listen an EventChannel without an intervening onCancel
+    // (hot restart, engine re-attach); tear the previous observer and device
+    // listeners down first so they never stack.
+    stop()
     currentDeviceID = resolver.deviceID
     emitCurrentState()
     resolverToken = resolver.addObserver { [weak self] in
@@ -342,16 +346,16 @@ final class SystemVolumeMonitor: NSObject, FlutterStreamHandler {
   // sink dispatches are guaranteed to happen on the main thread.
   private func emitCurrentState() {
     let deviceID = currentDeviceID
-    let volume: Double
-    let muted: Bool
+    // No resolvable output device: emit nothing rather than a synthetic
+    // volume-0 state — Dart-side, a missing state degrades to "not gated"
+    // while volume 0 would silence the app and zero its XP.
     if deviceID == AudioDeviceID(kAudioObjectUnknown) {
-      volume = 0
-      muted = false
-    } else {
-      volume = readVolume(deviceID: deviceID)
-      muted = readMuted(deviceID: deviceID)
+      return
     }
-    sink?(["volume": volume, "muted": muted])
+    sink?([
+      "volume": readVolume(deviceID: deviceID),
+      "muted": readMuted(deviceID: deviceID),
+    ])
   }
 
   // Some output devices do not expose the "main" volume element (element 0)

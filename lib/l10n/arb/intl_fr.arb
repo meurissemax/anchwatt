@@ -283,7 +283,6 @@
     "statsSoundDurationLabel": "Temps de bruit",
     "statsSoundsPlayedLabel": "Sons lâchés",
     "statsSoundsSplit": "dont {corporate} en corporate, {friday} en friday, {hardcore} en hardcore",
-    "statsTitle": "Tableau de chasse",
     "statsWakeupsDescription": "Un bond au plafond par événement",
     "statsWakeupsLabel": "Sursauts",
     "systemVolumeTooltip": "Haut-parleurs du Mac : {percent} %",

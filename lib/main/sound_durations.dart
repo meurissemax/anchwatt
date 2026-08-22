@@ -2,8 +2,8 @@
 // Run `dart run tools/generate_sound_durations.dart` after adding or removing a sound asset.
 
 /// Nominal duration, in milliseconds, of every sound asset, keyed by the
-/// asset key used at the `AssetSource` call site (the full repo-relative
-/// path, e.g. `assets/sounds/friday/plop.m4a`).
+/// asset key SoundService plays (the full repo-relative path, e.g.
+/// `assets/sounds/friday/plop.m4a`).
 const Map<String, int> soundDurationsMs = <String, int>{
   'assets/sounds/corporate/avec-la-pj.m4a': 2251,
   'assets/sounds/corporate/ecran.m4a': 1931,

@@ -13,7 +13,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Change muted or 0% internal speakers to pause Anchwatt entirely (no sound, no XP, no stats), exactly like Do Not Disturb — the volume pill turns red to show it
 - Change the Flutter SDK version to 3.47.1
 - Change the Dart SDK version to 3.13.1
-- Change the minimum required macOS version from 14.0 to 12.0
+- Change the minimum required macOS version from 14.0 to 12.0 — launch at login still requires macOS 13
 
 ### Added
 

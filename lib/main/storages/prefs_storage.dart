@@ -3,67 +3,63 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PrefsStorage {
   /* Variables */
 
-  SharedPreferences? prefs;
+  SharedPreferences? _prefs;
 
   /* Methods */
 
   Future<void> init() async {
-    if (prefs != null) {
+    if (_prefs != null) {
       return;
     }
 
-    prefs = await SharedPreferences.getInstance();
+    _prefs = await SharedPreferences.getInstance();
   }
 
   bool readBool({
     required String key,
     bool fallback = false,
   }) {
-    return prefs?.getBool(key) ?? fallback;
+    return _prefs?.getBool(key) ?? fallback;
   }
 
   Future<void> writeBool({
     required String key,
     required bool value,
   }) async {
-    await prefs?.setBool(key, value);
+    await _prefs?.setBool(key, value);
   }
 
   int readInt({
     required String key,
     int fallback = 0,
   }) {
-    return prefs?.getInt(key) ?? fallback;
+    return _prefs?.getInt(key) ?? fallback;
   }
 
   Future<void> writeInt({
     required String key,
     required int value,
   }) async {
-    await prefs?.setInt(key, value);
+    await _prefs?.setInt(key, value);
   }
 
   String? readString({
     required String key,
     String? fallback,
   }) {
-    return prefs?.getString(key) ?? fallback;
+    return _prefs?.getString(key) ?? fallback;
   }
 
   Future<void> writeString({
     required String key,
     required String value,
   }) async {
-    await prefs?.setString(key, value);
+    await _prefs?.setString(key, value);
   }
 
   Future<void> delete({
     required String key,
   }) async {
-    await prefs?.remove(key);
-  }
-
-  Future<void> deleteAll() async {
-    await prefs?.clear();
+    await _prefs?.remove(key);
   }
 }

@@ -17,13 +17,13 @@ void main() {
     expect(service.calendarEnabled, false);
   });
 
-  test('SilentModeService toggleManual flips the manual flag and persists across instances', () async {
+  test('SilentModeService setManualEnabled flips the manual flag and persists across instances', () async {
     final SilentModeService first = SilentModeService();
     await first.init();
 
     expect(first.isEnabled, false);
 
-    await first.toggleManual();
+    await first.setManualEnabled(true);
     expect(first.isEnabled, true);
     expect(first.manualEnabled, true);
 
@@ -33,7 +33,7 @@ void main() {
     expect(second.isEnabled, true);
     expect(second.manualEnabled, true);
 
-    await second.toggleManual();
+    await second.setManualEnabled(false);
     expect(second.isEnabled, false);
 
     final SilentModeService third = SilentModeService();

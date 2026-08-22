@@ -69,7 +69,9 @@ class AnchwattViewModel extends ChangeNotifier {
   // Last state received from the native monitor (internal speakers) — null
   // until the first emission. Kept nullable so the reaction gating can never
   // trigger off a synthetic state: a dead volume channel must degrade to
-  // "not gated", not to a permanently silent app.
+  // "not gated", not to a permanently silent app. The public getter fills the
+  // gap with [SystemVolumeState.initial] (full volume) for the same reason:
+  // no emission must never read as 0% and zero out the XP multiplier.
   SystemVolumeState? _systemVolumeState;
   DateTime? _lastPetCryAt;
   Duration _nextPetCryCooldown = Duration.zero;
@@ -423,12 +425,11 @@ class AnchwattViewModel extends ChangeNotifier {
     final double meanVolume = sampler.stop();
 
     // Nominal duration, read from the generated manifest — never the actual
-    // playback time, so an interrupted sound still counts in full. Cries are
-    // excluded from the cumulated stat, consistent with the "Sons lâchés" one.
+    // playback time, so an interrupted sound still counts in full (a failed
+    // one resolves to a null asset and counts nothing). Cries are excluded
+    // from the cumulated stat, consistent with the "Sons lâchés" one.
     final int durationMs = _soundDurationMs(asset);
-    if (asset != null) {
-      _statsService.recordSoundDuration(durationMs);
-    }
+    _statsService.recordSoundDuration(durationMs);
 
     final int xp = AnchwattSettings.xpForEvent(
       type: type,

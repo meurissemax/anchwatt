@@ -29,6 +29,30 @@ const TextStyle textLevel = TextStyle(
   letterSpacing: -2,
 );
 
+const TextStyle textSystemVolumeLabel = TextStyle(
+  color: colorSystemVolumeForeground,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 11,
+  fontWeight: FontWeight.w500,
+);
+
+const TextStyle textXpCounter = TextStyle(
+  color: colorMutedLight,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 11,
+  fontWeight: FontWeight.w400,
+);
+
+const TextStyle textXpGainFloater = TextStyle(
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 14,
+  fontWeight: FontWeight.w700,
+);
+
+// Options
 const TextStyle textOptionsAppMeta = TextStyle(
   color: colorMutedDark,
   fontFamily: fontFamily,
@@ -79,6 +103,7 @@ const TextStyle textOptionsSectionLabel = TextStyle(
   fontWeight: FontWeight.w600,
 );
 
+// Stats
 const TextStyle textStageLabel = TextStyle(
   color: colorMutedDark,
   fontFamily: fontFamily,
@@ -92,29 +117,6 @@ const TextStyle textStatValue = TextStyle(
   fontFeatures: [FontFeature.tabularFigures()],
   fontSize: 12,
   fontWeight: FontWeight.w500,
-);
-
-const TextStyle textSystemVolumeLabel = TextStyle(
-  color: colorSystemVolumeForeground,
-  fontFamily: fontFamily,
-  fontFeatures: [FontFeature.tabularFigures()],
-  fontSize: 11,
-  fontWeight: FontWeight.w500,
-);
-
-const TextStyle textXpCounter = TextStyle(
-  color: colorMutedLight,
-  fontFamily: fontFamily,
-  fontFeatures: [FontFeature.tabularFigures()],
-  fontSize: 11,
-  fontWeight: FontWeight.w400,
-);
-
-const TextStyle textXpGainFloater = TextStyle(
-  fontFamily: fontFamily,
-  fontFeatures: [FontFeature.tabularFigures()],
-  fontSize: 14,
-  fontWeight: FontWeight.w700,
 );
 
 // Stats card

@@ -16,8 +16,12 @@ class SilentModeService {
   /* Getters */
 
   bool get isEnabled => enabledNotifier.value;
-  bool get manualEnabled => _manualEnabled;
   bool get calendarEnabled => _calendarEnabled;
+
+  // Production code reads the combined [enabledNotifier]; this only exists so
+  // tests can assert the manual flag in isolation.
+  @visibleForTesting
+  bool get manualEnabled => _manualEnabled;
 
   /* Methods */
 
@@ -45,8 +49,6 @@ class SilentModeService {
     _calendarEnabled = value;
     _recomputeEnabled();
   }
-
-  Future<void> toggleManual() => setManualEnabled(!_manualEnabled);
 
   void _recomputeEnabled() {
     final bool next = _manualEnabled || _calendarEnabled;

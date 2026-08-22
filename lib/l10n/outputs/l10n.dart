@@ -1089,16 +1089,6 @@ class L10n {
     );
   }
 
-  /// `Tableau de chasse`
-  String get statsTitle {
-    return Intl.message(
-      'Tableau de chasse',
-      name: 'statsTitle',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Un bond au plafond par événement`
   String get statsWakeupsDescription {
     return Intl.message(

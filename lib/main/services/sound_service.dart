@@ -54,6 +54,10 @@ class SoundService {
         )
         .toList();
 
+    if (all.isEmpty) {
+      debugPrint('SoundService: no sound assets found under $_soundsPrefix');
+    }
+
     for (final SoundMode mode in SoundMode.values) {
       final String prefix = '$_soundsPrefix${mode.assetSubfolder}';
       _assetsByMode[mode] = all.where((key) => key.startsWith(prefix)).toList();
@@ -68,15 +72,11 @@ class SoundService {
         }
       }
     }
-
-    if (all.isEmpty) {
-      debugPrint('SoundService: no sound assets found under $_soundsPrefix');
-    }
   }
 
   // Resolves to the played asset key once playback completes (null when the
-  // mode's pool is empty), so the caller can look up the sound's nominal
-  // duration in the generated manifest.
+  // mode's pool is empty or playback failed), so the caller can look up the
+  // sound's nominal duration in the generated manifest.
   Future<String?> playRandom() async {
     final SoundMode mode = modeNotifier.value;
     final List<String> pool = _assetsByMode[mode] ?? const [];
@@ -104,19 +104,24 @@ class SoundService {
       }
     }
 
-    // Only Corporate/Friday sounds feed the "Sons lâchés" stat. Empty folders
-    // return before reaching here and DND is gated upstream, so muted / silent
-    // paths never count — only sounds actually dispatched to a player do. Pet
-    // cries (playCry) are an independent caress sound and intentionally skip this.
-    _statsService.recordSoundPlayed(modeNotifier.value);
+    final bool played = await _playAsset(asset, errorLabel: 'SoundService play error');
 
-    await _playAsset(asset, errorLabel: 'SoundService play error');
+    if (!played) {
+      return null;
+    }
+
+    // Every mode feeds its own "Sons lâchés" counter, hardcore included. DND
+    // and silenced speakers are gated upstream, and a failed playback returns
+    // above, so only sounds actually heard count. Pet cries (playCry) are an
+    // independent caress sound and intentionally skip this.
+    _statsService.recordSoundPlayed(mode);
 
     return asset;
   }
 
   // Resolves to the played cry's asset key once playback completes (null when
-  // no cry asset exists for the evolution), mirroring [playRandom].
+  // no cry asset exists for the evolution or playback failed), mirroring
+  // [playRandom].
   Future<String?> playCry(Evolution evolution) async {
     final String? asset = _criesByEvolution[evolution];
 
@@ -126,20 +131,27 @@ class SoundService {
       return null;
     }
 
-    await _playAsset(asset, errorLabel: 'SoundService cry play error');
+    final bool played = await _playAsset(asset, errorLabel: 'SoundService cry play error');
 
-    return asset;
+    return played ? asset : null;
   }
 
   // Invokes the native player, which only answers once the sound finished,
   // failed or was stopped — so awaiting this spans the whole playback (the
-  // XP volume-sampling window depends on it). Errors are logged, never
-  // rethrown: a failed sound must not break the event pipeline.
-  Future<void> _playAsset(String asset, {required String errorLabel}) async {
+  // XP volume-sampling window depends on it). Returns false on failure, so
+  // callers can skip the duration-based stats and XP for a sound nobody
+  // heard; a stopAll interruption answers as a success and still counts.
+  // Errors are logged, never rethrown: a failed sound must not break the
+  // event pipeline.
+  Future<bool> _playAsset(String asset, {required String errorLabel}) async {
     try {
       await _channel.invokeMethod<void>('play', {'asset': asset});
+
+      return true;
     } on Object catch (error) {
       debugPrint('$errorLabel: $error');
+
+      return false;
     }
   }
 

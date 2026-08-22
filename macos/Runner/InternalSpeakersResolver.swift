@@ -101,7 +101,9 @@ final class InternalSpeakersResolver {
     if deviceID == oldDeviceID && routingUID == oldRoutingUID {
       return
     }
-    for observer in observers.values {
+    // Snapshot: an observer re-registering from its callback must not mutate
+    // the dictionary mid-iteration.
+    for observer in Array(observers.values) {
       observer()
     }
   }

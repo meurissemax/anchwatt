@@ -4,6 +4,7 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/view_models/stats_view_model.dart';
+import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/stats_card.dart';
 import 'package:anchwatt/main/widgets/stats_card_capture.dart';
 import 'package:anchwatt/styles/borders.dart';
@@ -69,6 +70,7 @@ class StatsView extends StatelessWidget {
                     children: [
                       _Hero(
                         evolution: viewModel.evolution,
+                        isShiny: viewModel.isShiny,
                         stageLabel: viewModel.stageLabel,
                         flavor: viewModel.stageFlavor,
                       ),
@@ -172,25 +174,37 @@ class _Hero extends StatelessWidget {
   static const double _spriteToLabelSpacing = 8;
 
   final Evolution evolution;
+  final bool isShiny;
   final String stageLabel;
   final String flavor;
 
   const _Hero({
     required this.evolution,
+    required this.isShiny,
     required this.stageLabel,
     required this.flavor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Widget sprite = Image.asset(
+      evolution.assetPath,
+      width: StatsView._spriteSize,
+      height: StatsView._spriteSize,
+      filterQuality: FilterQuality.none,
+    );
+
     return Column(
       children: [
-        Image.asset(
-          evolution.assetPath,
-          width: StatsView._spriteSize,
-          height: StatsView._spriteSize,
-          filterQuality: FilterQuality.none,
-        ),
+        // Same recolour as the live sprite and the share card, so an active
+        // shiny window shows on the panel you share the card from.
+        if (isShiny)
+          ColorFiltered(
+            colorFilter: AnchwattSprite.shinyColorFilter,
+            child: sprite,
+          )
+        else
+          sprite,
         const SizedBox(
           height: _spriteToLabelSpacing,
         ),

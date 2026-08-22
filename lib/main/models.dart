@@ -603,8 +603,12 @@ class SystemVolumeState {
     required this.muted,
   });
 
+  // Placeholder used before the first native emission (and forever if the
+  // volume channel is dead). Full volume, not silence: a missing state must
+  // degrade to "not gated, full XP multiplier" — volume 0 here would silently
+  // zero the XP of every event and paint the pill red while nothing is muted.
   factory SystemVolumeState.initial() => const SystemVolumeState(
-    volume: 0,
+    volume: 1,
     muted: false,
   );
 

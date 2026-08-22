@@ -301,7 +301,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sons lâchés",
     ),
     "statsSoundsSplit": m19,
-    "statsTitle": MessageLookupByLibrary.simpleMessage("Tableau de chasse"),
     "statsWakeupsDescription": MessageLookupByLibrary.simpleMessage(
       "Un bond au plafond par événement",
     ),
