@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:anchwatt/main/models.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 // The colour filter to apply to the sprite. Selection is mutually exclusive
 // and follows a strict precedence: DND desaturation wins over the shiny

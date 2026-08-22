@@ -7,8 +7,8 @@ import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/borders.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/texts.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
 
 // The pure, deterministic render target for the shareable stats card. It is
 // driven entirely by an immutable [StatsCardData] snapshot (never a live

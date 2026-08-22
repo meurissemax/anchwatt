@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 // Widgets
 const List<BoxShadow> shadowOptionsAboutCard = <BoxShadow>[

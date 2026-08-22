@@ -2,7 +2,7 @@ import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/styles/texts.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class XpGainFloater extends StatefulWidget {
   static const Duration _totalDuration = Duration(milliseconds: 900);

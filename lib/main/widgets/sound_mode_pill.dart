@@ -3,7 +3,7 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/styles/borders.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class SoundModePill extends StatelessWidget {

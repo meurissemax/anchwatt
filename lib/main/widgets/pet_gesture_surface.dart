@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/styles/colors.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class PetGestureSurface extends StatefulWidget {

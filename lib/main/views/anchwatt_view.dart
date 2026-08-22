@@ -20,7 +20,7 @@ import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/gradients.dart';
 import 'package:anchwatt/styles/texts.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 @RoutePage()

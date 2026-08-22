@@ -16,10 +16,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.9.0+10
+version: 1.10.0+11
 
 environment:
-  sdk: ^3.12.2
+  sdk: ^3.13.1
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -56,6 +56,9 @@ dependencies:
 
   # Contains code to deal with internationalized/localized messages, date and number formatting and parsing, bi-directional text, and other internationalization issues.
   intl: ^0.20.2
+
+  # The official Flutter Material UI Library, implementing Google's Material Design design system.
+  material_ui: ^1.0.1
 
   # Flutter plugin for querying information about the application package, such as CFBundleVersion on iOS or versionCode on Android.
   package_info_plus: ^10.0.0

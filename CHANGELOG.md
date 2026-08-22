@@ -2,6 +2,13 @@
 
 This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
+## Unreleased
+
+### Changed
+
+- Change the Flutter SDK version to 3.47.1
+- Change the Dart SDK version to 3.13.1
+
 ## 1.9.0 - 2026-07-25
 
 ### Changed

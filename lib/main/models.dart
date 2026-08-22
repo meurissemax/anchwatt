@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/styles/colors.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 // Clément, don't read this, you curious boy
 class AnchwattSettings {

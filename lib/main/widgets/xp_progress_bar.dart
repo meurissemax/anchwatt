@@ -1,6 +1,6 @@
 import 'package:anchwatt/styles/borders.dart';
 import 'package:anchwatt/styles/colors.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 // The bar owns the "fill up and roll over" pacing entirely on the UI side: the
 // ViewModel's level/XP are the instant source of truth, and this widget catches

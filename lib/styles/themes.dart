@@ -1,6 +1,6 @@
 import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/texts.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 final ThemeData themeDefault = ThemeData(
   brightness: Brightness.light,

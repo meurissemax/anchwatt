@@ -2,8 +2,8 @@ import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/widgets/stats_card.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 StatsCardData _data({List<Achievement> badges = const <Achievement>[]}) => StatsCardData(
   level: 12,

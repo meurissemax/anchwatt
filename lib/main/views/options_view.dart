@@ -8,9 +8,9 @@ import 'package:anchwatt/styles/borders.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/shadows.dart';
 import 'package:anchwatt/styles/texts.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class OptionsView extends StatelessWidget {

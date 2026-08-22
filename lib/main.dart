@@ -4,8 +4,7 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/router.dart';
 import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/themes.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,8 +37,6 @@ class App extends StatelessWidget {
       localizationsDelegates: const [
         L10n.delegate,
         GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
       ],
       routerConfig: _router.config(),
       supportedLocales: L10n.delegate.supportedLocales,
