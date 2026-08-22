@@ -105,8 +105,6 @@ flutter:
 
   # Assets
   assets:
-    # Only the runtime logo — icon__app--dev.png is a flutter_launcher_icons
-    # input and must not ship inside the bundle.
     - assets/images/icons/app/icon__app.png
     - assets/images/misc/
     - assets/sounds/corporate/
