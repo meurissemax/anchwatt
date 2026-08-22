@@ -2,16 +2,31 @@ import Cocoa
 import FlutterMacOS
 import ServiceManagement
 
+// SMAppService requires macOS 13 — on macOS 12 the feature degrades: the
+// entry is reported as disabled and enabling it fails with `unsupported`,
+// which the Dart side already surfaces as a launch-at-login error state.
 final class LaunchAtLoginController: NSObject {
   func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "isEnabled":
-      result(SMAppService.mainApp.status == .enabled)
+      if #available(macOS 13.0, *) {
+        result(SMAppService.mainApp.status == .enabled)
+      } else {
+        result(false)
+      }
     case "setEnabled":
       guard let enabled = call.arguments as? Bool else {
         result(FlutterError(
           code: "invalid_argument",
           message: "setEnabled expects a Bool argument",
+          details: nil
+        ))
+        return
+      }
+      guard #available(macOS 13.0, *) else {
+        result(FlutterError(
+          code: "unsupported",
+          message: "Launch at login requires macOS 13 or later",
           details: nil
         ))
         return

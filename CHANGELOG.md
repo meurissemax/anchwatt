@@ -8,6 +8,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 - Change the Flutter SDK version to 3.47.1
 - Change the Dart SDK version to 3.13.1
+- Change the minimum required macOS version from 14.0 to 12.0
 
 ### Fixed
 
