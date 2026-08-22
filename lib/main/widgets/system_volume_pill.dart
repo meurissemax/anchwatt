@@ -14,7 +14,7 @@ class SystemVolumePill extends StatelessWidget {
   const SystemVolumePill({super.key});
 
   static IconData _iconFor(SystemVolumeState state) {
-    if (state.muted) {
+    if (state.isSilenced) {
       return Icons.volume_off_rounded;
     }
 
@@ -29,8 +29,10 @@ class SystemVolumePill extends StatelessWidget {
     return Icons.volume_up_rounded;
   }
 
+  // Red on [SystemVolumeState.isSilenced] — the exact predicate the ViewModel
+  // gates events on, so the pill turning red always means "Anchwatt is quiet".
   static Color _colorFor(SystemVolumeState state) {
-    if (state.muted) {
+    if (state.isSilenced) {
       return colorSystemVolumeMuted;
     }
 
@@ -51,7 +53,7 @@ class SystemVolumePill extends StatelessWidget {
         final Color color = _colorFor(state);
 
         return Tooltip(
-          message: state.muted ? l10n.systemVolumeTooltipMuted : l10n.systemVolumeTooltip(state.percent),
+          message: state.isSilenced ? l10n.systemVolumeTooltipMuted : l10n.systemVolumeTooltip(state.percent),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: _spacing,

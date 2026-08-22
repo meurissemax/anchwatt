@@ -1119,20 +1119,20 @@ class L10n {
     );
   }
 
-  /// `Volume : {percent} %`
+  /// `Haut-parleurs du Mac : {percent} %`
   String systemVolumeTooltip(int percent) {
     return Intl.message(
-      'Volume : $percent %',
+      'Haut-parleurs du Mac : $percent %',
       name: 'systemVolumeTooltip',
       desc: '',
       args: [percent],
     );
   }
 
-  /// `Silence radio`
+  /// `Silence radio — haut-parleurs du Mac coupés`
   String get systemVolumeTooltipMuted {
     return Intl.message(
-      'Silence radio',
+      'Silence radio — haut-parleurs du Mac coupés',
       name: 'systemVolumeTooltipMuted',
       desc: '',
       args: [],

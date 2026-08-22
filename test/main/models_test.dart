@@ -534,4 +534,20 @@ void main() {
       expect(Achievement.workhorse.isUnlockedBy(petsOnly), isFalse);
     });
   });
+
+  group('SystemVolumeState.isSilenced', () {
+    test('is true when muted, whatever the volume', () {
+      expect(const SystemVolumeState(volume: 1, muted: true).isSilenced, isTrue);
+      expect(const SystemVolumeState(volume: 0, muted: true).isSilenced, isTrue);
+    });
+
+    test('is true at exactly 0% even unmuted', () {
+      expect(const SystemVolumeState(volume: 0, muted: false).isSilenced, isTrue);
+    });
+
+    test('is false for any audible volume', () {
+      expect(const SystemVolumeState(volume: 0.01, muted: false).isSilenced, isFalse);
+      expect(const SystemVolumeState(volume: 1, muted: false).isSilenced, isFalse);
+    });
+  });
 }

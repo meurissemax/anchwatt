@@ -4,6 +4,7 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/stats_service.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -160,9 +161,59 @@ void main() {
     expect(vm.isShiny, isTrue);
   });
 
+  // Silenced internal speakers (muted or at 0%) are treated exactly like DND:
+  // the event is swallowed whole — no sound, no XP, no stat, no achievement
+  // progress. The volume states are pushed through a mocked native channel so
+  // the production path (service stream → ViewModel field → gate) is the one
+  // exercised.
+  test('AnchwattViewModel swallows system events while the internal speakers are silenced', () async {
+    late MockStreamHandlerEventSink volumeSink;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockStreamHandler(
+      const EventChannel('com.anchwatt/system_volume'),
+      MockStreamHandler.inline(
+        onListen: (Object? arguments, MockStreamHandlerEventSink events) {
+          volumeSink = events;
+        },
+      ),
+    );
+
+    final StatsService stats = locator<StatsService>();
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    // Let _bootServices() finish its inits and subscribe to the volume channel.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    final int eventsBefore = stats.totalSystemEvents;
+
+    // Muted speakers: gated, nothing moves.
+    volumeSink.success(const <Object?, Object?>{'volume': 1.0, 'muted': true});
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await vm.debugSimulateEvent();
+
+    expect(stats.totalSystemEvents, eventsBefore);
+    expect(_totalXp(vm.level, vm.xp), 0);
+
+    // 0% volume, unmuted: same treatment.
+    volumeSink.success(const <Object?, Object?>{'volume': 0.0, 'muted': false});
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await vm.debugSimulateEvent();
+
+    expect(stats.totalSystemEvents, eventsBefore);
+    expect(_totalXp(vm.level, vm.xp), 0);
+
+    // Audible again: the pipeline runs in full (stat + XP). Gated attempts
+    // above never touched the coalesce window, so this event is not absorbed.
+    volumeSink.success(const <Object?, Object?>{'volume': 0.5, 'muted': false});
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await vm.debugSimulateEvent();
+
+    expect(stats.totalSystemEvents, eventsBefore + 1);
+    expect(_totalXp(vm.level, vm.xp), greaterThan(0));
+  });
+
   // "System events never clear the shiny" has no test through the real event
-  // pipeline: _handleSystemEvent plays a sound, and audioplayers throws
-  // unhandled MissingPluginExceptions from its own constructor in this test
-  // environment. The invariant is structural anyway — the roll block can only
-  // open or reset the window, no code path clears _shinyExpiresAt early.
+  // pipeline: the shiny roll uses a private, non-injectable Random, so a
+  // deterministic assertion is impossible. The invariant is structural anyway
+  // — the roll block can only open or reset the window, no code path clears
+  // _shinyExpiresAt early.
 }

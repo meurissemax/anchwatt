@@ -28,9 +28,6 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  # A Flutter plugin to play multiple audio files simultaneously.
-  audioplayers: ^6.6.0
-
   # AutoRoute is a declarative routing solution, where everything needed for navigation is automatically generated for you.
   auto_route: ^11.1.0
 

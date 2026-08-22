@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 
@@ -6,21 +5,24 @@ import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/services/stats_service.dart';
 import 'package:anchwatt/main/storages/sound_storage.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class SoundService {
   /* Static variables */
 
+  static const String _channelName = 'com.anchwatt/sound_player';
   static const String _soundsPrefix = 'assets/sounds/';
   static const String _criesPrefix = 'assets/sounds/cries/';
   static const String _supportedExtension = '.m4a';
 
   /* Variables */
 
-  final AudioCache _cache = AudioCache(prefix: '');
-  final Map<AudioPlayer, Future<void> Function()> _activePlayers = {};
+  // Native AVPlayer bridge, routed to the internal speakers so Anchwatt stays
+  // audible in the room whatever output the user listens to. The native side
+  // resolves asset keys straight from the app bundle and caches them on first
+  // use — no Dart-side preloading.
+  final MethodChannel _channel = const MethodChannel(_channelName);
   final Random _random = Random();
   final SoundStorage _storage = SoundStorage();
   final StatsService _statsService = locator<StatsService>();
@@ -67,18 +69,9 @@ class SoundService {
       }
     }
 
-    final List<String> toPreload = [
-      ..._assetsByMode.values.expand((paths) => paths),
-      ..._criesByEvolution.values,
-    ];
-
-    if (toPreload.isEmpty) {
+    if (all.isEmpty) {
       debugPrint('SoundService: no sound assets found under $_soundsPrefix');
-
-      return;
     }
-
-    await _cache.loadAll(toPreload);
   }
 
   // Resolves to the played asset key once playback completes (null when the
@@ -138,36 +131,16 @@ class SoundService {
     return asset;
   }
 
-  Future<void> _playAsset(String asset, {required String errorLabel}) {
-    final AudioPlayer player = AudioPlayer();
-
-    // Bind the player to our prefix-less cache so AssetSource resolves to the
-    // exact key we preloaded with. The default global cache prepends 'assets/'.
-    player.audioCache = _cache;
-
-    final Completer<void> completer = Completer<void>();
-    late final StreamSubscription<void> sub;
-
-    Future<void> finish() async {
-      if (completer.isCompleted) {
-        return;
-      }
-      completer.complete();
-      _activePlayers.remove(player);
-      await sub.cancel();
-      await player.dispose();
-    }
-
-    _activePlayers[player] = finish;
-
-    sub = player.onPlayerComplete.listen((_) => finish());
-
-    player.play(AssetSource(asset)).catchError((Object error) {
+  // Invokes the native player, which only answers once the sound finished,
+  // failed or was stopped — so awaiting this spans the whole playback (the
+  // XP volume-sampling window depends on it). Errors are logged, never
+  // rethrown: a failed sound must not break the event pipeline.
+  Future<void> _playAsset(String asset, {required String errorLabel}) async {
+    try {
+      await _channel.invokeMethod<void>('play', {'asset': asset});
+    } on Object catch (error) {
       debugPrint('$errorLabel: $error');
-      finish();
-    });
-
-    return completer.future;
+    }
   }
 
   Future<void> setMode(SoundMode mode) async {
@@ -179,15 +152,15 @@ class SoundService {
     await _storage.writeMode(mode);
   }
 
-  // Stops every in-flight playback and resolves the futures returned by
-  // [playRandom] / [playCry] via their cached [finish] closures, so awaiting
-  // callers don't hang when the user flips Do Not Disturb on mid-sound.
+  // Stops every in-flight playback; the native side answers each pending
+  // play call, so the futures returned by [playRandom] / [playCry] resolve
+  // and awaiting callers don't hang when the user flips Do Not Disturb on
+  // mid-sound.
   Future<void> stopAll() async {
-    final List<MapEntry<AudioPlayer, Future<void> Function()>> entries = _activePlayers.entries.toList();
-
-    for (final MapEntry<AudioPlayer, Future<void> Function()> entry in entries) {
-      await entry.key.stop();
-      await entry.value();
+    try {
+      await _channel.invokeMethod<void>('stopAll');
+    } on Object catch (error) {
+      debugPrint('SoundService stopAll error: $error');
     }
   }
 

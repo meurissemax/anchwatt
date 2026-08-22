@@ -13,6 +13,7 @@ class AppDelegate: FlutterAppDelegate {
   var backgroundModeController: BackgroundModeController?
   var launchAtLoginController: LaunchAtLoginController?
   var clipboardChannel: ClipboardChannel?
+  var soundPlayerChannel: SoundPlayerChannel?
   var calendarChannel: CalendarChannel?
   var calendarChangesMonitor: CalendarChangesMonitor?
   var windowStateController: WindowStateController?
@@ -268,13 +269,23 @@ final class UsbMonitor: NSObject, FlutterStreamHandler {
   }
 }
 
+// Tracks the volume and mute state of the internal speakers (resolved by
+// InternalSpeakersResolver, with its default-output fallback) — NOT the
+// system's default output device. This is the volume the XP multiplier and
+// the event gating are based on.
 final class SystemVolumeMonitor: NSObject, FlutterStreamHandler {
+  private let resolver: InternalSpeakersResolver
   private var sink: FlutterEventSink?
   private var currentDeviceID: AudioDeviceID = AudioDeviceID(kAudioObjectUnknown)
-  private var defaultDeviceListener: AudioObjectPropertyListenerBlock?
+  private var resolverToken: UUID?
   private var volumeListeners: [(AudioObjectPropertyAddress, AudioObjectPropertyListenerBlock)] = []
   private var muteListener: (AudioObjectPropertyAddress, AudioObjectPropertyListenerBlock)?
   private let listenerQueue: DispatchQueue = DispatchQueue.main
+
+  init(resolver: InternalSpeakersResolver) {
+    self.resolver = resolver
+    super.init()
+  }
 
   func onListen(
     withArguments arguments: Any?,
@@ -292,18 +303,39 @@ final class SystemVolumeMonitor: NSObject, FlutterStreamHandler {
   }
 
   private func start() {
-    currentDeviceID = resolveDefaultOutputDevice()
+    currentDeviceID = resolver.deviceID
     emitCurrentState()
-    attachDefaultDeviceListener()
+    resolverToken = resolver.addObserver { [weak self] in
+      self?.handleResolvedDeviceChange()
+    }
     if currentDeviceID != AudioDeviceID(kAudioObjectUnknown) {
       attachDeviceListeners(deviceID: currentDeviceID)
     }
   }
 
   private func stop() {
+    if let token = resolverToken {
+      resolver.removeObserver(token)
+      resolverToken = nil
+    }
     detachDeviceListeners(deviceID: currentDeviceID)
-    detachDefaultDeviceListener()
     currentDeviceID = AudioDeviceID(kAudioObjectUnknown)
+  }
+
+  // The volume/mute listeners are attached to a specific device — when the
+  // resolver lands on a new one (jack plugged, dock, wake), they must move
+  // with it, and the fresh device's state is emitted immediately.
+  private func handleResolvedDeviceChange() {
+    let newID = resolver.deviceID
+    if newID == currentDeviceID {
+      return
+    }
+    detachDeviceListeners(deviceID: currentDeviceID)
+    currentDeviceID = newID
+    if newID != AudioDeviceID(kAudioObjectUnknown) {
+      attachDeviceListeners(deviceID: newID)
+    }
+    emitCurrentState()
   }
 
   // CoreAudio listener blocks fire on `listenerQueue` (main), so reads and
@@ -320,70 +352,6 @@ final class SystemVolumeMonitor: NSObject, FlutterStreamHandler {
       muted = readMuted(deviceID: deviceID)
     }
     sink?(["volume": volume, "muted": muted])
-  }
-
-  private func resolveDefaultOutputDevice() -> AudioDeviceID {
-    var address = AudioObjectPropertyAddress(
-      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
-      mScope: kAudioObjectPropertyScopeGlobal,
-      mElement: kAudioObjectPropertyElementMain
-    )
-    var deviceID = AudioDeviceID(kAudioObjectUnknown)
-    var size = UInt32(MemoryLayout<AudioDeviceID>.size)
-    let status = AudioObjectGetPropertyData(
-      AudioObjectID(kAudioObjectSystemObject),
-      &address,
-      0,
-      nil,
-      &size,
-      &deviceID
-    )
-    return status == noErr ? deviceID : AudioDeviceID(kAudioObjectUnknown)
-  }
-
-  private func attachDefaultDeviceListener() {
-    var address = AudioObjectPropertyAddress(
-      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
-      mScope: kAudioObjectPropertyScopeGlobal,
-      mElement: kAudioObjectPropertyElementMain
-    )
-    let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
-      guard let self = self else { return }
-      let oldID = self.currentDeviceID
-      let newID = self.resolveDefaultOutputDevice()
-      if newID == oldID {
-        return
-      }
-      self.detachDeviceListeners(deviceID: oldID)
-      self.currentDeviceID = newID
-      if newID != AudioDeviceID(kAudioObjectUnknown) {
-        self.attachDeviceListeners(deviceID: newID)
-      }
-      self.emitCurrentState()
-    }
-    self.defaultDeviceListener = block
-    AudioObjectAddPropertyListenerBlock(
-      AudioObjectID(kAudioObjectSystemObject),
-      &address,
-      listenerQueue,
-      block
-    )
-  }
-
-  private func detachDefaultDeviceListener() {
-    guard let block = defaultDeviceListener else { return }
-    var address = AudioObjectPropertyAddress(
-      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
-      mScope: kAudioObjectPropertyScopeGlobal,
-      mElement: kAudioObjectPropertyElementMain
-    )
-    AudioObjectRemovePropertyListenerBlock(
-      AudioObjectID(kAudioObjectSystemObject),
-      &address,
-      listenerQueue,
-      block
-    )
-    defaultDeviceListener = nil
   }
 
   // Some output devices do not expose the "main" volume element (element 0)
@@ -758,7 +726,7 @@ final class HeadphonesMonitor: NSObject, FlutterStreamHandler {
   //   - Bluetooth* transports → headphones (vast majority of Bluetooth audio
   //     output devices in practice are headsets / earphones).
   //   - Built-in transport → read the data source: 'hdpn' is the headphone
-  //     jack, 'spkr' is the internal speakers, 'line' is line out.
+  //     jack, 'ispk' is the internal speakers (see InternalSpeakersResolver).
   //   - All other transports (USB, AirPlay, HDMI, DisplayPort, Continuity
   //     Capture, Aggregate, Virtual, Unknown) → not headphones.
   private func isHeadphones(deviceID: AudioDeviceID) -> Bool {

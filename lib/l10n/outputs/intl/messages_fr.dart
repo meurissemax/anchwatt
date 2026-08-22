@@ -67,7 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m19(corporate, friday, hardcore) =>
       "dont ${corporate} en corporate, ${friday} en friday, ${hardcore} en hardcore";
 
-  static String m20(percent) => "Volume : ${percent} %";
+  static String m20(percent) => "Haut-parleurs du Mac : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -308,7 +308,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsWakeupsLabel": MessageLookupByLibrary.simpleMessage("Sursauts"),
     "systemVolumeTooltip": m20,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
-      "Silence radio",
+      "Silence radio — haut-parleurs du Mac coupés",
     ),
   };
 }

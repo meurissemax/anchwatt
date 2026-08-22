@@ -66,7 +66,11 @@ class AnchwattViewModel extends ChangeNotifier {
   int _xp = 0;
   Future<void>? _pending;
   UpdateStatus _updateStatus = const UpdateUnknown();
-  SystemVolumeState _systemVolumeState = SystemVolumeState.initial();
+  // Last state received from the native monitor (internal speakers) — null
+  // until the first emission. Kept nullable so the reaction gating can never
+  // trigger off a synthetic state: a dead volume channel must degrade to
+  // "not gated", not to a permanently silent app.
+  SystemVolumeState? _systemVolumeState;
   DateTime? _lastPetCryAt;
   Duration _nextPetCryCooldown = Duration.zero;
   DateTime? _lastSystemEventAt;
@@ -100,7 +104,7 @@ class AnchwattViewModel extends ChangeNotifier {
   bool get isShiny => AnchwattSettings.isShinyActive(expiresAt: _shinyExpiresAt, now: DateTime.now());
   bool get isHardcoreUnlocked => _level >= AnchwattSettings.hardcoreUnlockLevel;
   UpdateStatus get updateStatus => _updateStatus;
-  SystemVolumeState get systemVolumeState => _systemVolumeState;
+  SystemVolumeState get systemVolumeState => _systemVolumeState ?? SystemVolumeState.initial();
   ValueNotifier<SoundMode> get soundModeNotifier => _soundService.modeNotifier;
   ValueNotifier<bool> get hardcoreUnlockedNotifier => _hardcoreUnlockedNotifier;
   ValueNotifier<bool> get silentModeNotifier => _silentModeService.enabledNotifier;
@@ -116,6 +120,13 @@ class AnchwattViewModel extends ChangeNotifier {
   // mid-window reset without a clock seam (the codebase has none).
   @visibleForTesting
   DateTime? get shinyExpiresAt => _shinyExpiresAt;
+
+  // Single gate for every reaction entry point (system events and pet): the
+  // user asked for quiet (DND, manual or calendar), or the internal speakers
+  // cannot be heard anyway (muted or at 0% — treated exactly like DND, so
+  // farming silently is impossible). Never gated before the first native
+  // volume emission — see [_systemVolumeState].
+  bool get _isReactionGated => _silentModeService.isEnabled || (_systemVolumeState?.isSilenced ?? false);
 
   /* Methods */
 
@@ -228,9 +239,9 @@ class AnchwattViewModel extends ChangeNotifier {
   }
 
   void onPetTick() {
-    // Gate before touching the cooldown so a flurry of pets under DND does
+    // Gate before touching the cooldown so a flurry of pets while gated does
     // not silently push the next cry's cooldown forward.
-    if (_silentModeService.isEnabled) {
+    if (_isReactionGated) {
       return;
     }
 
@@ -255,7 +266,7 @@ class AnchwattViewModel extends ChangeNotifier {
     final int level = _level;
     final SoundMode mode = _soundService.modeNotifier.value;
     final Evolution evo = evolution;
-    final SystemVolumeState start = _systemVolumeState;
+    final SystemVolumeState start = systemVolumeState;
     final double initialVolume = start.muted ? 0.0 : start.volume;
 
     final PlaybackVolumeSampler sampler = PlaybackVolumeSampler(
@@ -365,9 +376,9 @@ class AnchwattViewModel extends ChangeNotifier {
   // rest. Per-channel debounces (the 1500ms USB iPhone-handshake one) still
   // run upstream of this method.
   Future<void> _handleSystemEvent(AnchwattEventType type) async {
-    // Gate before the coalesce-window update so a stream of events during
-    // DND does not poison the window the moment DND turns off.
-    if (_silentModeService.isEnabled) {
+    // Gate before the coalesce-window update so a stream of events while
+    // gated does not poison the window the moment the gate lifts.
+    if (_isReactionGated) {
       return;
     }
 
@@ -383,13 +394,13 @@ class AnchwattViewModel extends ChangeNotifier {
     // "réveils" total reflects every physical reaction.
     _statsService.recordSystemEvent(type);
 
-    // Roll for a shiny on every confirmed (post-DND, post-coalesce) random-sound
-    // event. A success (re)opens the shiny window for a full duration — mid-
-    // window it resets the remaining time, and it counts and notifies again. A
-    // failed roll leaves any running window untouched: events never clear the
-    // shiny, only the window's own expiry does. Runs before the zero-XP early
-    // return so a muted (but not DND) event still rolls. The pet path never
-    // reaches this method.
+    // Roll for a shiny on every confirmed (post-gate, post-coalesce) random-
+    // sound event. A success (re)opens the shiny window for a full duration —
+    // mid-window it resets the remaining time, and it counts and notifies
+    // again. A failed roll leaves any running window untouched: events never
+    // clear the shiny, only the window's own expiry does. Runs before the
+    // zero-XP early return so an event whose XP rounds to zero still rolls.
+    // The pet path never reaches this method.
     if (AnchwattSettings.rollShiny(_random)) {
       _startShinyWindow();
       _statsService.recordShinyEncounter();
@@ -400,7 +411,7 @@ class AnchwattViewModel extends ChangeNotifier {
     // during playback does not retroactively shift the XP for this event.
     final int level = _level;
     final SoundMode mode = _soundService.modeNotifier.value;
-    final SystemVolumeState startState = _systemVolumeState;
+    final SystemVolumeState startState = systemVolumeState;
     final double initialVolume = startState.muted ? 0.0 : startState.volume;
 
     final PlaybackVolumeSampler sampler = PlaybackVolumeSampler(
@@ -428,9 +439,10 @@ class AnchwattViewModel extends ChangeNotifier {
     );
 
     if (xp <= 0) {
-      // A muted (but not DND) event still incremented the event count and may
-      // have rolled a shiny, yet grants no XP and so never reaches _process —
-      // evaluate here so those thresholds still unlock.
+      // Zero XP can still happen when the speakers drop to 0% mid-playback
+      // (the gate runs at event time, the multiplier on the sampled mean).
+      // The event count and maybe a shiny already moved without reaching
+      // _process — evaluate here so those thresholds still unlock.
       _evaluateAchievements();
 
       return;

@@ -8,6 +8,9 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 - Change the shiny Anchwatt to stick around for a full 30 minutes instead of vanishing at the next system event
 - Change the shared stats card to show the shiny colours when the capture is timed right, so there is finally proof
+- Change every sound to come out of the Mac's internal speakers whatever output the system uses — plugging in headphones no longer makes Anchwatt harmless
+- Change the XP volume multiplier and the volume pill to follow the internal speakers' volume instead of the system output, so farming quietly through headphones is over
+- Change muted or 0% internal speakers to pause Anchwatt entirely (no sound, no XP, no stats), exactly like Do Not Disturb — the volume pill turns red to show it
 - Change the Flutter SDK version to 3.47.1
 - Change the Dart SDK version to 3.13.1
 - Change the minimum required macOS version from 14.0 to 12.0

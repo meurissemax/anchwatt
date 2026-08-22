@@ -29,6 +29,8 @@
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		4D4D4D4D4D4D4D4D4D4D4D4D /* WindowStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3C3C3C3C3C3C3C3C3C3C3C /* WindowStateController.swift */; };
 		4E4E4E4E4E4E4E4E4E4E4E4E /* ClipboardChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D3D3D3D3D3D3D3D3D3D3D3D /* ClipboardChannel.swift */; };
+		5A5A5A5A5A5A5A5A5A5A5A5A /* InternalSpeakersResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3E3E3E3E3E3E3E3E3E3E3E /* InternalSpeakersResolver.swift */; };
+		5B5B5B5B5B5B5B5B5B5B5B5B /* SoundPlayerChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3F3F3F3F3F3F3F3F3F3F3F /* SoundPlayerChannel.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +75,8 @@
 		33E5194F232828860026EE4D /* AppInfo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppInfo.xcconfig; sourceTree = "<group>"; };
 		3C3C3C3C3C3C3C3C3C3C3C3C /* WindowStateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowStateController.swift; sourceTree = "<group>"; };
 		3D3D3D3D3D3D3D3D3D3D3D3D /* ClipboardChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardChannel.swift; sourceTree = "<group>"; };
+		3E3E3E3E3E3E3E3E3E3E3E3E /* InternalSpeakersResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalSpeakersResolver.swift; sourceTree = "<group>"; };
+		3F3F3F3F3F3F3F3F3F3F3F3F /* SoundPlayerChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayerChannel.swift; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -148,6 +152,8 @@
 				1A1A1A1A1A1A1A1A1A1A1A1A /* LaunchAtLoginController.swift */,
 				3C3C3C3C3C3C3C3C3C3C3C3C /* WindowStateController.swift */,
 				3D3D3D3D3D3D3D3D3D3D3D3D /* ClipboardChannel.swift */,
+				3E3E3E3E3E3E3E3E3E3E3E3E /* InternalSpeakersResolver.swift */,
+				3F3F3F3F3F3F3F3F3F3F3F3F /* SoundPlayerChannel.swift */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
 				33E51913231747F40026EE4D /* DebugProfile.entitlements */,
 				33E51914231749380026EE4D /* Release.entitlements */,
@@ -295,6 +301,8 @@
 				2B2B2B2B2B2B2B2B2B2B2B2B /* LaunchAtLoginController.swift in Sources */,
 				4D4D4D4D4D4D4D4D4D4D4D4D /* WindowStateController.swift in Sources */,
 				4E4E4E4E4E4E4E4E4E4E4E4E /* ClipboardChannel.swift in Sources */,
+				5A5A5A5A5A5A5A5A5A5A5A5A /* InternalSpeakersResolver.swift in Sources */,
+				5B5B5B5B5B5B5B5B5B5B5B5B /* SoundPlayerChannel.swift in Sources */,
 				335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

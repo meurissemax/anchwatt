@@ -286,6 +286,6 @@
     "statsTitle": "Tableau de chasse",
     "statsWakeupsDescription": "Un bond au plafond par événement",
     "statsWakeupsLabel": "Sursauts",
-    "systemVolumeTooltip": "Volume : {percent} %",
-    "systemVolumeTooltipMuted": "Silence radio"
+    "systemVolumeTooltip": "Haut-parleurs du Mac : {percent} %",
+    "systemVolumeTooltipMuted": "Silence radio — haut-parleurs du Mac coupés"
 }

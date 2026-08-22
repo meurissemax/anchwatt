@@ -3,6 +3,7 @@ import FlutterMacOS
 
 class MainFlutterWindow: NSWindow {
   private var usbMonitor: UsbMonitor?
+  private var internalSpeakersResolver: InternalSpeakersResolver?
   private var systemVolumeMonitor: SystemVolumeMonitor?
   private var chargerMonitor: ChargerMonitor?
   private var externalDisplayMonitor: ExternalDisplayMonitor?
@@ -37,7 +38,14 @@ class MainFlutterWindow: NSWindow {
     usbChannel.setStreamHandler(monitor)
     self.usbMonitor = monitor
 
-    let volumeMonitor = SystemVolumeMonitor()
+    // Shared, app-lifetime resolver: the volume monitor reads the internal
+    // speakers' state from it, and the sound player routes its playback to
+    // the device it resolves.
+    let speakersResolver = InternalSpeakersResolver()
+    speakersResolver.start()
+    self.internalSpeakersResolver = speakersResolver
+
+    let volumeMonitor = SystemVolumeMonitor(resolver: speakersResolver)
     let volumeChannel = FlutterEventChannel(
       name: "com.anchwatt/system_volume",
       binaryMessenger: flutterViewController.engine.binaryMessenger
@@ -89,6 +97,14 @@ class MainFlutterWindow: NSWindow {
     )
     launchAtLoginChannel.setMethodCallHandler(launchAtLogin.handle)
     (NSApp.delegate as? AppDelegate)?.launchAtLoginController = launchAtLogin
+
+    let soundPlayerChannelHandler = SoundPlayerChannel(resolver: speakersResolver)
+    let soundPlayerMethodChannel = FlutterMethodChannel(
+      name: "com.anchwatt/sound_player",
+      binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    soundPlayerMethodChannel.setMethodCallHandler(soundPlayerChannelHandler.handle)
+    (NSApp.delegate as? AppDelegate)?.soundPlayerChannel = soundPlayerChannelHandler
 
     let clipboardChannelHandler = ClipboardChannel()
     let clipboardMethodChannel = FlutterMethodChannel(

@@ -103,8 +103,10 @@ class AnchwattSettings {
     return _longDurationMultiplier;
   }
 
-  // Volume = 0 yields 0 XP for non-pet events (anti-farming when muted).
-  // The pet uses [petVolumeFloor] so it still grants a small gain when muted.
+  // Volume = 0 yields 0 XP for non-pet events. Fully-silenced speakers are
+  // gated upstream by the ViewModel (treated exactly like DND), so this path
+  // only matters when the volume drops to zero mid-playback. The pet uses
+  // [petVolumeFloor] so a low-but-audible volume still grants a small gain.
   // [durationMs] is the played sound's nominal duration; 0 (no sound, or an
   // asset missing from the generated manifest) resolves to a x1 multiplier.
   static int xpForEvent({
@@ -625,6 +627,10 @@ class SystemVolumeState {
 
   int get percent => (volume * 100).round();
   bool get isLow => !muted && volume < SystemVolumeSettings.lowThreshold;
+
+  // Muted or fully turned down — the single predicate behind the event gating
+  // (silenced speakers are treated exactly like DND) and the red volume pill.
+  bool get isSilenced => muted || volume <= 0;
 
   @override
   bool operator ==(Object other) =>
