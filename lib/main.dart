@@ -36,7 +36,7 @@ class App extends StatelessWidget {
       },
       localizationsDelegates: const [
         L10n.delegate,
-        GlobalMaterialLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
       ],
       routerConfig: _router.config(),
       supportedLocales: L10n.delegate.supportedLocales,

@@ -9,6 +9,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Change the Flutter SDK version to 3.47.1
 - Change the Dart SDK version to 3.13.1
 
+### Fixed
+
+- Fix a startup warning about missing Cupertino localizations for regional French locales (e.g. fr_BE)
+
 ## 1.9.0 - 2026-07-25
 
 ### Changed
