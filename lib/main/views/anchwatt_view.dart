@@ -95,7 +95,7 @@ class _AnchwattViewBody extends StatelessWidget {
                       child: _DebugSimulateEventButton(),
                     ),
                     Expanded(
-                      child: _DebugToggleShinyButton(),
+                      child: _DebugForceShinyButton(),
                     ),
                     Expanded(
                       child: _DebugResetStatsButton(),
@@ -371,15 +371,15 @@ class _DebugSimulateEventButton extends StatelessWidget {
   }
 }
 
-class _DebugToggleShinyButton extends StatelessWidget {
-  const _DebugToggleShinyButton();
+class _DebugForceShinyButton extends StatelessWidget {
+  const _DebugForceShinyButton();
 
   @override
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
 
     return OutlinedButton(
-      onPressed: () => context.read<AnchwattViewModel>().debugToggleShiny(),
+      onPressed: () => context.read<AnchwattViewModel>().debugForceShiny(),
       style: OutlinedButton.styleFrom(
         enabledMouseCursor: SystemMouseCursors.click,
         foregroundColor: colorNeutralDark,
@@ -394,7 +394,7 @@ class _DebugToggleShinyButton extends StatelessWidget {
         ),
         textStyle: textDebugButton,
       ),
-      child: Text(l10n.anchwattDebugToggleShiny),
+      child: Text(l10n.anchwattDebugForceShiny),
     );
   }
 }

@@ -20,6 +20,7 @@ class AnchwattSettings {
   static const int petCryCooldownMinSeconds = 2;
   static const double petVolumeFloor = 0.2;
   static const int randomSoundExclusionWindow = 3;
+  static const Duration shinyDuration = Duration(minutes: 30);
   static const double shinyHueRotationDegrees = 150;
   static const int shinyOdds = 128;
   static const int statsCardTaglineCount = 3;
@@ -62,6 +63,13 @@ class AnchwattSettings {
   // Rolls a shiny encounter: a 1-in-[shinyOdds] chance. Kept pure (takes the
   // RNG) so the odds are unit-testable with a deterministic [Random].
   static bool rollShiny(Random random) => random.nextInt(shinyOdds) == 0;
+
+  // Whether a shiny window is active: a window exists and [now] is strictly
+  // before its end (the expiry instant itself already counts as expired).
+  // Kept pure (takes the clock reading) so the boundary is unit-testable
+  // without real waits.
+  static bool isShinyActive({required DateTime? expiresAt, required DateTime now}) =>
+      expiresAt != null && now.isBefore(expiresAt);
 
   // Picks which footer tagline the share card shows. Kept pure (takes the RNG)
   // so the selection is unit-testable with a deterministic [Random].
@@ -436,16 +444,18 @@ enum Achievement {
 }
 
 // Immutable snapshot the shareable stats card renders from. Built once at
-// capture time from the live services so the captured frame is deterministic
-// and never listens to anything. The sprite is always the evolution's NORMAL
-// variant (the shiny recolour is intentionally excluded), and [tagline] is the
-// already-localized footer line with its {level} placeholder filled in.
+// capture time from the live services so the captured frame never listens to
+// anything. [isShiny] freezes whether a shiny window was active at capture
+// time — the card draws the recoloured sprite when true (and only the sprite:
+// no extra shiny marker) — and [tagline] is the already-localized footer line
+// with its {level} placeholder filled in.
 @immutable
 class StatsCardData {
   final int level;
   final int xpInLevel;
   final int xpForLevel;
   final Evolution evolution;
+  final bool isShiny;
   final int totalSystemEvents;
   final int petInteractions;
   final int shinyEncounters;
@@ -458,6 +468,7 @@ class StatsCardData {
     required this.xpInLevel,
     required this.xpForLevel,
     required this.evolution,
+    required this.isShiny,
     required this.totalSystemEvents,
     required this.petInteractions,
     required this.shinyEncounters,

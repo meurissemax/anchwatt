@@ -266,6 +266,52 @@ void main() {
     });
   });
 
+  group('AnchwattSettings.isShinyActive', () {
+    final DateTime expiresAt = DateTime(2026, 8, 22, 12);
+
+    test('is inactive when no window exists', () {
+      expect(AnchwattSettings.isShinyActive(expiresAt: null, now: expiresAt), isFalse);
+    });
+
+    test('is active strictly before expiry', () {
+      expect(
+        AnchwattSettings.isShinyActive(
+          expiresAt: expiresAt,
+          now: expiresAt.subtract(const Duration(microseconds: 1)),
+        ),
+        isTrue,
+      );
+      expect(
+        AnchwattSettings.isShinyActive(
+          expiresAt: expiresAt,
+          now: expiresAt.subtract(AnchwattSettings.shinyDuration),
+        ),
+        isTrue,
+      );
+    });
+
+    test('is expired at the expiry instant itself', () {
+      expect(AnchwattSettings.isShinyActive(expiresAt: expiresAt, now: expiresAt), isFalse);
+    });
+
+    test('is expired after expiry', () {
+      expect(
+        AnchwattSettings.isShinyActive(
+          expiresAt: expiresAt,
+          now: expiresAt.add(const Duration(microseconds: 1)),
+        ),
+        isFalse,
+      );
+      expect(
+        AnchwattSettings.isShinyActive(
+          expiresAt: expiresAt,
+          now: expiresAt.add(const Duration(hours: 8)),
+        ),
+        isFalse,
+      );
+    });
+  });
+
   group('AnchwattSettings.pickTaglineIndex', () {
     test('returns the RNG draw verbatim', () {
       expect(AnchwattSettings.pickTaglineIndex(_StubRandom(0)), 0);

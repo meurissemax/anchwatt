@@ -114,11 +114,11 @@ class StatsViewModel extends ChangeNotifier {
     return best;
   }
 
-  // Assembles the deterministic snapshot the share card renders from, read once
-  // at capture time. Level/XP/evolution come from the parent game state; the
-  // counters from the stats service; the badges from the achievement catalogue.
-  // The shiny flag is deliberately ignored — the card always shows the normal
-  // sprite.
+  // Assembles the snapshot the share card renders from, read once at capture
+  // time. Level/XP/evolution come from the parent game state; the counters from
+  // the stats service; the badges from the achievement catalogue. The shiny
+  // flag freezes whether a shiny window is active right now, so a card shared
+  // mid-window carries the recoloured sprite.
   StatsCardData buildCardData() {
     final int level = _parent.level;
 
@@ -127,6 +127,7 @@ class StatsViewModel extends ChangeNotifier {
       xpInLevel: _parent.xp,
       xpForLevel: _parent.xpToNextLevel,
       evolution: _parent.evolution,
+      isShiny: _parent.isShiny,
       totalSystemEvents: _statsService.totalSystemEvents,
       petInteractions: _statsService.petInteractions,
       shinyEncounters: _statsService.shinyEncounters,

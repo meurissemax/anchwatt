@@ -72,8 +72,15 @@ class AnchwattViewModel extends ChangeNotifier {
   // RNG for the shiny roll. In-place like SoundService's random sound picker;
   // the odds themselves are unit-tested via AnchwattSettings.rollShiny.
   final Random _random = Random();
-  // Runtime-only: the sprite is never shiny on launch and this is not persisted.
-  bool _isShiny = false;
+  // End of the current shiny window. Runtime-only and never persisted: it
+  // starts null on every launch, so quitting the app ends the shiny. Expiry is
+  // always decided by comparing this against the wall clock (see [isShiny]) —
+  // never by [_shinyRepaintTimer], which a macOS sleep can stall.
+  DateTime? _shinyExpiresAt;
+  // One-shot repaint scheduled for the window's end, so the sprite reverts on
+  // screen the moment the window expires instead of lingering shiny until the
+  // next unrelated rebuild. Purely visual — it only calls [notifyListeners].
+  Timer? _shinyRepaintTimer;
 
   /* Constructor */
 
@@ -89,7 +96,7 @@ class AnchwattViewModel extends ChangeNotifier {
   Evolution get evolution => Evolution.fromLevel(_level);
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
   bool get isMaxLevel => _level >= AnchwattSettings.levelMax;
-  bool get isShiny => _isShiny;
+  bool get isShiny => AnchwattSettings.isShinyActive(expiresAt: _shinyExpiresAt, now: DateTime.now());
   bool get isHardcoreUnlocked => _level >= AnchwattSettings.hardcoreUnlockLevel;
   UpdateStatus get updateStatus => _updateStatus;
   SystemVolumeState get systemVolumeState => _systemVolumeState;
@@ -103,6 +110,11 @@ class AnchwattViewModel extends ChangeNotifier {
   ValueNotifier<bool> get notificationsEnabledNotifier => _notificationService.enabledNotifier;
   ValueNotifier<NotificationServiceError?> get notificationsErrorNotifier => _notificationService.errorNotifier;
   Stream<int> get xpGainStream => _xpGainController.stream;
+
+  // The end of the current shiny window, exposed so tests can assert the
+  // mid-window reset without a clock seam (the codebase has none).
+  @visibleForTesting
+  DateTime? get shinyExpiresAt => _shinyExpiresAt;
 
   /* Methods */
 
@@ -193,13 +205,9 @@ class AnchwattViewModel extends ChangeNotifier {
 
   Future<void> debugSimulateEvent() => _handleSystemEvent(AnchwattEventType.usbToggle);
 
-  // Forces the shiny display state only (no stat, no notification) so the
-  // recoloured sprite can be inspected without waiting on the roll.
-  void debugToggleShiny() {
-    _isShiny = !_isShiny;
-
-    notifyListeners();
-  }
+  // Forces a full shiny window (visual state only: no stat increment, no
+  // notification) so the timed behaviour can be inspected without the roll.
+  void debugForceShiny() => _startShinyWindow();
 
   Future<void> debugResetStats() async {
     _level = AnchwattSettings.levelMin;
@@ -373,16 +381,14 @@ class AnchwattViewModel extends ChangeNotifier {
     _statsService.recordSystemEvent(type);
 
     // Roll for a shiny on every confirmed (post-DND, post-coalesce) random-sound
-    // event. The result both sets and clears the shiny state, so a non-shiny
-    // event clears a previous shiny — the sprite stays shiny only until the next
-    // such event. Runs before the zero-XP early return so a muted (but not DND)
-    // event still re-rolls. The pet path never reaches this method.
-    final bool shiny = AnchwattSettings.rollShiny(_random);
-    if (shiny != _isShiny) {
-      _isShiny = shiny;
-      notifyListeners();
-    }
-    if (shiny) {
+    // event. A success (re)opens the shiny window for a full duration — mid-
+    // window it resets the remaining time, and it counts and notifies again. A
+    // failed roll leaves any running window untouched: events never clear the
+    // shiny, only the window's own expiry does. Runs before the zero-XP early
+    // return so a muted (but not DND) event still rolls. The pet path never
+    // reaches this method.
+    if (AnchwattSettings.rollShiny(_random)) {
+      _startShinyWindow();
       _statsService.recordShinyEncounter();
       unawaited(_notificationService.showShiny());
     }
@@ -419,6 +425,20 @@ class AnchwattViewModel extends ChangeNotifier {
     }
 
     await addXp(xp);
+  }
+
+  // (Re)opens the shiny window for a full [AnchwattSettings.shinyDuration] from
+  // now — a start during an active window resets it, windows never stack. The
+  // repaint timer is cancelled before being rearmed so at most one is ever
+  // pending; its firing is only a repaint cue, never the expiry decision (the
+  // [isShiny] getter re-checks the wall clock anyway).
+  void _startShinyWindow() {
+    _shinyExpiresAt = DateTime.now().add(AnchwattSettings.shinyDuration);
+
+    _shinyRepaintTimer?.cancel();
+    _shinyRepaintTimer = Timer(AnchwattSettings.shinyDuration, notifyListeners);
+
+    notifyListeners();
   }
 
   Future<void> _bootServices() async {
@@ -646,6 +666,7 @@ class AnchwattViewModel extends ChangeNotifier {
     _silentModeService.dispose();
     _launchAtLoginService.dispose();
     _soundService.dispose();
+    _shinyRepaintTimer?.cancel();
     _hardcoreUnlockedNotifier.dispose();
     _xpGainController.close();
     super.dispose();

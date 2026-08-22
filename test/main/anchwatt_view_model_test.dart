@@ -110,4 +110,59 @@ void main() {
     expect(gains, isEmpty);
     expect(stats.lifetimeXp, lifetimeBefore + 500);
   });
+
+  test('AnchwattViewModel shiny window opens on force and a second force resets it in full', () async {
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    expect(vm.isShiny, isFalse);
+    expect(vm.shinyExpiresAt, isNull);
+
+    vm.debugForceShiny();
+
+    expect(vm.isShiny, isTrue);
+    final DateTime first = vm.shinyExpiresAt!;
+
+    // Let the wall clock advance so the mid-window reset is observable as a
+    // strictly later expiry (there is no injectable clock to fake it with).
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    vm.debugForceShiny();
+
+    expect(vm.isShiny, isTrue);
+    expect(vm.shinyExpiresAt!.isAfter(first), isTrue);
+  });
+
+  test('AnchwattViewModel debugForceShiny is visual only and never moves the shiny stat', () async {
+    final StatsService stats = locator<StatsService>();
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    // Let _bootServices() finish its stats init before reading the counter.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    final int before = stats.shinyEncounters;
+    vm.debugForceShiny();
+
+    expect(stats.shinyEncounters, before);
+  });
+
+  // The window is a lifetime, not a usage counter: DND only desaturates the
+  // sprite (a widget-side precedence rule), it never pauses or clears the
+  // window itself.
+  test('AnchwattViewModel keeps an active shiny window running under DND', () async {
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    // Let _bootServices() finish the silent-mode service init first.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    vm.debugForceShiny();
+    await vm.toggleSilentMode();
+
+    expect(vm.silentModeNotifier.value, isTrue);
+    expect(vm.isShiny, isTrue);
+  });
+
+  // "System events never clear the shiny" has no test through the real event
+  // pipeline: _handleSystemEvent plays a sound, and audioplayers throws
+  // unhandled MissingPluginExceptions from its own constructor in this test
+  // environment. The invariant is structural anyway — the roll block can only
+  // open or reset the window, no code path clears _shinyExpiresAt early.
 }

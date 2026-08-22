@@ -5,11 +5,15 @@ import 'package:anchwatt/main/widgets/stats_card.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
-StatsCardData _data({List<Achievement> badges = const <Achievement>[]}) => StatsCardData(
+StatsCardData _data({
+  List<Achievement> badges = const <Achievement>[],
+  bool isShiny = false,
+}) => StatsCardData(
   level: 12,
   xpInLevel: 30,
   xpForLevel: 100,
   evolution: Evolution.anchwatt,
+  isShiny: isShiny,
   totalSystemEvents: 1234,
   petInteractions: 56,
   shinyEncounters: 2,
@@ -62,5 +66,28 @@ void main() {
 
     expect(find.byType(StatsCard), findsOneWidget);
     expect(find.text(locator<L10n>().statsAchievementsTitle), findsNothing);
+  });
+
+  // The recolour is the only shiny marker the card carries — a snapshot taken
+  // during a shiny window wraps the sprite in the hue-rotation filter, and a
+  // normal snapshot applies no filter at all.
+  testWidgets('recolours the sprite when the snapshot is shiny', (tester) async {
+    await tester.pumpWidget(_host(_data(isShiny: true)));
+    await tester.pump();
+
+    expect(
+      find.descendant(of: find.byType(StatsCard), matching: find.byType(ColorFiltered)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('applies no filter when the snapshot is not shiny', (tester) async {
+    await tester.pumpWidget(_host(_data()));
+    await tester.pump();
+
+    expect(
+      find.descendant(of: find.byType(StatsCard), matching: find.byType(ColorFiltered)),
+      findsNothing,
+    );
   });
 }

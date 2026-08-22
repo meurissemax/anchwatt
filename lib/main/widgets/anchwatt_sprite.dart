@@ -42,6 +42,36 @@ class AnchwattSprite extends StatefulWidget {
     return SpriteFilterMode.none;
   }
 
+  // The shiny recolour as a ready-to-apply filter. Also used by the stats
+  // card, which recolours its own sprite image rather than embedding this
+  // (animated) widget.
+  static ColorFilter get shinyColorFilter => ColorFilter.matrix(
+    _hueRotationMatrix(AnchwattSettings.shinyHueRotationDegrees),
+  );
+
+  // Builds a luminance-preserving hue-rotation colour matrix for `degrees`. The
+  // rows sum to 1, so neutral pixels (the black outline and eyes) and greys are
+  // left effectively unchanged; only chroma is shifted. The alpha row is
+  // untouched so the sprite's transparency is preserved. This is a linear-RGB
+  // rotation (it differs slightly from an HSV rotation, which is acceptable —
+  // the angle is tunable via [AnchwattSettings.shinyHueRotationDegrees]).
+  static List<double> _hueRotationMatrix(double degrees) {
+    final double a = degrees * pi / 180;
+    final double c = cos(a);
+    final double s = sin(a);
+
+    const double lumR = 0.213;
+    const double lumG = 0.715;
+    const double lumB = 0.072;
+
+    return <double>[
+      lumR + c * (1 - lumR) - s * lumR, lumG - c * lumG - s * lumG, lumB - c * lumB + s * (1 - lumB), 0, 0, //
+      lumR - c * lumR + s * 0.143, lumG + c * (1 - lumG) + s * 0.140, lumB - c * lumB - s * 0.283, 0, 0, //
+      lumR - c * lumR - s * (1 - lumR), lumG - c * lumG + s * lumG, lumB + c * (1 - lumB) + s * lumB, 0, 0, //
+      0, 0, 0, 1, 0, //
+    ];
+  }
+
   @override
   State<AnchwattSprite> createState() => _AnchwattSpriteState();
 }
@@ -94,9 +124,7 @@ class _AnchwattSpriteState extends State<AnchwattSprite> with SingleTickerProvid
           );
 
           final ColorFilter filter = switch (mode) {
-            SpriteFilterMode.shiny => ColorFilter.matrix(
-              _hueRotationMatrix(AnchwattSettings.shinyHueRotationDegrees),
-            ),
+            SpriteFilterMode.shiny => AnchwattSprite.shinyColorFilter,
             // Both desaturate and none use the animated saturation matrix: when
             // not muted the tween settles at 1 (identity), so `none` applies no
             // visible change while still animating the un-desaturation on DND exit.
@@ -136,29 +164,6 @@ class _AnchwattSpriteState extends State<AnchwattSprite> with SingleTickerProvid
       r + saturation, g, b, 0, 0, //
       r, g + saturation, b, 0, 0, //
       r, g, b + saturation, 0, 0, //
-      0, 0, 0, 1, 0, //
-    ];
-  }
-
-  // Builds a luminance-preserving hue-rotation colour matrix for `degrees`. The
-  // rows sum to 1, so neutral pixels (the black outline and eyes) and greys are
-  // left effectively unchanged; only chroma is shifted. The alpha row is
-  // untouched so the sprite's transparency is preserved. This is a linear-RGB
-  // rotation (it differs slightly from an HSV rotation, which is acceptable —
-  // the angle is tunable via [AnchwattSettings.shinyHueRotationDegrees]).
-  static List<double> _hueRotationMatrix(double degrees) {
-    final double a = degrees * pi / 180;
-    final double c = cos(a);
-    final double s = sin(a);
-
-    const double lumR = 0.213;
-    const double lumG = 0.715;
-    const double lumB = 0.072;
-
-    return <double>[
-      lumR + c * (1 - lumR) - s * lumR, lumG - c * lumG - s * lumG, lumB - c * lumB + s * (1 - lumB), 0, 0, //
-      lumR - c * lumR + s * 0.143, lumG + c * (1 - lumG) + s * 0.140, lumB - c * lumB - s * 0.283, 0, 0, //
-      lumR - c * lumR - s * (1 - lumR), lumG - c * lumG + s * lumG, lumB + c * (1 - lumB) + s * lumB, 0, 0, //
       0, 0, 0, 1, 0, //
     ];
   }

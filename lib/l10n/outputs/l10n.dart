@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -189,6 +190,16 @@ class L10n {
     );
   }
 
+  /// `Shiny`
+  String get anchwattDebugForceShiny {
+    return Intl.message(
+      'Shiny',
+      name: 'anchwattDebugForceShiny',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Reset`
   String get anchwattDebugResetStats {
     return Intl.message(
@@ -204,16 +215,6 @@ class L10n {
     return Intl.message(
       'Simuler',
       name: 'anchwattDebugSimulateEvent',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Shiny`
-  String get anchwattDebugToggleShiny {
-    return Intl.message(
-      'Shiny',
-      name: 'anchwattDebugToggleShiny',
       desc: '',
       args: [],
     );

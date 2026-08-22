@@ -6,6 +6,8 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 ### Changed
 
+- Change the shiny Anchwatt to stick around for a full 30 minutes instead of vanishing at the next system event
+- Change the shared stats card to show the shiny colours when the capture is timed right, so there is finally proof
 - Change the Flutter SDK version to 3.47.1
 - Change the Dart SDK version to 3.13.1
 - Change the minimum required macOS version from 14.0 to 12.0

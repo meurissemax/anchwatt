@@ -106,11 +106,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "anchwatt": MessageLookupByLibrary.simpleMessage("Anchwatt"),
     "anchwattDebugAddXp": MessageLookupByLibrary.simpleMessage("Ajouter XP"),
+    "anchwattDebugForceShiny": MessageLookupByLibrary.simpleMessage("Shiny"),
     "anchwattDebugResetStats": MessageLookupByLibrary.simpleMessage("Reset"),
     "anchwattDebugSimulateEvent": MessageLookupByLibrary.simpleMessage(
       "Simuler",
     ),
-    "anchwattDebugToggleShiny": MessageLookupByLibrary.simpleMessage("Shiny"),
     "anchwattXpCounter": m0,
     "anchwattXpGain": m1,
     "autoMuteActiveReason": m2,

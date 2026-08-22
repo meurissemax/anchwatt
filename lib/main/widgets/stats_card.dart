@@ -2,6 +2,7 @@ import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
 import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/borders.dart';
@@ -10,11 +11,12 @@ import 'package:anchwatt/styles/texts.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
-// The pure, deterministic render target for the shareable stats card. It is
-// driven entirely by an immutable [StatsCardData] snapshot (never a live
-// service), so the captured frame is stable, and it always draws the current
-// form's NORMAL sprite — the shiny recolour is intentionally excluded. Fixed at
-// 600 logical px wide by its capture host; the height is intrinsic.
+// The pure render target for the shareable stats card. It is driven entirely
+// by an immutable [StatsCardData] snapshot (never a live service), so the
+// captured frame is stable for a given snapshot. The sprite is recoloured when
+// the snapshot was taken during a shiny window — the recolour only, no extra
+// shiny marker. Fixed at 600 logical px wide by its capture host; the height
+// is intrinsic.
 class StatsCard extends StatelessWidget {
   /* Static variables */
 
@@ -153,6 +155,12 @@ class _Hero extends StatelessWidget {
     final L10n l10n = locator<L10n>();
     final double progress = data.xpForLevel <= 0 ? 0 : (data.xpInLevel / data.xpForLevel).clamp(0, 1);
 
+    final Widget sprite = Image.asset(
+      data.evolution.assetPath,
+      filterQuality: FilterQuality.none,
+      fit: BoxFit.contain,
+    );
+
     return Row(
       children: [
         Container(
@@ -163,11 +171,14 @@ class _Hero extends StatelessWidget {
             color: colorAchievementTileUnlocked,
             borderRadius: borderRadiusOptionsAboutCard,
           ),
-          child: Image.asset(
-            data.evolution.assetPath,
-            filterQuality: FilterQuality.none,
-            fit: BoxFit.contain,
-          ),
+          // Same recolour as the live sprite. DND is deliberately ignored here:
+          // the card freezes the shiny window's state, not the mute state.
+          child: data.isShiny
+              ? ColorFiltered(
+                  colorFilter: AnchwattSprite.shinyColorFilter,
+                  child: sprite,
+                )
+              : sprite,
         ),
         const SizedBox(
           width: _spriteToStats,
