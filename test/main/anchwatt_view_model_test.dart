@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/services/achievement_service.dart';
 import 'package:anchwatt/main/services/stats_service.dart';
+import 'package:anchwatt/main/storages/anchwatt_storage.dart';
 import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +21,14 @@ int _totalXp(int level, int xp) {
   }
 
   return total;
+}
+
+// Grinds a character to the level cap one palier at a time, the way the cycle
+// tests need a maxed-out starting point.
+Future<void> _grindToMaxLevel(AnchwattViewModel vm) async {
+  while (vm.level < AnchwattSettings.levelMax) {
+    await vm.addXp(vm.xpToNextLevel);
+  }
 }
 
 void main() {
@@ -209,6 +219,118 @@ void main() {
 
     expect(stats.totalSystemEvents, eventsBefore + 1);
     expect(_totalXp(vm.level, vm.xp), greaterThan(0));
+  });
+
+  test('AnchwattViewModel performCycle is a no-op below the level cap', () async {
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    // Let _bootServices() finish its progression read first.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    await vm.addXp(vm.xpToNextLevel);
+    final int levelBefore = vm.level;
+
+    await vm.performCycle();
+
+    expect(vm.level, levelBefore);
+    expect(vm.cycleCount, 0);
+  });
+
+  // The whole cycle transaction, checked against the acceptance list: level and
+  // XP back to the start, base form, Hardcore relocked with the active mode
+  // falling back to Corporate, counter incremented and persisted — while the
+  // stats, the badges and a running shiny window all survive untouched.
+  test('AnchwattViewModel performCycle resets the progression and keeps everything else', () async {
+    final StatsService stats = locator<StatsService>();
+    final AchievementService achievements = locator<AchievementService>();
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    // Let _bootServices() finish its inits (progression, stats, sound mode)
+    // before the grind, so nothing races the state asserted below.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    await _grindToMaxLevel(vm);
+    await vm.setSoundMode(SoundMode.hardcore);
+    vm.debugForceShiny();
+
+    expect(vm.isMaxLevel, isTrue);
+    expect(vm.soundModeNotifier.value, SoundMode.hardcore);
+    expect(achievements.isUnlocked(Achievement.endOfLine), isTrue);
+
+    final int lifetimeBefore = stats.lifetimeXp;
+
+    await vm.performCycle();
+
+    expect(vm.level, AnchwattSettings.levelMin);
+    expect(vm.xp, 0);
+    expect(vm.isMaxLevel, isFalse);
+    expect(vm.evolution, Evolution.anchwatt);
+    expect(vm.cycleCount, 1);
+    expect(vm.isHardcoreUnlocked, isFalse);
+    expect(vm.hardcoreUnlockedNotifier.value, isFalse);
+    expect(vm.soundModeNotifier.value, SoundMode.corporate);
+    expect(stats.lifetimeXp, lifetimeBefore);
+    expect(vm.isShiny, isTrue);
+    expect(achievements.isUnlocked(Achievement.endOfLine), isTrue);
+
+    // Persisted immediately: a fresh storage reads the reset state back.
+    final AnchwattStorage storage = AnchwattStorage();
+    await storage.init();
+
+    expect(storage.readCycleCount(), 1);
+    expect(storage.readProgression(), (level: AnchwattSettings.levelMin, xp: 0));
+  });
+
+  // Progression keeps working after a reset: the next grant lands at level 1
+  // instead of being discarded by the max-level guard.
+  test('AnchwattViewModel resumes leveling after a cycle', () async {
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    await _grindToMaxLevel(vm);
+    await vm.performCycle();
+
+    await vm.addXp(vm.xpToNextLevel);
+
+    expect(vm.level, AnchwattSettings.levelMin + 1);
+    expect(vm.cycleCount, 1);
+  });
+
+  // performCycle is queued behind the grant pipeline: a grant fired before the
+  // reset (a sound still playing under the confirmation dialog) is discarded
+  // at the cap first, and a grant fired after it lands on the fresh level 1.
+  test('AnchwattViewModel performCycle is serialized with in-flight grants', () async {
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    await _grindToMaxLevel(vm);
+
+    final Future<void> staleGrant = vm.addXp(500);
+    final Future<void> cycle = vm.performCycle();
+    final Future<void> freshGrant = vm.addXp(500);
+    await Future.wait(<Future<void>>[staleGrant, cycle, freshGrant]);
+
+    expect(vm.cycleCount, 1);
+    expect(_totalXp(vm.level, vm.xp), 500);
+  });
+
+  // The debug wipe is a full reset, cycles included.
+  test('AnchwattViewModel debugResetStats also clears the cycle count', () async {
+    final AnchwattViewModel vm = AnchwattViewModel();
+
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    await _grindToMaxLevel(vm);
+    await vm.performCycle();
+    await vm.debugResetStats();
+
+    final AnchwattStorage storage = AnchwattStorage();
+    await storage.init();
+
+    expect(vm.cycleCount, 0);
+    expect(storage.readCycleCount(), 0);
   });
 
   // "System events never clear the shiny" has no test through the real event

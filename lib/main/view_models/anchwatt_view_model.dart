@@ -64,6 +64,7 @@ class AnchwattViewModel extends ChangeNotifier {
   final ValueNotifier<bool> _hardcoreUnlockedNotifier = ValueNotifier<bool>(false);
   int _level = AnchwattSettings.levelMin;
   int _xp = 0;
+  int _cycleCount = 0;
   Future<void>? _pending;
   UpdateStatus _updateStatus = const UpdateUnknown();
   // Last state received from the native monitor (internal speakers) — null
@@ -99,6 +100,7 @@ class AnchwattViewModel extends ChangeNotifier {
 
   int get level => _level;
   int get xp => _xp;
+  int get cycleCount => _cycleCount;
   int get xpToNextLevel => AnchwattSettings.xpForLevel(_level);
   Evolution get evolution => Evolution.fromLevel(_level);
   double get progress => (_xp / xpToNextLevel).clamp(0, 1);
@@ -153,6 +155,16 @@ class AnchwattViewModel extends ChangeNotifier {
     return _soundService.setMode(target);
   }
 
+  // Hardcore is only valid at or above its unlock level. Applied after every
+  // level load or drop — boot (stale prefs from a bug or a rebalance), a cycle
+  // reset, the debug reset — so a locked mode never stays active with its XP
+  // multiplier still applying. Falls back to Corporate silently.
+  Future<void> _enforceSoundModeLock() async {
+    if (_soundService.mode == SoundMode.hardcore && !isHardcoreUnlocked) {
+      await _soundService.setMode(SoundMode.corporate);
+    }
+  }
+
   // The toggle reflects the combined DND state (manual OR calendar). When the
   // user turns it off while a calendar event is driving DND, opt out of that
   // event for the remainder of its duration; the manual flag is set to false
@@ -195,8 +207,22 @@ class AnchwattViewModel extends ChangeNotifier {
 
   Future<void> setLaunchAtLogin(bool value) => _launchAtLoginService.setEnabled(value);
 
-  Future<void> addXp(int amount) {
-    final Future<void> next = (_pending ?? Future<void>.value()).then((_) => _process(amount));
+  Future<void> addXp(int amount) => _enqueue(() => _process(amount));
+
+  // Starts a new cycle: the level-100 character goes back to level 1 as the
+  // base Anchwatt and the permanent cycle counter moves up by one. Queued
+  // behind any XP grant in flight (a sound may still be playing while the
+  // confirmation dialog is open) so a stale level can never be persisted over
+  // the reset. Silent by design — no sound, no notification, no XP floater —
+  // and deliberately narrow: stats, badges and the shiny window are untouched,
+  // lifetime XP being the continuity metric across cycles.
+  Future<void> performCycle() => _enqueue(_resetForCycle);
+
+  // Serializes the mutations of the progression state: each action runs once
+  // the previous one has settled, so level/xp updates and their persistence
+  // never interleave.
+  Future<void> _enqueue(Future<void> Function() action) {
+    final Future<void> next = (_pending ?? Future<void>.value()).then((_) => action());
     _pending = next;
 
     next.whenComplete(() {
@@ -227,6 +253,7 @@ class AnchwattViewModel extends ChangeNotifier {
   Future<void> debugResetStats() async {
     _level = AnchwattSettings.levelMin;
     _xp = 0;
+    _cycleCount = 0;
     _hardcoreUnlockedNotifier.value = isHardcoreUnlocked;
 
     notifyListeners();
@@ -234,6 +261,7 @@ class AnchwattViewModel extends ChangeNotifier {
     await _storage.clear();
     await _statsService.reset();
     await _achievementService.reset();
+    await _enforceSoundModeLock();
 
     // Re-seed against the now-empty stats (level reset to 1, all counters 0), so
     // every badge returns to locked without firing a notification.
@@ -327,7 +355,8 @@ class AnchwattViewModel extends ChangeNotifier {
     // Reaching the Hardcore unlock level is a one-time milestone: fire its own
     // notification and skip the generic level-up for this crossing so a single
     // notification surfaces. The < / >= test catches a multi-level jump, and
-    // levels only increase (bar the debug reset), so it fires exactly once.
+    // levels only drop on a cycle (or the debug reset), so it fires once per
+    // cycle — consistent with Hardcore relocking on every reset.
     final bool unlockedHardcore =
         oldLevel < AnchwattSettings.hardcoreUnlockLevel && newLevel >= AnchwattSettings.hardcoreUnlockLevel;
     if (unlockedHardcore) {
@@ -491,6 +520,7 @@ class AnchwattViewModel extends ChangeNotifier {
     final ({int level, int xp}) initial = _storage.readProgression();
     _level = initial.level;
     _xp = initial.xp;
+    _cycleCount = _storage.readCycleCount();
     _hardcoreUnlockedNotifier.value = isHardcoreUnlocked;
     notifyListeners();
 
@@ -544,11 +574,7 @@ class AnchwattViewModel extends ChangeNotifier {
       debugPrint('AnchwattViewModel: SoundService init failed: $error');
     }
 
-    // Defensive: a persisted Hardcore selection is invalid below the unlock
-    // level (stale prefs from a bug or a rebalance) — fall back silently.
-    if (_soundService.mode == SoundMode.hardcore && !isHardcoreUnlocked) {
-      await _soundService.setMode(SoundMode.corporate);
-    }
+    await _enforceSoundModeLock();
 
     try {
       await _usbEventService.start();
@@ -633,6 +659,25 @@ class AnchwattViewModel extends ChangeNotifier {
     notifyListeners();
 
     return status;
+  }
+
+  Future<void> _resetForCycle() async {
+    // Re-checked once the queue has drained: the button only shows at the cap,
+    // but a debug reset could have moved the level in the meantime.
+    if (!isMaxLevel) {
+      return;
+    }
+
+    _level = AnchwattSettings.levelMin;
+    _xp = 0;
+    _cycleCount += 1;
+    _hardcoreUnlockedNotifier.value = isHardcoreUnlocked;
+
+    notifyListeners();
+
+    await _storage.writeProgression(level: _level, xp: _xp);
+    await _storage.writeCycleCount(_cycleCount);
+    await _enforceSoundModeLock();
   }
 
   Future<void> _process(int amount) async {
