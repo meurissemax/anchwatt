@@ -238,6 +238,8 @@ class _CycleBand extends StatelessWidget {
 
 // One dot per tier, the reached ones in their metal and the rest left neutral:
 // a glance tells how far up the ladder this character is, and that it goes on.
+// Reached dots are ringed in the tier's deep tone so the plasma white one still
+// reads as lit on the light tile.
 class _TierLadder extends StatelessWidget {
   static const double _dotSize = 8;
   static const double _spacing = 4;
@@ -255,15 +257,29 @@ class _TierLadder extends StatelessWidget {
       spacing: _spacing,
       children: [
         for (final CycleTier tier in CycleTier.values)
-          Container(
-            width: _dotSize,
-            height: _dotSize,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: tier.index <= current.index ? null : colorNeutralLight,
-              gradient: tier.index <= current.index ? tier.gradient : null,
+          if (tier.index <= current.index)
+            Container(
+              width: _dotSize,
+              height: _dotSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: tier.gradient,
+                border: Border.all(
+                  color: tier.deepColor,
+                ),
+              ),
+            )
+          else
+            const SizedBox(
+              width: _dotSize,
+              height: _dotSize,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colorNeutralLight,
+                ),
+              ),
             ),
-          ),
       ],
     );
   }

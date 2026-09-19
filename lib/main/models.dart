@@ -338,6 +338,27 @@ enum CycleTier {
     }
   }
 
+  // The tier's darkest tone, which stays visible on a light surface even for
+  // the plasma white tier — used to ring the reached ladder dots.
+  Color get deepColor {
+    switch (this) {
+      case CycleTier.copper:
+        return colorCycleCopperDeep;
+
+      case CycleTier.steel:
+        return colorCycleSteelDeep;
+
+      case CycleTier.electricBlue:
+        return colorCycleElectricBlueDeep;
+
+      case CycleTier.violet:
+        return colorCycleVioletDeep;
+
+      case CycleTier.plasmaWhite:
+        return colorCyclePlasmaWhiteDeep;
+    }
+  }
+
   // Highlight → base → deep sheen, the same treatment as the golden level 100.
   LinearGradient get gradient {
     switch (this) {
