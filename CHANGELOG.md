@@ -2,7 +2,7 @@
 
 This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
-## Unreleased
+## 1.11.0 - 2026-09-19
 
 ### Changed
 
