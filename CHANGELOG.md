@@ -2,6 +2,18 @@
 
 This Changelog is inspired by the principles of [Common Changelog](https://common-changelog.org).
 
+## Unreleased
+
+### Changed
+
+- Change the Flutter SDK version to 3.47.5
+- Change the Dart SDK version to 3.13.4
+- Change the ignore rules to cover the Flutter widget preview directory
+
+### Removed
+
+- Remove the unused Android build artifact paths from the ignore rules
+
 ## 1.10.0 - 2026-08-22
 
 ### Changed
