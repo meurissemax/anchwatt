@@ -142,6 +142,29 @@ const TextStyle textStatsCardCta = TextStyle(
   fontWeight: FontWeight.w600,
 );
 
+const TextStyle textStatsCardCycle = TextStyle(
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 18,
+  fontWeight: FontWeight.w700,
+  letterSpacing: 4,
+);
+
+const TextStyle textStatsCardCycleXpLabel = TextStyle(
+  color: colorMutedLight,
+  fontFamily: fontFamily,
+  fontSize: 11,
+  fontWeight: FontWeight.w500,
+);
+
+const TextStyle textStatsCardCycleXpValue = TextStyle(
+  color: Colors.white,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 18,
+  fontWeight: FontWeight.w700,
+);
+
 const TextStyle textStatsCardLevel = TextStyle(
   color: colorNeutralDark,
   fontFamily: fontFamily,

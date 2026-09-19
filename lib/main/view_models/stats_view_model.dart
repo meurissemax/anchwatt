@@ -132,6 +132,8 @@ class StatsViewModel extends ChangeNotifier {
       xpForLevel: _parent.xpToNextLevel,
       evolution: _parent.evolution,
       isShiny: _parent.isShiny,
+      cycleCount: _parent.cycleCount,
+      lifetimeXp: _statsService.lifetimeXp,
       totalSystemEvents: _statsService.totalSystemEvents,
       petInteractions: _statsService.petInteractions,
       shinyEncounters: _statsService.shinyEncounters,

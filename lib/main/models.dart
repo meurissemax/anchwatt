@@ -603,7 +603,8 @@ enum Achievement {
 // anything. [isShiny] freezes whether a shiny window was active at capture
 // time — the card draws the recoloured sprite when true (and only the sprite:
 // no extra shiny marker) — and [tagline] is the already-localized footer line
-// with its {level} placeholder filled in.
+// with its {level} placeholder filled in. [cycleCount] and [lifetimeXp] feed
+// the cycle band, which only shows from the first cycle on.
 @immutable
 class StatsCardData {
   final int level;
@@ -611,6 +612,8 @@ class StatsCardData {
   final int xpForLevel;
   final Evolution evolution;
   final bool isShiny;
+  final int cycleCount;
+  final int lifetimeXp;
   final int totalSystemEvents;
   final int petInteractions;
   final int shinyEncounters;
@@ -624,6 +627,8 @@ class StatsCardData {
     required this.xpForLevel,
     required this.evolution,
     required this.isShiny,
+    required this.cycleCount,
+    required this.lifetimeXp,
     required this.totalSystemEvents,
     required this.petInteractions,
     required this.shinyEncounters,

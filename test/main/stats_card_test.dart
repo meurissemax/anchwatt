@@ -1,3 +1,4 @@
+import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
@@ -8,12 +9,16 @@ import 'package:material_ui/material_ui.dart';
 StatsCardData _data({
   List<Achievement> badges = const <Achievement>[],
   bool isShiny = false,
+  int cycleCount = 0,
+  int lifetimeXp = 0,
 }) => StatsCardData(
   level: 12,
   xpInLevel: 30,
   xpForLevel: 100,
   evolution: Evolution.anchwatt,
   isShiny: isShiny,
+  cycleCount: cycleCount,
+  lifetimeXp: lifetimeXp,
   totalSystemEvents: 1234,
   petInteractions: 56,
   shinyEncounters: 2,
@@ -89,5 +94,33 @@ void main() {
       find.descendant(of: find.byType(StatsCard), matching: find.byType(ColorFiltered)),
       findsNothing,
     );
+  });
+
+  // The band is the card's only trace of the cycle system: absent until the
+  // first cycle, so a never-cycled card renders exactly as before.
+  testWidgets('leaves the card free of any cycle band at cycle 0', (tester) async {
+    await tester.pumpWidget(_host(_data(lifetimeXp: 12345)));
+    await tester.pump();
+
+    expect(find.text(locator<L10n>().statsLifetimeXpLabel), findsNothing);
+    expect(find.text(formatNumber(12345)), findsNothing);
+  });
+
+  testWidgets('shows the cycle numeral and the lifetime XP from the first cycle on', (tester) async {
+    final L10n l10n = locator<L10n>();
+
+    await tester.pumpWidget(
+      _host(
+        _data(
+          cycleCount: 4,
+          lifetimeXp: 12345,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text(l10n.cyclePlaque('IV')), findsOneWidget);
+    expect(find.text(formatNumber(12345)), findsOneWidget);
+    expect(find.text(l10n.statsLifetimeXpLabel), findsOneWidget);
   });
 }

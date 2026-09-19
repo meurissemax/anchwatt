@@ -24,6 +24,7 @@ class StatsCard extends StatelessWidget {
 
   static const double _padding = 28;
   static const double _sectionSpacing = 24;
+  static const double _headerToCycleBand = 16;
 
   /* Variables */
 
@@ -53,6 +54,15 @@ class StatsCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _Header(evolution: data.evolution),
+            if (data.cycleCount >= 1) ...[
+              const SizedBox(
+                height: _headerToCycleBand,
+              ),
+              _CycleBand(
+                cycleCount: data.cycleCount,
+                lifetimeXp: data.lifetimeXp,
+              ),
+            ],
             const SizedBox(
               height: _sectionSpacing,
             ),
@@ -135,6 +145,69 @@ class _Header extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// The cycle counter, shown only from the first cycle on and given a heavier
+// treatment than the in-window plaque since the card is the one surface that
+// actually gets shared. The lifetime XP sits right next to it: it is the one
+// figure that keeps climbing across cycles.
+class _CycleBand extends StatelessWidget {
+  static const double _borderWidth = 1.5;
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    horizontal: 18,
+    vertical: 12,
+  );
+
+  final int cycleCount;
+  final int lifetimeXp;
+
+  const _CycleBand({
+    required this.cycleCount,
+    required this.lifetimeXp,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+    final CycleTier tier = CycleTier.fromCycleCount(cycleCount);
+
+    return Container(
+      padding: _padding,
+      decoration: BoxDecoration(
+        color: colorCyclePlaqueBackground,
+        border: Border.all(
+          color: tier.borderColor,
+          width: _borderWidth,
+        ),
+        borderRadius: borderRadiusCyclePlaque,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            l10n.cyclePlaque(AnchwattSettings.cycleNumeral(cycleCount)),
+            style: textStatsCardCycle.copyWith(
+              color: tier.textColor,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                formatNumber(lifetimeXp),
+                style: textStatsCardCycleXpValue,
+              ),
+              Text(
+                l10n.statsLifetimeXpLabel,
+                style: textStatsCardCycleXpLabel,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
