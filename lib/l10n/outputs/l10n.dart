@@ -310,40 +310,40 @@ class L10n {
     );
   }
 
-  /// `Annuler`
+  /// `Plus tard`
   String get cycleDialogCancel {
     return Intl.message(
-      'Annuler',
+      'Plus tard',
       name: 'cycleDialogCancel',
       desc: '',
       args: [],
     );
   }
 
-  /// `Effectuer le cycle`
+  /// `Lancer le cycle`
   String get cycleDialogConfirm {
     return Intl.message(
-      'Effectuer le cycle',
+      'Lancer le cycle',
       name: 'cycleDialogConfirm',
       desc: '',
       args: [],
     );
   }
 
-  /// `Anchwatt remet les compteurs à zéro. Au menu :`
+  /// `Anchwatt repart à neuf. Ce qui redémarre :`
   String get cycleDialogIntro {
     return Intl.message(
-      'Anchwatt remet les compteurs à zéro. Au menu :',
+      'Anchwatt repart à neuf. Ce qui redémarre :',
       name: 'cycleDialogIntro',
       desc: '',
       args: [],
     );
   }
 
-  /// `Définitif, aucun retour en arrière possible.`
+  /// `Pas de marche arrière possible.`
   String get cycleDialogIrreversible {
     return Intl.message(
-      'Définitif, aucun retour en arrière possible.',
+      'Pas de marche arrière possible.',
       name: 'cycleDialogIrreversible',
       desc: '',
       args: [],
@@ -390,13 +390,13 @@ class L10n {
     );
   }
 
-  /// `Effectuer un cycle ?`
-  String get cycleDialogTitle {
+  /// `Cap sur le cycle {numeral} ?`
+  String cycleDialogTitle(String numeral) {
     return Intl.message(
-      'Effectuer un cycle ?',
+      'Cap sur le cycle $numeral ?',
       name: 'cycleDialogTitle',
       desc: '',
-      args: [],
+      args: [numeral],
     );
   }
 

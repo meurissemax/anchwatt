@@ -23,7 +23,12 @@ class _Host extends StatelessWidget {
         body: Center(
           child: Builder(
             builder: (context) => TextButton(
-              onPressed: () async => onResult(await CycleConfirmationDialog.show(context)),
+              onPressed: () async => onResult(
+                await CycleConfirmationDialog.show(
+                  context,
+                  nextCycle: 2,
+                ),
+              ),
               child: const Text('open'),
             ),
           ),
@@ -79,6 +84,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(result, isFalse);
+  });
+
+  // The reward comes first: the plaque the next cycle earns, with its tier.
+  testWidgets('previews the plaque of the next cycle', (tester) async {
+    final L10n l10n = locator<L10n>();
+    await _open(tester, (_) {});
+
+    expect(find.text(l10n.cycleDialogTitle('II')), findsOneWidget);
+    expect(find.text(l10n.cyclePlaque('II')), findsOneWidget);
+    expect(find.text(l10n.cycleTierCopper), findsOneWidget);
   });
 
   // The three losses are the whole point of the dialog: they must all be there.

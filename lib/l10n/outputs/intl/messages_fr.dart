@@ -30,49 +30,51 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m3(level) =>
       "Mode Hardcore reverrouillé jusqu\'au niveau ${level}";
 
-  static String m4(numeral) => "CYCLE ${numeral}";
+  static String m4(numeral) => "Cap sur le cycle ${numeral} ?";
 
-  static String m5(hours, minutes) => "${hours}h ${minutes}min";
+  static String m5(numeral) => "CYCLE ${numeral}";
 
-  static String m6(minutes, seconds) => "${minutes}min ${seconds}s";
+  static String m6(hours, minutes) => "${hours}h ${minutes}min";
 
-  static String m7(count) => "${count} nouveaux badges débloqués";
+  static String m7(minutes, seconds) => "${minutes}min ${seconds}s";
 
-  static String m8(eventTitle, time) =>
+  static String m8(count) => "${count} nouveaux badges débloqués";
+
+  static String m9(eventTitle, time) =>
       "${eventTitle} commence bientôt. Anchwatt se tait jusqu\'à ${time}.";
 
-  static String m9(eventTitle) =>
+  static String m10(eventTitle) =>
       "${eventTitle} est terminé. Anchwatt reprend du service.";
 
-  static String m10(from, to) => "${from} évolue en ${to}.";
+  static String m11(from, to) => "${from} évolue en ${to}.";
 
-  static String m11(from, level, to) =>
+  static String m12(from, level, to) =>
       "Niveau ${level} atteint. ${from} évolue en ${to}.";
 
-  static String m12(name) => "${name} a gagné un niveau.";
+  static String m13(name) => "${name} a gagné un niveau.";
 
-  static String m13(level) => "Niveau ${level} atteint";
+  static String m14(level) => "Niveau ${level} atteint";
 
-  static String m14(version) => "v${version}";
+  static String m15(version) => "v${version}";
 
-  static String m15(level) => "Débloqué au niveau ${level}.";
+  static String m16(level) => "Débloqué au niveau ${level}.";
 
-  static String m16(version) =>
+  static String m17(version) =>
       "Une nouvelle version a pointé son nez : ${version}";
 
-  static String m17(mode) => "Ambiance : ${mode}";
+  static String m18(mode) => "Ambiance : ${mode}";
 
-  static String m18(level) => "Niveau ${level}. Tout ça pour ça.";
+  static String m19(level) => "Niveau ${level}. Tout ça pour ça.";
 
-  static String m19(level) => "Niveau ${level} et toujours pas de promotion.";
+  static String m20(level) => "Niveau ${level} et toujours pas de promotion.";
 
-  static String m20(level) =>
+  static String m21(level) =>
       "Niveau ${level}, et pourtant personne n\'a rien demandé.";
 
-  static String m21(corporate, friday, hardcore) =>
+  static String m22(corporate, friday, hardcore) =>
       "dont ${corporate} en corporate, ${friday} en friday, ${hardcore} en hardcore";
 
-  static String m22(percent) => "Haut-parleurs du Mac : ${percent} %";
+  static String m23(percent) => "Haut-parleurs du Mac : ${percent} %";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -137,15 +139,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
     ),
     "cycleButton": MessageLookupByLibrary.simpleMessage("Effectuer un cycle"),
-    "cycleDialogCancel": MessageLookupByLibrary.simpleMessage("Annuler"),
+    "cycleDialogCancel": MessageLookupByLibrary.simpleMessage("Plus tard"),
     "cycleDialogConfirm": MessageLookupByLibrary.simpleMessage(
-      "Effectuer le cycle",
+      "Lancer le cycle",
     ),
     "cycleDialogIntro": MessageLookupByLibrary.simpleMessage(
-      "Anchwatt remet les compteurs à zéro. Au menu :",
+      "Anchwatt repart à neuf. Ce qui redémarre :",
     ),
     "cycleDialogIrreversible": MessageLookupByLibrary.simpleMessage(
-      "Définitif, aucun retour en arrière possible.",
+      "Pas de marche arrière possible.",
     ),
     "cycleDialogKept": MessageLookupByLibrary.simpleMessage(
       "Tes stats, ton XP amassé et tes hauts faits restent acquis.",
@@ -157,10 +159,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "cycleDialogLossLevel": MessageLookupByLibrary.simpleMessage(
       "Retour au niveau 1",
     ),
-    "cycleDialogTitle": MessageLookupByLibrary.simpleMessage(
-      "Effectuer un cycle ?",
-    ),
-    "cyclePlaque": m4,
+    "cycleDialogTitle": m4,
+    "cyclePlaque": m5,
     "cycleTierCopper": MessageLookupByLibrary.simpleMessage("Cuivre"),
     "cycleTierElectricBlue": MessageLookupByLibrary.simpleMessage(
       "Bleu électrique",
@@ -170,8 +170,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "cycleTierSteel": MessageLookupByLibrary.simpleMessage("Acier"),
     "cycleTierViolet": MessageLookupByLibrary.simpleMessage("Violet"),
-    "durationHoursMinutes": m5,
-    "durationMinutesSeconds": m6,
+    "durationHoursMinutes": m6,
+    "durationMinutesSeconds": m7,
     "eventTypeChargerToggle": MessageLookupByLibrary.simpleMessage(
       "Coup de jus",
     ),
@@ -204,18 +204,18 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "notificationAchievementUnlockedTitle":
         MessageLookupByLibrary.simpleMessage("Nouveau badge débloqué"),
-    "notificationAchievementsUnlockedTitle": m7,
+    "notificationAchievementsUnlockedTitle": m8,
     "notificationCalendarEventFallbackName":
         MessageLookupByLibrary.simpleMessage("un événement"),
-    "notificationDndActivatedBody": m8,
+    "notificationDndActivatedBody": m9,
     "notificationDndActivatedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Ne pas déranger activé",
     ),
-    "notificationDndDeactivatedBody": m9,
+    "notificationDndDeactivatedBody": m10,
     "notificationDndDeactivatedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Ne pas déranger désactivé",
     ),
-    "notificationEvolutionBody": m10,
+    "notificationEvolutionBody": m11,
     "notificationEvolutionTitle": MessageLookupByLibrary.simpleMessage(
       "Évolution !",
     ),
@@ -225,11 +225,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "notificationHardcoreUnlockedTitle": MessageLookupByLibrary.simpleMessage(
       "Mode Hardcore débloqué",
     ),
-    "notificationLevelUpAndEvolutionBody": m11,
+    "notificationLevelUpAndEvolutionBody": m12,
     "notificationLevelUpAndEvolutionTitle":
         MessageLookupByLibrary.simpleMessage("Évolution !"),
-    "notificationLevelUpBody": m12,
-    "notificationLevelUpTitle": m13,
+    "notificationLevelUpBody": m13,
+    "notificationLevelUpTitle": m14,
     "notificationShinyBody": MessageLookupByLibrary.simpleMessage(
       "La chance. Il t\'est apparu dans une teinte qu\'on ne voit presque jamais.",
     ),
@@ -244,7 +244,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Notifications refusées. À activer dans Réglages Système > Notifications > Anchwatt.",
     ),
     "ohmassacre": MessageLookupByLibrary.simpleMessage("Ohmassacre"),
-    "optionsAppVersion": m14,
+    "optionsAppVersion": m15,
     "optionsButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Bidouiller Anchwatt",
     ),
@@ -262,9 +262,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "optionsModeDescriptionHardcore": MessageLookupByLibrary.simpleMessage(
       "Sans filtre, sans pitié. Anchwatt décline toute responsabilité.",
     ),
-    "optionsModeHardcoreLockedTooltip": m15,
+    "optionsModeHardcoreLockedTooltip": m16,
     "optionsModeLabel": MessageLookupByLibrary.simpleMessage("Ambiance"),
-    "optionsUpdatesAvailable": m16,
+    "optionsUpdatesAvailable": m17,
     "optionsUpdatesCheckButton": MessageLookupByLibrary.simpleMessage(
       "Chercher du neuf",
     ),
@@ -289,7 +289,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "soundModeCorporate": MessageLookupByLibrary.simpleMessage("Corporate"),
     "soundModeFriday": MessageLookupByLibrary.simpleMessage("Friday"),
     "soundModeHardcore": MessageLookupByLibrary.simpleMessage("Hardcore"),
-    "soundModeTooltip": m17,
+    "soundModeTooltip": m18,
     "statsAchievementsTitle": MessageLookupByLibrary.simpleMessage(
       "Hauts faits",
     ),
@@ -308,9 +308,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsCardShareError": MessageLookupByLibrary.simpleMessage(
       "Raté, la carte n\'est pas passée",
     ),
-    "statsCardTaglineFirst": m18,
-    "statsCardTaglineSecond": m19,
-    "statsCardTaglineThird": m20,
+    "statsCardTaglineFirst": m19,
+    "statsCardTaglineSecond": m20,
+    "statsCardTaglineThird": m21,
     "statsFavoriteEventDescription": MessageLookupByLibrary.simpleMessage(
       "L\'événement qui le titille le plus souvent",
     ),
@@ -340,12 +340,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "statsSoundsPlayedLabel": MessageLookupByLibrary.simpleMessage(
       "Sons lâchés",
     ),
-    "statsSoundsSplit": m21,
+    "statsSoundsSplit": m22,
     "statsWakeupsDescription": MessageLookupByLibrary.simpleMessage(
       "Un bond au plafond par événement",
     ),
     "statsWakeupsLabel": MessageLookupByLibrary.simpleMessage("Sursauts"),
-    "systemVolumeTooltip": m22,
+    "systemVolumeTooltip": m23,
     "systemVolumeTooltipMuted": MessageLookupByLibrary.simpleMessage(
       "Silence radio — haut-parleurs du Mac coupés",
     ),

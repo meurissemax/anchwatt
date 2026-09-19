@@ -2,6 +2,7 @@ import 'package:anchwatt/commons/utils/number_format.dart';
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
+import 'package:anchwatt/main/widgets/cycle_plaque.dart';
 import 'package:anchwatt/styles/borders.dart';
 import 'package:anchwatt/styles/colors.dart';
 import 'package:anchwatt/styles/texts.dart';
@@ -10,8 +11,9 @@ import 'package:material_ui/material_ui.dart';
 
 // Confirmation gate of the cycle reset. A plain widget rather than a view: it
 // holds no state of its own and only answers a yes/no question, leaving the
-// reset itself to the caller. Spells out every loss so nobody trips into a
-// reset they did not mean.
+// reset itself to the caller. Leads with the plaque the next cycle earns, then
+// spells out what starts over — an invitation with its fine print, not a
+// warning.
 class CycleConfirmationDialog extends StatelessWidget {
   /* Static variables */
 
@@ -21,23 +23,36 @@ class CycleConfirmationDialog extends StatelessWidget {
     vertical: 28,
   );
   static const EdgeInsets _bodyPadding = EdgeInsets.all(20);
-  static const double _titleSpacing = 12;
-  static const double _itemSpacing = 6;
+  static const double _titleSpacing = 16;
+  static const double _plaqueToCaption = 8;
   static const double _sectionSpacing = 16;
+  static const double _itemSpacing = 6;
   static const double _actionSpacing = 8;
+
+  /* Variables */
+
+  final int nextCycle;
 
   /* Constructor */
 
-  const CycleConfirmationDialog._();
+  const CycleConfirmationDialog._({
+    required this.nextCycle,
+  });
 
   /* Methods */
 
-  // Resolves to true only on an explicit confirmation; cancelling, Escape and
-  // a tap outside the dialog all resolve to false.
-  static Future<bool> show(BuildContext context) async {
+  // Resolves to true only on an explicit confirmation; dismissing, Escape and
+  // a tap outside the dialog all resolve to false. [nextCycle] is the cycle
+  // the reset would open, previewed as the plaque it earns.
+  static Future<bool> show(
+    BuildContext context, {
+    required int nextCycle,
+  }) async {
     final bool? confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => const CycleConfirmationDialog._(),
+      builder: (_) => CycleConfirmationDialog._(
+        nextCycle: nextCycle,
+      ),
     );
 
     return confirmed ?? false;
@@ -46,6 +61,7 @@ class CycleConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
+    final CycleTier tier = CycleTier.fromCycleCount(nextCycle);
 
     return Dialog(
       backgroundColor: colorSurface,
@@ -70,11 +86,28 @@ class CycleConfirmationDialog extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    l10n.cycleDialogTitle,
+                    l10n.cycleDialogTitle(AnchwattSettings.cycleNumeral(nextCycle)),
                     style: textOptionsAppName,
                   ),
                   const SizedBox(
                     height: _titleSpacing,
+                  ),
+                  Center(
+                    child: CyclePlaque(
+                      cycleCount: nextCycle,
+                      large: true,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: _plaqueToCaption,
+                  ),
+                  Text(
+                    tier.label(l10n),
+                    textAlign: TextAlign.center,
+                    style: textOptionsSectionDescription,
+                  ),
+                  const SizedBox(
+                    height: _sectionSpacing,
                   ),
                   Text(
                     l10n.cycleDialogIntro,
@@ -83,19 +116,22 @@ class CycleConfirmationDialog extends StatelessWidget {
                   const SizedBox(
                     height: _itemSpacing,
                   ),
-                  _LossItem(
+                  _ResetItem(
+                    iconData: Icons.looks_one,
                     label: l10n.cycleDialogLossLevel,
                   ),
                   const SizedBox(
                     height: _itemSpacing,
                   ),
-                  _LossItem(
+                  _ResetItem(
+                    iconData: Icons.egg,
                     label: l10n.cycleDialogLossForm,
                   ),
                   const SizedBox(
                     height: _itemSpacing,
                   ),
-                  _LossItem(
+                  _ResetItem(
+                    iconData: Icons.lock_outline,
                     label: l10n.cycleDialogLossHardcore(formatNumber(AnchwattSettings.hardcoreUnlockLevel)),
                   ),
                   const SizedBox(
@@ -103,12 +139,7 @@ class CycleConfirmationDialog extends StatelessWidget {
                   ),
                   Text(
                     l10n.cycleDialogIrreversible,
-                    style: textOptionsSectionDescription.copyWith(
-                      color: colorError,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 4,
+                    style: textOptionsSectionDescription,
                   ),
                   Text(
                     l10n.cycleDialogKept,
@@ -127,7 +158,7 @@ class CycleConfirmationDialog extends StatelessWidget {
                       ),
                       _DialogButton(
                         label: l10n.cycleDialogConfirm,
-                        destructive: true,
+                        filled: true,
                         onPressed: () => Navigator.of(context).pop(true),
                       ),
                     ],
@@ -142,13 +173,17 @@ class CycleConfirmationDialog extends StatelessWidget {
   }
 }
 
-class _LossItem extends StatelessWidget {
+class _ResetItem extends StatelessWidget {
   static const double _iconSize = 14;
-  static const double _iconToLabel = 6;
+  static const double _iconToLabel = 8;
+  // Nudges the glyph onto the first text line when the label wraps.
+  static const EdgeInsets _iconPadding = EdgeInsets.only(top: 1);
 
+  final IconData iconData;
   final String label;
 
-  const _LossItem({
+  const _ResetItem({
+    required this.iconData,
     required this.label,
   });
 
@@ -157,10 +192,13 @@ class _LossItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(
-          Icons.remove,
-          size: _iconSize,
-          color: colorError,
+        Padding(
+          padding: _iconPadding,
+          child: Icon(
+            iconData,
+            size: _iconSize,
+            color: colorMutedDark,
+          ),
         ),
         const SizedBox(
           width: _iconToLabel,
@@ -168,7 +206,7 @@ class _LossItem extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: textOptionsSectionLabel,
+            style: textCycleDialogItem,
           ),
         ),
       ],
@@ -184,21 +222,21 @@ class _DialogButton extends StatelessWidget {
 
   final String label;
   final VoidCallback onPressed;
-  final bool destructive;
+  final bool filled;
 
   const _DialogButton({
     required this.label,
     required this.onPressed,
-    this.destructive = false,
+    this.filled = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // The destructive action is filled in the error colour while the safe one
-    // stays hollow, so the two can never be mistaken for each other.
-    final Color foreground = destructive ? Colors.white : colorNeutralDark;
-    final Color background = destructive ? colorError : Colors.transparent;
-    final Color borderColor = destructive ? colorError : colorNeutralLight;
+    // The go-ahead is the filled, brand-coloured one and the way out stays
+    // hollow: unmistakable at a glance, without painting the reset as a threat.
+    final Color foreground = filled ? Colors.white : colorNeutralDark;
+    final Color background = filled ? colorPrimary : Colors.transparent;
+    final Color borderColor = filled ? colorPrimary : colorNeutralLight;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,

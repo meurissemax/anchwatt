@@ -12,6 +12,14 @@ const TextStyle textBodyMedium = TextStyle(
 );
 
 // Anchwatt
+const TextStyle textCycleDialogItem = TextStyle(
+  color: colorNeutralDark,
+  fontFamily: fontFamily,
+  fontSize: 12,
+  fontWeight: FontWeight.w500,
+  height: 1.4,
+);
+
 // Opaque white on purpose: the plaque paints it through a ShaderMask that
 // swaps the white for the tier's metallic gradient.
 const TextStyle textCyclePlaque = TextStyle(

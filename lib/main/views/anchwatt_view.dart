@@ -399,7 +399,10 @@ class _CycleButton extends StatelessWidget {
   // never touches the context once the dialog has closed.
   Future<void> _onTap(BuildContext context) async {
     final AnchwattViewModel viewModel = context.read<AnchwattViewModel>();
-    final bool confirmed = await CycleConfirmationDialog.show(context);
+    final bool confirmed = await CycleConfirmationDialog.show(
+      context,
+      nextCycle: viewModel.cycleCount + 1,
+    );
 
     if (!confirmed) {
       return;

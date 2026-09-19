@@ -34,6 +34,13 @@
             }
         }
     },
+    "@cycleDialogTitle": {
+        "placeholders": {
+            "numeral": {
+                "type": "String"
+            }
+        }
+    },
     "@cyclePlaque": {
         "placeholders": {
             "numeral": {
@@ -217,15 +224,15 @@
     "autoMuteOpenSystemSettings": "Ouvrir les Réglages Système",
     "autoMutePermissionDenied": "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
     "cycleButton": "Effectuer un cycle",
-    "cycleDialogCancel": "Annuler",
-    "cycleDialogConfirm": "Effectuer le cycle",
-    "cycleDialogIntro": "Anchwatt remet les compteurs à zéro. Au menu :",
-    "cycleDialogIrreversible": "Définitif, aucun retour en arrière possible.",
+    "cycleDialogCancel": "Plus tard",
+    "cycleDialogConfirm": "Lancer le cycle",
+    "cycleDialogIntro": "Anchwatt repart à neuf. Ce qui redémarre :",
+    "cycleDialogIrreversible": "Pas de marche arrière possible.",
     "cycleDialogKept": "Tes stats, ton XP amassé et tes hauts faits restent acquis.",
     "cycleDialogLossForm": "Retour à la forme Anchwatt de base",
     "cycleDialogLossHardcore": "Mode Hardcore reverrouillé jusqu'au niveau {level}",
     "cycleDialogLossLevel": "Retour au niveau 1",
-    "cycleDialogTitle": "Effectuer un cycle ?",
+    "cycleDialogTitle": "Cap sur le cycle {numeral} ?",
     "cyclePlaque": "CYCLE {numeral}",
     "cycleTierCopper": "Cuivre",
     "cycleTierElectricBlue": "Bleu électrique",
