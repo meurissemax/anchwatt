@@ -410,6 +410,41 @@ class L10n {
     );
   }
 
+  /// `Cuivre`
+  String get cycleTierCopper {
+    return Intl.message('Cuivre', name: 'cycleTierCopper', desc: '', args: []);
+  }
+
+  /// `Bleu électrique`
+  String get cycleTierElectricBlue {
+    return Intl.message(
+      'Bleu électrique',
+      name: 'cycleTierElectricBlue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blanc plasma`
+  String get cycleTierPlasmaWhite {
+    return Intl.message(
+      'Blanc plasma',
+      name: 'cycleTierPlasmaWhite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Acier`
+  String get cycleTierSteel {
+    return Intl.message('Acier', name: 'cycleTierSteel', desc: '', args: []);
+  }
+
+  /// `Violet`
+  String get cycleTierViolet {
+    return Intl.message('Violet', name: 'cycleTierViolet', desc: '', args: []);
+  }
+
   /// `{hours}h {minutes}min`
   String durationHoursMinutes(int hours, int minutes) {
     return Intl.message(

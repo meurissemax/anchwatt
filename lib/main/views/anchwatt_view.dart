@@ -10,6 +10,7 @@ import 'package:anchwatt/main/views/options_view.dart';
 import 'package:anchwatt/main/views/stats_view.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
 import 'package:anchwatt/main/widgets/cycle_confirmation_dialog.dart';
+import 'package:anchwatt/main/widgets/cycle_plaque.dart';
 import 'package:anchwatt/main/widgets/pet_gesture_surface.dart';
 import 'package:anchwatt/main/widgets/sound_mode_pill.dart';
 import 'package:anchwatt/main/widgets/system_volume_pill.dart';
@@ -81,7 +82,7 @@ class _AnchwattViewBody extends StatelessWidget {
                   ),
                 ),
               ),
-              const _CyclePlaque(),
+              const _CycleRow(),
               const _XpSection(),
               const _CycleSection(),
               if (Settings.isDev) ...[
@@ -329,19 +330,14 @@ class _XpCounterText extends StatelessWidget {
   }
 }
 
-class _CyclePlaque extends StatelessWidget {
-  static const EdgeInsets _padding = EdgeInsets.symmetric(
-    vertical: 6,
-  );
-
-  const _CyclePlaque();
+class _CycleRow extends StatelessWidget {
+  const _CycleRow();
 
   @override
   Widget build(BuildContext context) {
-    final L10n l10n = locator<L10n>();
-
     // Rebuilds only when the counter itself moves — a handful of times over the
-    // whole life of a character — so the plaque never repaints on its own.
+    // whole life of a character — so the plaque never repaints on its own. The
+    // row collapses entirely below the first cycle: no reserved space at all.
     return Selector<AnchwattViewModel, int>(
       selector: (_, vm) => vm.cycleCount,
       builder: (_, cycleCount, _) {
@@ -349,25 +345,9 @@ class _CyclePlaque extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final CycleTier tier = CycleTier.fromCycleCount(cycleCount);
-
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            color: colorCyclePlaqueBackground,
-            border: Border.all(
-              color: tier.borderColor,
-            ),
-            borderRadius: borderRadiusCyclePlaque,
-          ),
-          child: Padding(
-            padding: _padding,
-            child: Text(
-              l10n.cyclePlaque(AnchwattSettings.cycleNumeral(cycleCount)),
-              textAlign: TextAlign.center,
-              style: textCyclePlaque.copyWith(
-                color: tier.textColor,
-              ),
-            ),
+        return Center(
+          child: CyclePlaque(
+            cycleCount: cycleCount,
           ),
         );
       },

@@ -12,12 +12,24 @@ const TextStyle textBodyMedium = TextStyle(
 );
 
 // Anchwatt
+// Opaque white on purpose: the plaque paints it through a ShaderMask that
+// swaps the white for the tier's metallic gradient.
 const TextStyle textCyclePlaque = TextStyle(
+  color: Colors.white,
   fontFamily: fontFamily,
   fontFeatures: [FontFeature.tabularFigures()],
-  fontSize: 11,
+  fontSize: 10,
   fontWeight: FontWeight.w700,
-  letterSpacing: 2.5,
+  letterSpacing: 2,
+);
+
+const TextStyle textCyclePlaqueLarge = TextStyle(
+  color: Colors.white,
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 13,
+  fontWeight: FontWeight.w700,
+  letterSpacing: 3,
 );
 
 const TextStyle textDebugButton = TextStyle(
@@ -140,29 +152,6 @@ const TextStyle textStatsCardCta = TextStyle(
   fontFamily: fontFamily,
   fontSize: 15,
   fontWeight: FontWeight.w600,
-);
-
-const TextStyle textStatsCardCycle = TextStyle(
-  fontFamily: fontFamily,
-  fontFeatures: [FontFeature.tabularFigures()],
-  fontSize: 18,
-  fontWeight: FontWeight.w700,
-  letterSpacing: 4,
-);
-
-const TextStyle textStatsCardCycleXpLabel = TextStyle(
-  color: colorMutedLight,
-  fontFamily: fontFamily,
-  fontSize: 11,
-  fontWeight: FontWeight.w500,
-);
-
-const TextStyle textStatsCardCycleXpValue = TextStyle(
-  color: Colors.white,
-  fontFamily: fontFamily,
-  fontFeatures: [FontFeature.tabularFigures()],
-  fontSize: 18,
-  fontWeight: FontWeight.w700,
 );
 
 const TextStyle textStatsCardLevel = TextStyle(

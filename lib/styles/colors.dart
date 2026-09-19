@@ -31,17 +31,22 @@ const Color colorLevelMaxGoldDeep = Color(0xffc9a227);
 const Color colorLevelMaxGoldHighlight = Color(0xfffff3b0);
 
 // Cycles
-const Color colorCycleCopperBorder = Color(0xffb87333);
-const Color colorCycleCopperText = Color(0xffe0a268);
-const Color colorCycleElectricBlueBorder = Color(0xff3b82f6);
-const Color colorCycleElectricBlueText = Color(0xff93c5fd);
+const Color colorCycleCopperBase = Color(0xffb87333);
+const Color colorCycleCopperDeep = Color(0xff8c5a2b);
+const Color colorCycleCopperHighlight = Color(0xffe0a268);
+const Color colorCycleElectricBlueBase = Color(0xff3b82f6);
+const Color colorCycleElectricBlueDeep = Color(0xff1d4ed8);
+const Color colorCycleElectricBlueHighlight = Color(0xff93c5fd);
 const Color colorCyclePlaqueBackground = Color(0xff1f2937);
-const Color colorCyclePlasmaWhiteBorder = Color(0xffe8f4ff);
-const Color colorCyclePlasmaWhiteText = Color(0xffffffff);
-const Color colorCycleSteelBorder = Color(0xff8a99a8);
-const Color colorCycleSteelText = Color(0xffcbd5e0);
-const Color colorCycleVioletBorder = Color(0xff8b5cf6);
-const Color colorCycleVioletText = Color(0xffc4b5fd);
+const Color colorCyclePlasmaWhiteBase = Color(0xffe8f4ff);
+const Color colorCyclePlasmaWhiteDeep = Color(0xffbfdbfe);
+const Color colorCyclePlasmaWhiteHighlight = Color(0xffffffff);
+const Color colorCycleSteelBase = Color(0xff8a99a8);
+const Color colorCycleSteelDeep = Color(0xff5b6876);
+const Color colorCycleSteelHighlight = Color(0xffcbd5e0);
+const Color colorCycleVioletBase = Color(0xff8b5cf6);
+const Color colorCycleVioletDeep = Color(0xff6d28d9);
+const Color colorCycleVioletHighlight = Color(0xffc4b5fd);
 
 // Widgets
 const Color colorAchievementTileLocked = Color(0xfff9fafb);

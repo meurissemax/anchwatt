@@ -3,6 +3,7 @@ import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/locator.dart';
 import 'package:anchwatt/main/models.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
+import 'package:anchwatt/main/widgets/cycle_plaque.dart';
 import 'package:anchwatt/main/widgets/xp_progress_bar.dart';
 import 'package:anchwatt/settings.dart';
 import 'package:anchwatt/styles/borders.dart';
@@ -149,16 +150,18 @@ class _Header extends StatelessWidget {
   }
 }
 
-// The cycle counter, shown only from the first cycle on and given a heavier
-// treatment than the in-window plaque since the card is the one surface that
-// actually gets shared. The lifetime XP sits right next to it: it is the one
-// figure that keeps climbing across cycles.
+// The cycle rank, shown only from the first cycle on: the emblem at its
+// showcase size, the tier's name and the five-tier ladder that hints at what
+// is still ahead, on the same light tile as the other stats. The lifetime XP
+// sits right next to it as the one figure that keeps climbing across cycles.
 class _CycleBand extends StatelessWidget {
-  static const double _borderWidth = 1.5;
   static const EdgeInsets _padding = EdgeInsets.symmetric(
-    horizontal: 18,
+    horizontal: 16,
     vertical: 12,
   );
+  static const double _plaqueToCaption = 8;
+  static const double _captionToLadder = 10;
+  static const double _valueToLabel = 4;
 
   final int cycleCount;
   final int lifetimeXp;
@@ -175,39 +178,93 @@ class _CycleBand extends StatelessWidget {
 
     return Container(
       padding: _padding,
-      decoration: BoxDecoration(
-        color: colorCyclePlaqueBackground,
-        border: Border.all(
-          color: tier.borderColor,
-          width: _borderWidth,
-        ),
-        borderRadius: borderRadiusCyclePlaque,
+      decoration: const BoxDecoration(
+        color: colorAchievementTileUnlocked,
+        borderRadius: borderRadiusOptionsAboutCard,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            l10n.cyclePlaque(AnchwattSettings.cycleNumeral(cycleCount)),
-            style: textStatsCardCycle.copyWith(
-              color: tier.textColor,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CyclePlaque(
+                cycleCount: cycleCount,
+                large: true,
+              ),
+              const SizedBox(
+                height: _plaqueToCaption,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    tier.label(l10n),
+                    style: textStatsCardTileLabel,
+                  ),
+                  const SizedBox(
+                    width: _captionToLadder,
+                  ),
+                  _TierLadder(
+                    current: tier,
+                  ),
+                ],
+              ),
+            ],
           ),
+          const Spacer(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 formatNumber(lifetimeXp),
-                style: textStatsCardCycleXpValue,
+                style: textStatsCardTileValue,
+              ),
+              const SizedBox(
+                height: _valueToLabel,
               ),
               Text(
                 l10n.statsLifetimeXpLabel,
-                style: textStatsCardCycleXpLabel,
+                style: textStatsCardTileLabel,
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+}
+
+// One dot per tier, the reached ones in their metal and the rest left neutral:
+// a glance tells how far up the ladder this character is, and that it goes on.
+class _TierLadder extends StatelessWidget {
+  static const double _dotSize = 8;
+  static const double _spacing = 4;
+
+  final CycleTier current;
+
+  const _TierLadder({
+    required this.current,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: _spacing,
+      children: [
+        for (final CycleTier tier in CycleTier.values)
+          Container(
+            width: _dotSize,
+            height: _dotSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: tier.index <= current.index ? null : colorNeutralLight,
+              gradient: tier.index <= current.index ? tier.gradient : null,
+            ),
+          ),
+      ],
     );
   }
 }

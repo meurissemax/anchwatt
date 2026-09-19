@@ -120,6 +120,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(l10n.cyclePlaque('IV')), findsOneWidget);
+    expect(find.text(l10n.cycleTierSteel), findsOneWidget);
     expect(find.text(formatNumber(12345)), findsOneWidget);
     expect(find.text(l10n.statsLifetimeXpLabel), findsOneWidget);
   });

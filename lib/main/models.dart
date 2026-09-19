@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:anchwatt/l10n/outputs/l10n.dart';
 import 'package:anchwatt/styles/colors.dart';
+import 'package:anchwatt/styles/gradients.dart';
 import 'package:material_ui/material_ui.dart';
 
 // Clément, don't read this, you curious boy
@@ -317,41 +318,62 @@ enum CycleTier {
     }
   }
 
-  Color get borderColor {
+  // The tier's base metal, for flat accents (the glow, the ladder dots).
+  Color get accentColor {
     switch (this) {
       case CycleTier.copper:
-        return colorCycleCopperBorder;
+        return colorCycleCopperBase;
 
       case CycleTier.steel:
-        return colorCycleSteelBorder;
+        return colorCycleSteelBase;
 
       case CycleTier.electricBlue:
-        return colorCycleElectricBlueBorder;
+        return colorCycleElectricBlueBase;
 
       case CycleTier.violet:
-        return colorCycleVioletBorder;
+        return colorCycleVioletBase;
 
       case CycleTier.plasmaWhite:
-        return colorCyclePlasmaWhiteBorder;
+        return colorCyclePlasmaWhiteBase;
     }
   }
 
-  Color get textColor {
+  // Highlight → base → deep sheen, the same treatment as the golden level 100.
+  LinearGradient get gradient {
     switch (this) {
       case CycleTier.copper:
-        return colorCycleCopperText;
+        return gradientCycleCopper;
 
       case CycleTier.steel:
-        return colorCycleSteelText;
+        return gradientCycleSteel;
 
       case CycleTier.electricBlue:
-        return colorCycleElectricBlueText;
+        return gradientCycleElectricBlue;
 
       case CycleTier.violet:
-        return colorCycleVioletText;
+        return gradientCycleViolet;
 
       case CycleTier.plasmaWhite:
-        return colorCyclePlasmaWhiteText;
+        return gradientCyclePlasmaWhite;
+    }
+  }
+
+  String label(L10n l10n) {
+    switch (this) {
+      case CycleTier.copper:
+        return l10n.cycleTierCopper;
+
+      case CycleTier.steel:
+        return l10n.cycleTierSteel;
+
+      case CycleTier.electricBlue:
+        return l10n.cycleTierElectricBlue;
+
+      case CycleTier.violet:
+        return l10n.cycleTierViolet;
+
+      case CycleTier.plasmaWhite:
+        return l10n.cycleTierPlasmaWhite;
     }
   }
 }

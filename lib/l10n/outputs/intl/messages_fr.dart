@@ -161,6 +161,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Effectuer un cycle ?",
     ),
     "cyclePlaque": m4,
+    "cycleTierCopper": MessageLookupByLibrary.simpleMessage("Cuivre"),
+    "cycleTierElectricBlue": MessageLookupByLibrary.simpleMessage(
+      "Bleu électrique",
+    ),
+    "cycleTierPlasmaWhite": MessageLookupByLibrary.simpleMessage(
+      "Blanc plasma",
+    ),
+    "cycleTierSteel": MessageLookupByLibrary.simpleMessage("Acier"),
+    "cycleTierViolet": MessageLookupByLibrary.simpleMessage("Violet"),
     "durationHoursMinutes": m5,
     "durationMinutesSeconds": m6,
     "eventTypeChargerToggle": MessageLookupByLibrary.simpleMessage(
