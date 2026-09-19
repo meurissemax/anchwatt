@@ -12,6 +12,14 @@ const TextStyle textBodyMedium = TextStyle(
 );
 
 // Anchwatt
+const TextStyle textCyclePlaque = TextStyle(
+  fontFamily: fontFamily,
+  fontFeatures: [FontFeature.tabularFigures()],
+  fontSize: 11,
+  fontWeight: FontWeight.w700,
+  letterSpacing: 2.5,
+);
+
 const TextStyle textDebugButton = TextStyle(
   fontFamily: fontFamily,
   fontFeatures: [FontFeature.tabularFigures()],

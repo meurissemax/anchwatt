@@ -27,6 +27,20 @@
             }
         }
     },
+    "@cycleDialogLossHardcore": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "@cyclePlaque": {
+        "placeholders": {
+            "numeral": {
+                "type": "String"
+            }
+        }
+    },
     "@durationHoursMinutes": {
         "placeholders": {
             "hours": {
@@ -190,6 +204,7 @@
     "achievementWorkhorseDescription": "1 000 événements système encaissés. Le repos attendra.",
     "achievementWorkhorseLabel": "Bourreau de travail",
     "anchwatt": "Anchwatt",
+    "anchwattDebugAddCycle": "Cycle +1",
     "anchwattDebugAddXp": "Ajouter XP",
     "anchwattDebugForceShiny": "Shiny",
     "anchwattDebugResetStats": "Reset",
@@ -201,6 +216,17 @@
     "autoMuteLabel": "Silence pendant les réunions",
     "autoMuteOpenSystemSettings": "Ouvrir les Réglages Système",
     "autoMutePermissionDenied": "Accès au calendrier refusé. À activer dans Réglages Système > Confidentialité et sécurité > Calendriers.",
+    "cycleButton": "Effectuer un cycle",
+    "cycleDialogCancel": "Annuler",
+    "cycleDialogConfirm": "Effectuer le cycle",
+    "cycleDialogIntro": "Anchwatt remet les compteurs à zéro. Au menu :",
+    "cycleDialogIrreversible": "Définitif, aucun retour en arrière possible.",
+    "cycleDialogKept": "Tes stats, ton XP amassé et tes hauts faits restent acquis.",
+    "cycleDialogLossForm": "Retour à la forme Anchwatt de base",
+    "cycleDialogLossHardcore": "Mode Hardcore reverrouillé jusqu'au niveau {level}",
+    "cycleDialogLossLevel": "Retour au niveau 1",
+    "cycleDialogTitle": "Effectuer un cycle ?",
+    "cyclePlaque": "CYCLE {numeral}",
     "durationHoursMinutes": "{hours}h {minutes}min",
     "durationMinutesSeconds": "{minutes}min {seconds}s",
     "eventTypeChargerToggle": "Coup de jus",

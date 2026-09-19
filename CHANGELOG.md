@@ -14,6 +14,7 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 
 - Add five cycle tiers, from copper to plasma white, numbered in roman numerals up to XX
 - Add a cycle reset that sends a level 100 Anchwatt back to level 1 in its base form and relocks the Hardcore mode
+- Add a cycle button at level 100, behind a confirmation dialog, and a cycle plaque in the main window
 
 ### Removed
 

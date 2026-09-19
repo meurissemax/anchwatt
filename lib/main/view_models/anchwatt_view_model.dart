@@ -250,6 +250,16 @@ class AnchwattViewModel extends ChangeNotifier {
   // notification) so the timed behaviour can be inspected without the roll.
   void debugForceShiny() => _startShinyWindow();
 
+  // Bumps the cycle counter without touching the progression, so every tier
+  // plaque can be inspected without grinding to level 100 each time.
+  Future<void> debugAddCycle() async {
+    _cycleCount += 1;
+
+    notifyListeners();
+
+    await _storage.writeCycleCount(_cycleCount);
+  }
+
   Future<void> debugResetStats() async {
     _level = AnchwattSettings.levelMin;
     _xp = 0;

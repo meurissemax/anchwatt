@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 // Widgets
+const BorderRadius borderRadiusCyclePlaque = BorderRadius.all(Radius.circular(8));
 const BorderRadius borderRadiusDebugButton = BorderRadius.all(Radius.circular(6));
 const BorderRadius borderRadiusOptionsAboutCard = BorderRadius.all(Radius.circular(10));
 const BorderRadius borderRadiusOptionsButton = BorderRadius.all(Radius.circular(6));

@@ -9,6 +9,7 @@ import 'package:anchwatt/main/view_models/anchwatt_view_model.dart';
 import 'package:anchwatt/main/views/options_view.dart';
 import 'package:anchwatt/main/views/stats_view.dart';
 import 'package:anchwatt/main/widgets/anchwatt_sprite.dart';
+import 'package:anchwatt/main/widgets/cycle_confirmation_dialog.dart';
 import 'package:anchwatt/main/widgets/pet_gesture_surface.dart';
 import 'package:anchwatt/main/widgets/sound_mode_pill.dart';
 import 'package:anchwatt/main/widgets/system_volume_pill.dart';
@@ -80,7 +81,9 @@ class _AnchwattViewBody extends StatelessWidget {
                   ),
                 ),
               ),
+              const _CyclePlaque(),
               const _XpSection(),
+              const _CycleSection(),
               if (Settings.isDev) ...[
                 const SizedBox(
                   height: 20,
@@ -96,6 +99,17 @@ class _AnchwattViewBody extends StatelessWidget {
                     ),
                     Expanded(
                       child: _DebugForceShinyButton(),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                const Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      child: _DebugAddCycleButton(),
                     ),
                     Expanded(
                       child: _DebugResetStatsButton(),
@@ -315,6 +329,148 @@ class _XpCounterText extends StatelessWidget {
   }
 }
 
+class _CyclePlaque extends StatelessWidget {
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    vertical: 6,
+  );
+
+  const _CyclePlaque();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    // Rebuilds only when the counter itself moves — a handful of times over the
+    // whole life of a character — so the plaque never repaints on its own.
+    return Selector<AnchwattViewModel, int>(
+      selector: (_, vm) => vm.cycleCount,
+      builder: (_, cycleCount, _) {
+        if (cycleCount < 1) {
+          return const SizedBox.shrink();
+        }
+
+        final CycleTier tier = CycleTier.fromCycleCount(cycleCount);
+
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorCyclePlaqueBackground,
+            border: Border.all(
+              color: tier.borderColor,
+            ),
+            borderRadius: borderRadiusCyclePlaque,
+          ),
+          child: Padding(
+            padding: _padding,
+            child: Text(
+              l10n.cyclePlaque(AnchwattSettings.cycleNumeral(cycleCount)),
+              textAlign: TextAlign.center,
+              style: textCyclePlaque.copyWith(
+                color: tier.textColor,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CycleSection extends StatelessWidget {
+  const _CycleSection();
+
+  @override
+  Widget build(BuildContext context) {
+    // Takes over the slot the XP gauge leaves empty at the cap: the bar retires
+    // at level 100 and the cycle button shows up in its place.
+    return Selector<AnchwattViewModel, bool>(
+      selector: (_, vm) => vm.isMaxLevel,
+      builder: (_, isMaxLevel, _) {
+        if (!isMaxLevel) {
+          return const SizedBox.shrink();
+        }
+
+        return const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            _CycleButton(),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _CycleButton extends StatelessWidget {
+  static const double _iconSize = 14;
+  static const double _spacing = 8;
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 10,
+  );
+
+  const _CycleButton();
+
+  // The dialog is the only gate: the reset runs on an explicit confirmation
+  // and nothing else. The ViewModel is read before awaiting so the callback
+  // never touches the context once the dialog has closed.
+  Future<void> _onTap(BuildContext context) async {
+    final AnchwattViewModel viewModel = context.read<AnchwattViewModel>();
+    final bool confirmed = await CycleConfirmationDialog.show(context);
+
+    if (!confirmed) {
+      return;
+    }
+
+    await viewModel.performCycle();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _onTap(context),
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            border: Border.fromBorderSide(
+              BorderSide(
+                color: colorNeutralLight,
+              ),
+            ),
+            borderRadius: borderRadiusOptionsButton,
+          ),
+          child: Padding(
+            padding: _padding,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: _spacing,
+              children: [
+                const Icon(
+                  Icons.autorenew,
+                  size: _iconSize,
+                  color: colorNeutralDark,
+                ),
+                Text(
+                  l10n.cycleButton,
+                  style: textOptionsCompactButton.copyWith(
+                    color: colorNeutralDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DebugAddXpButton extends StatelessWidget {
   const _DebugAddXpButton();
 
@@ -395,6 +551,34 @@ class _DebugForceShinyButton extends StatelessWidget {
         textStyle: textDebugButton,
       ),
       child: Text(l10n.anchwattDebugForceShiny),
+    );
+  }
+}
+
+class _DebugAddCycleButton extends StatelessWidget {
+  const _DebugAddCycleButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final L10n l10n = locator<L10n>();
+
+    return OutlinedButton(
+      onPressed: () => context.read<AnchwattViewModel>().debugAddCycle(),
+      style: OutlinedButton.styleFrom(
+        enabledMouseCursor: SystemMouseCursors.click,
+        foregroundColor: colorNeutralDark,
+        side: const BorderSide(
+          color: colorNeutralLight,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: borderRadiusDebugButton,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        textStyle: textDebugButton,
+      ),
+      child: Text(l10n.anchwattDebugAddCycle),
     );
   }
 }

@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -179,6 +180,16 @@ class L10n {
     return Intl.message('Anchwatt', name: 'anchwatt', desc: '', args: []);
   }
 
+  /// `Cycle +1`
+  String get anchwattDebugAddCycle {
+    return Intl.message(
+      'Cycle +1',
+      name: 'anchwattDebugAddCycle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Ajouter XP`
   String get anchwattDebugAddXp {
     return Intl.message(
@@ -286,6 +297,116 @@ class L10n {
       name: 'autoMutePermissionDenied',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Effectuer un cycle`
+  String get cycleButton {
+    return Intl.message(
+      'Effectuer un cycle',
+      name: 'cycleButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Annuler`
+  String get cycleDialogCancel {
+    return Intl.message(
+      'Annuler',
+      name: 'cycleDialogCancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Effectuer le cycle`
+  String get cycleDialogConfirm {
+    return Intl.message(
+      'Effectuer le cycle',
+      name: 'cycleDialogConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Anchwatt remet les compteurs à zéro. Au menu :`
+  String get cycleDialogIntro {
+    return Intl.message(
+      'Anchwatt remet les compteurs à zéro. Au menu :',
+      name: 'cycleDialogIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Définitif, aucun retour en arrière possible.`
+  String get cycleDialogIrreversible {
+    return Intl.message(
+      'Définitif, aucun retour en arrière possible.',
+      name: 'cycleDialogIrreversible',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tes stats, ton XP amassé et tes hauts faits restent acquis.`
+  String get cycleDialogKept {
+    return Intl.message(
+      'Tes stats, ton XP amassé et tes hauts faits restent acquis.',
+      name: 'cycleDialogKept',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retour à la forme Anchwatt de base`
+  String get cycleDialogLossForm {
+    return Intl.message(
+      'Retour à la forme Anchwatt de base',
+      name: 'cycleDialogLossForm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mode Hardcore reverrouillé jusqu'au niveau {level}`
+  String cycleDialogLossHardcore(String level) {
+    return Intl.message(
+      'Mode Hardcore reverrouillé jusqu\'au niveau $level',
+      name: 'cycleDialogLossHardcore',
+      desc: '',
+      args: [level],
+    );
+  }
+
+  /// `Retour au niveau 1`
+  String get cycleDialogLossLevel {
+    return Intl.message(
+      'Retour au niveau 1',
+      name: 'cycleDialogLossLevel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Effectuer un cycle ?`
+  String get cycleDialogTitle {
+    return Intl.message(
+      'Effectuer un cycle ?',
+      name: 'cycleDialogTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CYCLE {numeral}`
+  String cyclePlaque(String numeral) {
+    return Intl.message(
+      'CYCLE $numeral',
+      name: 'cyclePlaque',
+      desc: '',
+      args: [numeral],
     );
   }
 
