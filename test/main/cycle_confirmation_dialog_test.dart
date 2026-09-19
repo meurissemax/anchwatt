@@ -86,14 +86,13 @@ void main() {
     expect(result, isFalse);
   });
 
-  // The reward comes first: the plaque the next cycle earns, with its tier.
+  // The reward comes first: the plaque the next cycle earns.
   testWidgets('previews the plaque of the next cycle', (tester) async {
     final L10n l10n = locator<L10n>();
     await _open(tester, (_) {});
 
     expect(find.text(l10n.cycleDialogTitle('II')), findsOneWidget);
     expect(find.text(l10n.cyclePlaque('II')), findsOneWidget);
-    expect(find.text(l10n.cycleTierCopper), findsOneWidget);
   });
 
   // The three losses are the whole point of the dialog: they must all be there.

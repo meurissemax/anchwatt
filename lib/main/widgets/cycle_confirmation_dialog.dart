@@ -24,7 +24,6 @@ class CycleConfirmationDialog extends StatelessWidget {
   );
   static const EdgeInsets _bodyPadding = EdgeInsets.all(20);
   static const double _titleSpacing = 16;
-  static const double _plaqueToCaption = 8;
   static const double _sectionSpacing = 16;
   static const double _itemSpacing = 6;
   static const double _actionSpacing = 8;
@@ -61,7 +60,6 @@ class CycleConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final L10n l10n = locator<L10n>();
-    final CycleTier tier = CycleTier.fromCycleCount(nextCycle);
 
     return Dialog(
       backgroundColor: colorSurface,
@@ -97,14 +95,6 @@ class CycleConfirmationDialog extends StatelessWidget {
                       cycleCount: nextCycle,
                       large: true,
                     ),
-                  ),
-                  const SizedBox(
-                    height: _plaqueToCaption,
-                  ),
-                  Text(
-                    tier.label(l10n),
-                    textAlign: TextAlign.center,
-                    style: textOptionsSectionDescription,
                   ),
                   const SizedBox(
                     height: _sectionSpacing,
