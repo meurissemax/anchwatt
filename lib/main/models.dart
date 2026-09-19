@@ -15,9 +15,26 @@ class AnchwattSettings {
   static const double _shortDurationMultiplier = 1;
   static const double _mediumDurationMultiplier = 1.25;
   static const double _longDurationMultiplier = 1.5;
+  // Roman numeral building blocks for [cycleNumeral], largest first.
+  static const List<(int, String)> _romanNumerals = [
+    (1000, 'M'),
+    (900, 'CM'),
+    (500, 'D'),
+    (400, 'CD'),
+    (100, 'C'),
+    (90, 'XC'),
+    (50, 'L'),
+    (40, 'XL'),
+    (10, 'X'),
+    (9, 'IX'),
+    (5, 'V'),
+    (4, 'IV'),
+    (1, 'I'),
+  ];
 
   static const int achievementPetsThreshold = 500;
   static const int achievementTotalEventsThreshold = 1000;
+  static const int cycleRomanNumeralMax = 20;
   static const int evolutionLamperoieLevel = 15;
   static const int evolutionOhmassacreLevel = 40;
   static const int hardcoreUnlockLevel = 50;
@@ -84,6 +101,28 @@ class AnchwattSettings {
   // Picks which footer tagline the share card shows. Kept pure (takes the RNG)
   // so the selection is unit-testable with a deterministic [Random].
   static int pickTaglineIndex(Random random) => random.nextInt(statsCardTaglineCount);
+
+  // Formats a cycle number for the plaque: roman numerals up to
+  // [cycleRomanNumeralMax] inclusive, plain digits beyond, where a roman form
+  // gets too wide for the plaque. Non-positive values have no roman form and
+  // fall back to digits as well.
+  static String cycleNumeral(int cycle) {
+    if (cycle <= 0 || cycle > cycleRomanNumeralMax) {
+      return '$cycle';
+    }
+
+    final StringBuffer buffer = StringBuffer();
+    int remaining = cycle;
+
+    for (final (int value, String symbol) in _romanNumerals) {
+      while (remaining >= value) {
+        buffer.write(symbol);
+        remaining -= value;
+      }
+    }
+
+    return buffer.toString();
+  }
 
   /// Returns the XP multiplier for a sound of the given nominal duration.
   /// Falls back to 1.0 for unknown or non-positive durations.
@@ -232,6 +271,87 @@ enum Evolution {
 
       case Evolution.ohmassacre:
         return l10n.evolutionFlavorOhmassacre;
+    }
+  }
+}
+
+// Rank of the permanent cycle counter, driving the plaque colours. Each tier
+// starts at [minCycle] and spans two cycles; the last one is open-ended, so the
+// counter can grow forever without leaving the table.
+enum CycleTier {
+  copper,
+  steel,
+  electricBlue,
+  violet,
+  plasmaWhite;
+
+  // Resolves the tier of a cycle count by walking the thresholds from the top.
+  // Counts below the first threshold resolve to the first tier — the plaque is
+  // hidden at 0 anyway, so this only keeps the mapping total.
+  static CycleTier fromCycleCount(int count) {
+    for (final CycleTier tier in CycleTier.values.reversed) {
+      if (count >= tier.minCycle) {
+        return tier;
+      }
+    }
+
+    return CycleTier.copper;
+  }
+
+  int get minCycle {
+    switch (this) {
+      case CycleTier.copper:
+        return 1;
+
+      case CycleTier.steel:
+        return 3;
+
+      case CycleTier.electricBlue:
+        return 5;
+
+      case CycleTier.violet:
+        return 7;
+
+      case CycleTier.plasmaWhite:
+        return 9;
+    }
+  }
+
+  Color get borderColor {
+    switch (this) {
+      case CycleTier.copper:
+        return colorCycleCopperBorder;
+
+      case CycleTier.steel:
+        return colorCycleSteelBorder;
+
+      case CycleTier.electricBlue:
+        return colorCycleElectricBlueBorder;
+
+      case CycleTier.violet:
+        return colorCycleVioletBorder;
+
+      case CycleTier.plasmaWhite:
+        return colorCyclePlasmaWhiteBorder;
+    }
+  }
+
+  Color get textColor {
+    switch (this) {
+      case CycleTier.copper:
+        return colorCycleCopperText;
+
+      case CycleTier.steel:
+        return colorCycleSteelText;
+
+      case CycleTier.electricBlue:
+        return colorCycleElectricBlueText;
+
+      case CycleTier.violet:
+        return colorCycleVioletText;
+
+      case CycleTier.plasmaWhite:
+        return colorCyclePlasmaWhiteText;
     }
   }
 }

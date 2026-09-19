@@ -550,4 +550,48 @@ void main() {
       expect(const SystemVolumeState(volume: 1, muted: false).isSilenced, isFalse);
     });
   });
+
+  group('AnchwattSettings.cycleNumeral', () {
+    test('formats roman numerals up to and including the cap', () {
+      expect(AnchwattSettings.cycleNumeral(1), 'I');
+      expect(AnchwattSettings.cycleNumeral(4), 'IV');
+      expect(AnchwattSettings.cycleNumeral(9), 'IX');
+      expect(AnchwattSettings.cycleNumeral(14), 'XIV');
+      expect(AnchwattSettings.cycleNumeral(19), 'XIX');
+      expect(AnchwattSettings.cycleNumeral(AnchwattSettings.cycleRomanNumeralMax), 'XX');
+    });
+
+    test('falls back to digits above the cap', () {
+      expect(AnchwattSettings.cycleNumeral(AnchwattSettings.cycleRomanNumeralMax + 1), '21');
+      expect(AnchwattSettings.cycleNumeral(100), '100');
+    });
+
+    test('falls back to digits for non-positive values', () {
+      expect(AnchwattSettings.cycleNumeral(0), '0');
+      expect(AnchwattSettings.cycleNumeral(-3), '-3');
+    });
+  });
+
+  group('CycleTier.fromCycleCount', () {
+    test('changes tier at the III, V, VII and IX bounds', () {
+      expect(CycleTier.fromCycleCount(1), CycleTier.copper);
+      expect(CycleTier.fromCycleCount(2), CycleTier.copper);
+      expect(CycleTier.fromCycleCount(3), CycleTier.steel);
+      expect(CycleTier.fromCycleCount(4), CycleTier.steel);
+      expect(CycleTier.fromCycleCount(5), CycleTier.electricBlue);
+      expect(CycleTier.fromCycleCount(6), CycleTier.electricBlue);
+      expect(CycleTier.fromCycleCount(7), CycleTier.violet);
+      expect(CycleTier.fromCycleCount(8), CycleTier.violet);
+      expect(CycleTier.fromCycleCount(9), CycleTier.plasmaWhite);
+    });
+
+    test('keeps the last tier open-ended', () {
+      expect(CycleTier.fromCycleCount(10), CycleTier.plasmaWhite);
+      expect(CycleTier.fromCycleCount(250), CycleTier.plasmaWhite);
+    });
+
+    test('resolves counts below the first threshold to the first tier', () {
+      expect(CycleTier.fromCycleCount(0), CycleTier.copper);
+    });
+  });
 }

@@ -30,6 +30,18 @@ const Color colorLevelMaxGold = Color(0xffffd700);
 const Color colorLevelMaxGoldDeep = Color(0xffc9a227);
 const Color colorLevelMaxGoldHighlight = Color(0xfffff3b0);
 
+// Cycles
+const Color colorCycleCopperBorder = Color(0xffb87333);
+const Color colorCycleCopperText = Color(0xffe0a268);
+const Color colorCycleElectricBlueBorder = Color(0xff3b82f6);
+const Color colorCycleElectricBlueText = Color(0xff93c5fd);
+const Color colorCyclePlasmaWhiteBorder = Color(0xffe8f4ff);
+const Color colorCyclePlasmaWhiteText = Color(0xffffffff);
+const Color colorCycleSteelBorder = Color(0xff8a99a8);
+const Color colorCycleSteelText = Color(0xffcbd5e0);
+const Color colorCycleVioletBorder = Color(0xff8b5cf6);
+const Color colorCycleVioletText = Color(0xffc4b5fd);
+
 // Widgets
 const Color colorAchievementTileLocked = Color(0xfff9fafb);
 const Color colorAchievementTileUnlocked = Color(0xfff3f4f6);

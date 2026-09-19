@@ -45,4 +45,50 @@ void main() {
     expect(restored.level, AnchwattSettings.levelMin);
     expect(restored.xp, 0);
   });
+
+  // Installs predating cycles have no cycle key at all: they must read as 0 and
+  // present the app exactly as before.
+  test('readCycleCount reads 0 when the key is absent', () async {
+    final AnchwattStorage storage = AnchwattStorage();
+    await storage.init();
+
+    expect(storage.readCycleCount(), 0);
+  });
+
+  test('readCycleCount round-trips a written count and clamps a negative one', () async {
+    final AnchwattStorage storage = AnchwattStorage();
+    await storage.init();
+
+    await storage.writeCycleCount(4);
+    expect(storage.readCycleCount(), 4);
+
+    await storage.writeCycleCount(-1);
+    expect(storage.readCycleCount(), 0);
+  });
+
+  // The cycle count lives outside the level/xp validation: a corrupted
+  // progression resets to level 1 but never erases the cycles earned.
+  test('readCycleCount survives a progression that fails validation', () async {
+    final AnchwattStorage storage = AnchwattStorage();
+    await storage.init();
+
+    await storage.writeCycleCount(2);
+    await storage.writeProgression(
+      level: AnchwattSettings.levelMax + 1,
+      xp: 0,
+    );
+
+    expect(storage.readProgression().level, AnchwattSettings.levelMin);
+    expect(storage.readCycleCount(), 2);
+  });
+
+  test('clear removes the cycle count with the rest of the progression', () async {
+    final AnchwattStorage storage = AnchwattStorage();
+    await storage.init();
+
+    await storage.writeCycleCount(3);
+    await storage.clear();
+
+    expect(storage.readCycleCount(), 0);
+  });
 }

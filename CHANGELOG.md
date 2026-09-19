@@ -10,6 +10,10 @@ This Changelog is inspired by the principles of [Common Changelog](https://commo
 - Change the Dart SDK version to 3.13.4
 - Change the ignore rules to cover the Flutter widget preview directory
 
+### Added
+
+- Add five cycle tiers, from copper to plasma white, numbered in roman numerals up to XX
+
 ### Removed
 
 - Remove the unused Android build artifact paths from the ignore rules

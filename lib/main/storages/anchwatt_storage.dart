@@ -8,6 +8,7 @@ class AnchwattStorage {
   static const String _keySchemaVersion = 'anchwatt.schema_version';
   static const String _keyLevel = 'anchwatt.level';
   static const String _keyXp = 'anchwatt.xp';
+  static const String _keyCycleCount = 'anchwatt.cycle_count';
 
   /* Variables */
 
@@ -70,10 +71,25 @@ class AnchwattStorage {
     );
   }
 
+  // Read independently of the level/xp validation above: a corrupted
+  // progression falls back to level 1 but must never erase the cycles earned.
+  // An absent key (every install predating cycles) reads as 0.
+  int readCycleCount() {
+    final int count = _prefsStorage.readInt(key: _keyCycleCount);
+
+    return count < 0 ? 0 : count;
+  }
+
+  Future<void> writeCycleCount(int count) => _prefsStorage.writeInt(
+    key: _keyCycleCount,
+    value: count,
+  );
+
   Future<void> clear() async {
     await _prefsStorage.delete(key: _keySchemaVersion);
     await _prefsStorage.delete(key: _keyLevel);
     await _prefsStorage.delete(key: _keyXp);
+    await _prefsStorage.delete(key: _keyCycleCount);
   }
 
   ({int level, int xp}) _defaults() => (level: AnchwattSettings.levelMin, xp: 0);
